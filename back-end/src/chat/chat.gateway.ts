@@ -258,6 +258,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         console.log(`Last message is ${lastMsg.text}`);
         console.log(dmm.id_dm);
         const newDm = {
+          id_room:dmm.id_dm,
           id: dmm.receiverId,
           user_id: dmm.senderId,
           name: getUser.name,
@@ -285,8 +286,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const user = await this.UsersService.findById(userId);
     if (user) {
+      console.log("before sending: ", data.room_id);
       // console.log("before sending: ", data.room_id);
-      const messages = await this.ChatService.getAllMessages(data.id);
+      const messages = await this.ChatService.getAllMessages(data.room_id);
       // const room = `room_${data.id}`;
       // this.server.to(room).emit('Response_messages_Dms', messages);
       // console.log("after sending", messages);

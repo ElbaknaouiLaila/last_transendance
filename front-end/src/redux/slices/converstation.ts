@@ -21,6 +21,7 @@ export const ConverstationSlice = createSlice({
     fetchConverstations(state, action) {
       // ! get all converstation
       const list = action.payload.conversations.map((el: any) => {
+        // console.log(el);
         const formatDateTime = (dateString: string): string => {
           const inputDate = new Date(dateString);
           const currentDate = new Date();
@@ -40,7 +41,9 @@ export const ConverstationSlice = createSlice({
         // const user = el.find(
         //   (elm: any) => elm.id_dm.toString() !== action.payload.user_id.toString()
         // );
+        // console.log(el.id_room);
         return {
+          room_id: el?.id_room,
           id: el?.id,
           user_id: el?.user_id,
           name: el?.name,

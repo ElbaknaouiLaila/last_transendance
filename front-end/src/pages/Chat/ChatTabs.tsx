@@ -63,7 +63,7 @@ const ChatTabs = () => {
   React.useEffect(() => {
     console.log(socket?.connected);
     if (socket) {
-      socket.emit("allConversationsDm", { _id });
+      socket.emit("allConversationsDm", { _id }); 
       socket.on("response", (data: any) => {
         console.log(data);
         dispatch(fetchConverstations({ conversations: data, user_id: _id }));

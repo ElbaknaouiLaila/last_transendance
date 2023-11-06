@@ -36,6 +36,7 @@ interface Props {
 }
 
 const ContactElements = (cont: any) => {
+  // console.log(cont);
   // const { contact } = useAppSelector((state) => state);
   const dispatch = useAppDispatch();
   const id = cont.id_user;
@@ -57,6 +58,7 @@ const ContactElements = (cont: any) => {
 
   const handleClickMuted = () => {
     // ! emit "mute_converstation" event
+
     // socket.emit("mute_converstation", { to: _id, from: user_id });
     dispatch(mutedContact({ room_id: id }));
 

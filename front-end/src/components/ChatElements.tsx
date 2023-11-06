@@ -14,6 +14,7 @@ import {
 
 interface IdType {
   id: number;
+  room_id: number;
   name: string;
   img: string;
   time: string;
@@ -31,7 +32,8 @@ const StyledChatBox = styled(Box)(() => ({
 const ChatElements = (id: IdType) => {
   const { contact, profile } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
-  const selected_id = id.id;
+  const selected_id = id.room_id;
+  console.log(id);
   const selectedChatId = contact.room_id;
   let isSelected = +selectedChatId === id.id;
 
