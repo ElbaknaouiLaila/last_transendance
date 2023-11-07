@@ -169,4 +169,13 @@ export class ChannelsController {
   {
     return this.channelsService.getProtectedChannels();
   }
+
+  @Get('allChannels')
+  async getAllChannels(@Req() req, @Body() data: any)
+  {
+    const decode = this.jwt.verify(req.cookies['cookie']);
+    const user = await this.UsersService.findById(decode.id);
+    return this.channelsService.getAllChannels(user.id_user);
+      
+  }
 }

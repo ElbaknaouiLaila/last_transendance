@@ -13,7 +13,6 @@ import Privates from "../../sections/Private";
 import { socket } from "../../socket";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { fetchConverstations } from "../../redux/slices/converstation";
-import { FetchChannels } from "../../redux/slices/channels";
 
 const resolveSlotProps = (fn: unknown, args: unknown) =>
   typeof fn === "function" ? fn(args) : fn;
@@ -62,14 +61,13 @@ const ChatTabs = () => {
   // !!! fetch all conversations with user_is
   const { _id } = useAppSelector(state => state.profile);
   React.useEffect(() => {
-    // console.log(socket?.connected);
+    console.log(socket?.connected);
     if (socket) {
       socket.emit("allConversationsDm", { _id }); 
       socket.on("response", (data: any) => {
         console.log(data);
         dispatch(fetchConverstations({ conversations: data, user_id: _id }));
       });
-      dispatch(FetchChannels());
     }
     // socket.emit("get_direct_conversations", { _id }, (data:any) => {
     //   console.log(data); // this data is the list of conversations
