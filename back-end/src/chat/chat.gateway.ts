@@ -230,11 +230,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // 2 -idChannel.
     // Create a new channel.
     // check is the channel is exist :
-    const channel = await this.ChatService.findChannel(data.id);
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.log(data);
+    const channel = await this.ChatService.findChannel(data.to);
     if (channel)
     {
       const users = await this.ChatService.getUsersInChannel(
-        data.id
+        data.from
       );
 
       this.handling_joinRoom_group(data, users);

@@ -43,18 +43,20 @@ const ChannelElements = (id: IdType) => {
     <StyledChatBox
       onClick={() => {
         console.log("id", selected_id);
+        socket.emit("allMessagesRoom", { room_id: selected_id });
         dispatch(
           selectConversation({
             room_id: selected_id,
             name: id.name,
-            type_chat: "channel",
+            type_chat: id.channel_type,
             avatar: id.image,
           })
         );
-        // socket.emit("allMessagesRoom", { room_id: selected_id });
-        // socket.on("Response_messages_Channel", (data: any) => {
-        //   dispatch(setCurrentChannel(data));
-        // });
+        socket.on("Response_messages_Channel", (data: any) => {
+          console.log("data", data);
+          dispatch(setCurrentChannel(data));
+
+        });
       }}
       sx={{
         width: "100%",
