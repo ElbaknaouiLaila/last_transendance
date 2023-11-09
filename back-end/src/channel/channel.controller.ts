@@ -54,7 +54,7 @@ export class ChannelsController {
 
     // this.channelsService.getAllChannels(user.id_user);
 
-    this.getAllChannels(user.id_user);
+    // this.getAllChannels(user.id_user);
     return true;
   }
   @Post('join')
@@ -179,24 +179,24 @@ export class ChannelsController {
 
 
 
-  // @Get('allChannels')
+  @Get('allChannels')
   // async getAllChannels(@Req() req, @Body() data: any)
 
-  async getAllChannels(id:number)
+  async getAllChannels(@Req() req, @Body() data: any)
   {
     console.log("all channels");
-    // const decode = this.jwt.verify(req.cookies['cookie']);
+    const decode = this.jwt.verify(req.cookies['cookie']);
     // console.log("Reshe");
-    // const user = await this.UsersService.findById(decode.id);
-    const user = await this.UsersService.findById(id);
+    const user = await this.UsersService.findById(decode.id);
+    // const user = await this.UsersService.findById(id);
 
 
     // console.log("Reshe   222");
 
     const myAllChannels = await this.channelsService.getAllChannels(user.id_user);
-    console.log("START LOOPING ");
+    // console.log("START LOOPING ");
     let message = "";
-    let sent: Date ;
+    let sent: Date | null = null;
     if(myAllChannels)
     {
         const arrayOfChannels = [];
@@ -231,9 +231,11 @@ export class ChannelsController {
           };
           arrayOfChannels.push(newCh);
         }
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        console.log(arrayOfChannels);
-        console.log("ENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNND");
+
+        // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        // console.log(arrayOfChannels);
+        // console.log("ENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNND");
+        return arrayOfChannels;
     }
 }
 

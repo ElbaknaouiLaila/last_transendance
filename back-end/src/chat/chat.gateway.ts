@@ -128,6 +128,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // console.log(`****** size of map of clients connected is ${size}`);
     // if (senderClient && receiverClient) {
       // Send the message to the specified room
+
+      console.log("*************   handling_joinRoom_dm");
+
       this.joinRoom(senderClient, room);
       this.joinRoom(receiverClient, room);
       // chatTodm is the name of event li ana mn back kansifto lfront (li khaso yb9a yelisteni elih)
@@ -171,6 +174,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // const senderId = "71";
     // const receiverId = "72";
     let room ;
+    console.log("*************   direct_message");
 
     //  room = this.createRoom(senderId, receiverId);
     console.log(data);
@@ -180,40 +184,48 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     //  for (const [key, value] of this.connectedClients) {
     //   console.log(`Key: ${key}, Value: ${value}`);
     // }
-    console.log(`FRom websockets DM ==== ${data.message}`);
-    console.log()
-    console.log(`client connected is ${client.id}`);
+    // console.log(`FRom websockets DM ==== ${data.message}`);
+    // console.log()
+    // console.log(`client connected is ${client.id}`);
     // decodeCookie(client)
     return 'Hello world!';
   }
 
 
   
-  handling_joinRoom_group(data:any, users:any)
+ async handling_joinRoom_group(data:any, users:any)
   {
 
     // u need more check 
+    console.log("*************   handling_joinRoom_group");
+
     const room= `room_${data.id}`;
     for (const user of users) {
       // Access and process individual user properties
       // clientsChannel.push(this.connectedClients[user.userId]);
       // const client = this.connectedClients[user.userId];
+      console.log("Inside sockets of groups");
       const client: Socket = this.connectedClients.get(user.userId);
+      console.log("11111111111111111111111111111111");
       this.joinRoom(client,room);
+      console.log("22222222222222222222222222222222222222");
       // saving into databases :
-
-      const save = this.ChatService.createDiscussion(data.senderId, data.message, data.id)
-      const result = {
-        id:data.id,
-        message: data.message,
-        send: data.senderId, 
-      };
-      this.server.to(room).emit('chatToGroup', result);
     }
+      const save = await this.ChatService.createDiscussion(data.from, data.message, data.to)
+      const result = {
+        id:data.to,
+        message: data.message,
+        send: data.from, 
+      };
+
+      console.log("befoor emiting in groups");
+      console.log(save);
+      this.server.to(room).emit('chatToGroup', result);
+    console.log("ENDING JOINGROUP ");
   }
 
   @SubscribeMessage('channel_message')
-  async sendInChannel(@ConnectedSocket() client: Socket,@MessageBody() data: any): Promise<any> {
+  async sendInChannel(@ConnectedSocket() client: Socket,@MessageBody() data: any) {
     // Business logic to save the message to the database 
     // output the map :
     // I think I do need just the id of channel and the message.
@@ -230,11 +242,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // 2 -idChannel.
     // Create a new channel.
     // check is the channel is exist :
-    const channel = await this.ChatService.findChannel(data.id);
+    console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    console.log("*************   channel_message");
+    console.log(data);
+    const channel = await this.ChatService.findChannel(data.to);
     if (channel)
     {
       const users = await this.ChatService.getUsersInChannel(
-        data.id
+        data.to
       );
 
       this.handling_joinRoom_group(data, users);
@@ -250,15 +265,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   {
     // I need the id of current User :
     // data.id = 
-    console.log["*************"];
+    console.log("*************   allConversationsDm");
     const userId: number = Number(client.handshake.query.user_id);
-    console.log(`Socket from allDms is ${client.id}`);
+    // console.log(`Socket from allDms is ${client.id}`);
     // console.log(`User id from hansshake is ${userId}`);
     // console.log(`id coming from front is ${data._id}`);
     // console.log(`From allConversationsDm ${userId}`);
     const user = await this.UsersService.findById(userId);
     const dms =  await this.ChatService.getAllConversations(user.id_user);
-    console.log("|||||||||||||||||||||||||");
+    // console.log("|||||||||||||||||||||||||");
 
     if(dms)
     {
@@ -283,8 +298,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         };
         arrayOfDms.push(newDm);
       }
-      console.log("ZZZZZZZZZZZZZZ");
-      console.log(arrayOfDms);
+      // console.log("ZZZZZZZZZZZZZZ");
+      // console.log(arrayOfDms);
       client.emit('response', arrayOfDms); 
     }
       // console.log(`Lensth is ${dms.length}`);
@@ -294,13 +309,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   // sending response to this client :
     // preparing data for front :
 
-    console.log("after allconDms");
+    // console.log("after allconDms");
   }
 
   @SubscribeMessage('allMessagesDm')
   async getAllMessages(@ConnectedSocket() client: Socket,@MessageBody() data: any)
   {
     // I need the id of room (dm).
+    console.log("*************   allMessagesDm");
+
     const userId: number = Number(client.handshake.query.user_id);
 
     const user = await this.UsersService.findById(userId);
@@ -308,11 +325,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     {
       const messages = await  this.ChatService.getAllMessages(data.room_id);
       const room = `room_${data.room_id}`;
-      console.log(`messages are ${messages}`);
+      // console.log(`messages are ${messages}`);
       client.emit('historyDms', messages); 
 
       // this.server.to(room).emit('Response_messages_Dms', messages);
-      console.log("after sending");
+      // console.log("after sending");
     }
     else
       console.log("Error user does not exist");
@@ -324,6 +341,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async getAllMessagesRoom(@ConnectedSocket() client: Socket,@MessageBody() data: any)
   {
     // I need the id of room (dm).
+    console.log("********************** allMessagesRoom");
     const userId: number = Number(client.handshake.query.user_id);
 
     const user = await this.UsersService.findById(userId);
@@ -333,7 +351,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       const messages =  this.ChatService.getAllMessagesRoom(data.id);
       const room = `room_${data.id}`;
       this.server.to(room).emit('Response_messages_Channel', messages);
-      console.log("after sending");
+      // console.log("after sending");
     }
     else
       console.log("Error user does not exist");

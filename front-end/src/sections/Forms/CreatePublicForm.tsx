@@ -6,8 +6,7 @@ import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import axios from 'axios'
-
+import axios from "axios";
 
 const CreatePublicForm = ({ handleClose }: any) => {
   const { friends } = useAppSelector(state => state.app);
@@ -38,7 +37,7 @@ const CreatePublicForm = ({ handleClose }: any) => {
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("create public channel");
+      console.log("DATA", data);
       await axios.post("http://localhost:3000/channels/create", data, {
         withCredentials: true,
       });
@@ -49,19 +48,17 @@ const CreatePublicForm = ({ handleClose }: any) => {
         })
       );
       // call api
-      console.log("DATA", data);
     } catch (error) {
-      console.log("error", error);
-      reset();
       dispatch(
         showSnackbar({
           severity: "failed",
           message: "Create Public Channel Failed",
         })
       );
+      console.log("error", error);
+      reset();
     }
   };
-
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
@@ -82,11 +79,9 @@ const CreatePublicForm = ({ handleClose }: any) => {
         >
           <Button onClick={handleClose}>Cancel</Button>
           <Button
-          
             type="submit"
             variant="contained"
             sx={{
-                
               backgroundColor: "#806EA9", // Change the background color to purple
               color: "#C7BBD1", // Change the text color to white
               borderRadius: "21px",

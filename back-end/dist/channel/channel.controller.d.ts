@@ -27,5 +27,5 @@ export declare class ChannelsController {
         visibility: string;
         password: string;
     }[]>;
-    getAllChannels(id: number): Promise<void>;
+    getAllChannels(req: any, data: any): Promise<any[]>;
 }

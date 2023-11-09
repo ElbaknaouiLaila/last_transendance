@@ -33,12 +33,17 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
       // console.log(value);
       // console.log("contact", contact);
       if (!value) return;
-      socket.emit("direct_message", {
-        message: linkify(value),
-        subtype: "text",
-        from: profile._id,
-        to: contact.room_id,
-      });
+      socket.emit(
+        contact.type_chat === "individual"
+          ? "direct_message"
+          : "channel_message",
+        {
+          message: linkify(value),
+          subtype: "text",
+          from: profile._id,
+          to: contact.room_id,
+        }
+      );
       setValue("");
     }
   };
@@ -85,13 +90,19 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
                     // console.log('=>', typeof(contact.room_id));
                     if (!linkify(value)) return;
                     const _id = parseInt(contact.room_id.toString());
-                    socket.emit("direct_message", {
-                      message: linkify(value),
-                      // conversation_id: room_id,
-                      from: profile._id,
-                      to: _id,
-                      // type: containsUrl(v›alue) ? "Link" : "Text",
-                    });
+                    console.log(contact.type_chat);
+                    socket.emit(
+                      contact.type_chat === "individual"
+                        ? "direct_message"
+                        : "channel_message",
+                      {
+                        message: linkify(value),
+                        // conversation_id: room_id,
+                        from: profile._id,
+                        to: _id,
+                        // type: containsUrl(v›alue) ? "Link" : "Text",
+                      }
+                    );
                     setValue("");
                   }}
                 />{" "}

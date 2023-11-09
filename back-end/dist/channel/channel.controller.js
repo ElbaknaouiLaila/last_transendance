@@ -41,7 +41,6 @@ let ChannelsController = class ChannelsController {
         console.log("##################");
         const channel = await this.channelsService.createChannel(data, user.id_user);
         console.log("End of Creating A Channel ");
-        this.getAllChannels(user.id_user);
         return true;
     }
     async join(req, data) {
@@ -110,13 +109,13 @@ let ChannelsController = class ChannelsController {
     async getProtectedChannels() {
         return this.channelsService.getProtectedChannels();
     }
-    async getAllChannels(id) {
+    async getAllChannels(req, data) {
         console.log("all channels");
-        const user = await this.UsersService.findById(id);
+        const decode = this.jwt.verify(req.cookies['cookie']);
+        const user = await this.UsersService.findById(decode.id);
         const myAllChannels = await this.channelsService.getAllChannels(user.id_user);
-        console.log("START LOOPING ");
         let message = "";
-        let sent;
+        let sent = null;
         if (myAllChannels) {
             const arrayOfChannels = [];
             for (const channels of myAllChannels) {
@@ -148,9 +147,7 @@ let ChannelsController = class ChannelsController {
                 };
                 arrayOfChannels.push(newCh);
             }
-            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            console.log(arrayOfChannels);
-            console.log("ENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNND");
+            return arrayOfChannels;
         }
     }
 };
@@ -239,6 +236,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "getProtectedChannels", null);
+__decorate([
+    (0, common_1.Get)('allChannels'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChannelsController.prototype, "getAllChannels", null);
 exports.ChannelsController = ChannelsController = __decorate([
     (0, common_1.Controller)('channels'),
     __metadata("design:paramtypes", [jwtservice_service_1.JwtService, channel_service_1.ChannelsService, users_service_1.UsersService])

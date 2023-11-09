@@ -38,6 +38,7 @@ const CreatePrivateForm = ({ handleClose }: any) => {
   const { friends } = useAppSelector(state => state.app);
   const onSubmit = async (data: any) => {
     try {
+      
       dispatch(
         showSnackbar({
           severity: "success",
@@ -45,6 +46,7 @@ const CreatePrivateForm = ({ handleClose }: any) => {
         })
       );
       // call api
+      
       console.log("DATA", data);
     } catch (error) {
       console.log("error", error);

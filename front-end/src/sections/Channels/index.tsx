@@ -117,7 +117,7 @@ const Channels = () => {
             }}
           >
             {/* <SimpleBarStyle> */}
-            <Stack>
+            <Stack sx={{ backgroundColor: "#F3A162", borderRadius: "25px" }}>
               {channels.channels.map((el, index) => {
                 return <ChannelElements key={index} {...el} />;
               })}

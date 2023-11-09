@@ -78,6 +78,7 @@ let ChatGateway = class ChatGateway {
     async handling_joinRoom_dm(room, senderId, receiverId, message) {
         const senderClient = this.connectedClients.get(senderId);
         const receiverClient = this.connectedClients.get(receiverId);
+        console.log("*************   handling_joinRoom_dm");
         this.joinRoom(senderClient, room);
         this.joinRoom(receiverClient, room);
         console.log("starting sending");
@@ -95,43 +96,49 @@ let ChatGateway = class ChatGateway {
     }
     process_dm(client, data) {
         let room;
+        console.log("*************   direct_message");
         console.log(data);
         room = this.createRoom(data.from, data.to);
         this.handling_joinRoom_dm(room, data.from, data.to, data.message);
-        console.log(`FRom websockets DM ==== ${data.message}`);
-        console.log();
-        console.log(`client connected is ${client.id}`);
         return 'Hello world!';
     }
-    handling_joinRoom_group(data, users) {
+    async handling_joinRoom_group(data, users) {
+        console.log("*************   handling_joinRoom_group");
         const room = `room_${data.id}`;
         for (const user of users) {
+            console.log("Inside sockets of groups");
             const client = this.connectedClients.get(user.userId);
+            console.log("11111111111111111111111111111111");
             this.joinRoom(client, room);
-            const save = this.ChatService.createDiscussion(data.senderId, data.message, data.id);
-            const result = {
-                id: data.id,
-                message: data.message,
-                send: data.senderId,
-            };
-            this.server.to(room).emit('chatToGroup', result);
+            console.log("22222222222222222222222222222222222222");
         }
+        const save = await this.ChatService.createDiscussion(data.from, data.message, data.to);
+        const result = {
+            id: data.to,
+            message: data.message,
+            send: data.from,
+        };
+        console.log("befoor emiting in groups");
+        console.log(save);
+        this.server.to(room).emit('chatToGroup', result);
+        console.log("ENDING JOINGROUP ");
     }
     async sendInChannel(client, data) {
-        const channel = await this.ChatService.findChannel(data.id);
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        console.log("*************   channel_message");
+        console.log(data);
+        const channel = await this.ChatService.findChannel(data.to);
         if (channel) {
-            const users = await this.ChatService.getUsersInChannel(data.id);
+            const users = await this.ChatService.getUsersInChannel(data.to);
             this.handling_joinRoom_group(data, users);
         }
         return "OK";
     }
     async allConversationsDm(client, data) {
-        console.log["*************"];
+        console.log("*************   allConversationsDm");
         const userId = Number(client.handshake.query.user_id);
-        console.log(`Socket from allDms is ${client.id}`);
         const user = await this.UsersService.findById(userId);
         const dms = await this.ChatService.getAllConversations(user.id_user);
-        console.log("|||||||||||||||||||||||||");
         if (dms) {
             const arrayOfDms = [];
             for (const dmm of dms) {
@@ -153,33 +160,29 @@ let ChatGateway = class ChatGateway {
                 };
                 arrayOfDms.push(newDm);
             }
-            console.log("ZZZZZZZZZZZZZZ");
-            console.log(arrayOfDms);
             client.emit('response', arrayOfDms);
         }
-        console.log("after allconDms");
     }
     async getAllMessages(client, data) {
+        console.log("*************   allMessagesDm");
         const userId = Number(client.handshake.query.user_id);
         const user = await this.UsersService.findById(userId);
         if (user) {
             const messages = await this.ChatService.getAllMessages(data.room_id);
             const room = `room_${data.room_id}`;
-            console.log(`messages are ${messages}`);
             client.emit('historyDms', messages);
-            console.log("after sending");
         }
         else
             console.log("Error user does not exist");
     }
     async getAllMessagesRoom(client, data) {
+        console.log("********************** allMessagesRoom");
         const userId = Number(client.handshake.query.user_id);
         const user = await this.UsersService.findById(userId);
         if (user) {
             const messages = this.ChatService.getAllMessagesRoom(data.id);
             const room = `room_${data.id}`;
             this.server.to(room).emit('Response_messages_Channel', messages);
-            console.log("after sending");
         }
         else
             console.log("Error user does not exist");

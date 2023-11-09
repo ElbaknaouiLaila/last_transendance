@@ -5,6 +5,13 @@ import { useDispatch } from 'react-redux';
 export interface Channel {
   members: [];
   channel_id: string;
+  image: string;
+  name: string;
+  owner: [];
+  admin: [];
+  last_messages: string;
+  time: string;
+  unread: number;
   current_messages: [];
   channel_type: string;
 }
@@ -40,8 +47,19 @@ export const ChannelsSlice = createSlice({
     fetchChannels(state, action) {
       //! get all channels conversation
       console.log(action.payload);
-      state.channels = action.payload;
-      // state.channels_conversation = action.payload;
+      // state.channels = action.payload;
+      state.channels = action.payload.map((el: any) => ({
+        channel_id: el.channel_id,
+        image: el.image,
+        name: el.name,
+        owner: el.owner,
+        admin: el.admin,
+        members: el.members,
+        last_messages: el.latest_message,
+        time: el.time,
+        unread: el.unread,
+        channel_type: el.channel_type,
+      }));
     },
     updatedChannels(state, action: PayloadAction<Channel[]>) {
       //! update channels
@@ -88,6 +106,7 @@ export function FetchChannels() {
         "Content-Type": "application/json",
     }, })
       .then((res) => {
+        console.log(res.data);
         dispatch(fetchChannels(res.data));
       })
       .catch((err) => console.log(err));
