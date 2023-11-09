@@ -11,7 +11,6 @@ async function bootstrap() {
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
     }));
-    app.enableCors();
     app.use(cors({
         credentials: true,
         origin: 'http://localhost:5173',

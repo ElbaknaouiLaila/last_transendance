@@ -469,8 +469,74 @@ let ChannelsService = class ChannelsService {
                 channel: true,
             },
         });
-        console.log(channels);
         return channels;
+    }
+    async getAllAdmins(idch) {
+        const usersInAdminChannel = await this.prisma.memberChannel.findMany({
+            where: {
+                channelId: idch,
+                status_UserInChannel: 'admin',
+            },
+            include: {
+                user: true,
+                channel: true,
+            },
+        });
+        let Names = [];
+        if (usersInAdminChannel) {
+            Names = usersInAdminChannel.map(member => member.user.name);
+        }
+        return Names;
+    }
+    async getAllMembers(idch) {
+        const usersInAdminChannel = await this.prisma.memberChannel.findMany({
+            where: {
+                channelId: idch,
+                status_UserInChannel: 'member',
+            },
+            include: {
+                user: true,
+                channel: true,
+            },
+        });
+        let Names = [];
+        if (usersInAdminChannel) {
+            Names = usersInAdminChannel.map(member => member.user.name);
+        }
+        return Names;
+    }
+    async getAllOwners(idch) {
+        const usersInAdminChannel = await this.prisma.memberChannel.findMany({
+            where: {
+                channelId: idch,
+                status_UserInChannel: 'owner',
+            },
+            include: {
+                user: true,
+                channel: true,
+            },
+        });
+        let Names = [];
+        if (usersInAdminChannel) {
+            Names = usersInAdminChannel.map(member => member.user.name);
+        }
+        return Names;
+    }
+    async getTheLastMessageOfChannel(idch) {
+        try {
+            const lastMessage = await this.prisma.discussion.findFirst({
+                where: {
+                    channelId: idch
+                },
+                orderBy: {
+                    dateSent: 'desc'
+                }
+            });
+            return lastMessage;
+        }
+        catch (error) {
+            console.error('we have no messages on this channel', error);
+        }
     }
 };
 exports.ChannelsService = ChannelsService;

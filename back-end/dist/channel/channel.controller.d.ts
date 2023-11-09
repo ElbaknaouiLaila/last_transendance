@@ -27,18 +27,5 @@ export declare class ChannelsController {
         visibility: string;
         password: string;
     }[]>;
-    getAllChannels(req: any, data: any): Promise<({
-        channel: {
-            id_channel: number;
-            name: string;
-            visibility: string;
-            password: string;
-        };
-    } & {
-        userId: number;
-        channelId: number;
-        status_UserInChannel: string;
-        muted: boolean;
-        period: Date;
-    })[]>;
+    getAllChannels(id: number): Promise<void>;
 }

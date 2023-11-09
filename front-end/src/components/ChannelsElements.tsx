@@ -1,16 +1,9 @@
 import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
-import StyledBadge from "./StyledBadge";
 import { styled } from "@mui/system";
-import { useAppDispatch, useAppSelector } from "../redux/store/store";
+import { setCurrentChannel } from "../redux/slices/channels";
 import { selectConversation } from "../redux/slices/contact";
+import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import { socket } from "../socket";
-import {
-  fetchCurrentMessages,
-  setCurrentConverstation,
-} from "../redux/slices/converstation";
-// import { useDispatch, useSelector } from "react-redux";
-// import { SelectConversation } from "../redux/slices/App";
-// import { SelectConversation } from "../redux/slices/app";
 
 interface IdType {
   id: number;
@@ -29,12 +22,16 @@ const StyledChatBox = styled(Box)(() => ({
   },
 }));
 
-const ChatElements = (id: IdType) => {
-  const { contact, profile } = useAppSelector(state => state);
+const SmallAvatar = styled(Avatar)(() => ({
+    width: 22,
+    height: 22,
+    // border: `2px solid ${theme.palette.background.paper}`,
+  }));
+
+const ChannelElements = (id: IdType) => {
+  const { contact, profile } = useAppSelector((state) => state);
   const dispatch = useAppDispatch();
   const selected_id = id.room_id;
-  console.log('--->', id);
-  console.log('--->', id);
   const selectedChatId = contact.room_id;
   let isSelected = +selectedChatId === id.id;
 
@@ -45,14 +42,14 @@ const ChatElements = (id: IdType) => {
   return (
     <StyledChatBox
       onClick={() => {
-        socket.emit("allMessagesDm", { room_id: selected_id });
-        socket.on("historyDms", (data: any) => {
-          dispatch(setCurrentConverstation(data));
+        socket.emit("allMessagesRoom", { room_id: selected_id });
+        socket.on("Response_messages_Channel", (data: any) => {
+          dispatch(setCurrentChannel(data));
           dispatch(
             selectConversation({
               room_id: selected_id,
               name: id.name,
-              type_chat: "individual",
+              type_chat: "channel",
               avatar: id.img,
             })
           );
@@ -72,13 +69,15 @@ const ChatElements = (id: IdType) => {
       >
         <Stack direction={"row"} alignItems={"center"} spacing={2}>
           {id.online ? (
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              variant="dot"
-            >
-              <Avatar src={id.img} sx={{ width: 52, height: 52 }} />
-            </StyledBadge>
+            <Badge
+            overlap="circular"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            badgeContent={
+              <SmallAvatar alt={id.name} src={id.img} />
+            }
+          >
+            <Avatar alt={id.name} src={id.img} />
+          </Badge>
           ) : (
             <Avatar src={id.img} sx={{ width: 52, height: 52 }} />
           )}
@@ -114,4 +113,4 @@ const ChatElements = (id: IdType) => {
   );
 };
 
-export default ChatElements;
+export default ChannelElements;

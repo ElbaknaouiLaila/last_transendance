@@ -41,6 +41,7 @@ let ChannelsController = class ChannelsController {
         console.log("##################");
         const channel = await this.channelsService.createChannel(data, user.id_user);
         console.log("End of Creating A Channel ");
+        this.getAllChannels(user.id_user);
         return true;
     }
     async join(req, data) {
@@ -109,10 +110,48 @@ let ChannelsController = class ChannelsController {
     async getProtectedChannels() {
         return this.channelsService.getProtectedChannels();
     }
-    async getAllChannels(req, data) {
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        return this.channelsService.getAllChannels(user.id_user);
+    async getAllChannels(id) {
+        console.log("all channels");
+        const user = await this.UsersService.findById(id);
+        const myAllChannels = await this.channelsService.getAllChannels(user.id_user);
+        console.log("START LOOPING ");
+        let message = "";
+        let sent;
+        if (myAllChannels) {
+            const arrayOfChannels = [];
+            for (const channels of myAllChannels) {
+                const lastMsg = await this.channelsService.getTheLastMessageOfChannel(channels.channelId);
+                if (lastMsg) {
+                    message = lastMsg.message;
+                    sent = lastMsg.dateSent;
+                }
+                const admins = await this.channelsService.getAllAdmins(channels.channelId);
+                console.log("ADMINS ARE : ");
+                console.log(admins);
+                const memebers = await this.channelsService.getAllMembers(channels.channelId);
+                console.log("memebers ARE : ");
+                console.log(memebers);
+                const owners = await this.channelsService.getAllOwners(channels.channelId);
+                console.log("owners ARE : ");
+                console.log(owners);
+                const newCh = {
+                    channel_id: channels.channelId,
+                    image: channels.channelId,
+                    name: channels.channel.name,
+                    owner: owners,
+                    admin: admins,
+                    members: memebers,
+                    last_messages: message,
+                    time: sent,
+                    unread: true,
+                    channel_type: channels.channel.visibility,
+                };
+                arrayOfChannels.push(newCh);
+            }
+            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            console.log(arrayOfChannels);
+            console.log("ENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNND");
+        }
     }
 };
 exports.ChannelsController = ChannelsController;
@@ -200,14 +239,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "getProtectedChannels", null);
-__decorate([
-    (0, common_1.Get)('allChannels'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], ChannelsController.prototype, "getAllChannels", null);
 exports.ChannelsController = ChannelsController = __decorate([
     (0, common_1.Controller)('channels'),
     __metadata("design:paramtypes", [jwtservice_service_1.JwtService, channel_service_1.ChannelsService, users_service_1.UsersService])

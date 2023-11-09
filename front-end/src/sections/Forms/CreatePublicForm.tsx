@@ -6,6 +6,7 @@ import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import axios from 'axios'
 
 
 const CreatePublicForm = ({ handleClose }: any) => {
@@ -37,6 +38,10 @@ const CreatePublicForm = ({ handleClose }: any) => {
 
   const onSubmit = async (data: any) => {
     try {
+      console.log("create public channel");
+      await axios.post("http://localhost:3000/channels/create", data, {
+        withCredentials: true,
+      });
       dispatch(
         showSnackbar({
           severity: "success",
@@ -56,6 +61,7 @@ const CreatePublicForm = ({ handleClose }: any) => {
       );
     }
   };
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>

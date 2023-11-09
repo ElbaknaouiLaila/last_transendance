@@ -1,0 +1,83 @@
+###################################################
+[
+  {
+    userId: 90351,
+    channelId: 1,
+    status_UserInChannel: 'member',
+    muted: null,
+    period: null,
+    channel: {
+      id_channel: 1,
+      name: 'Mychannel',
+      visibility: 'public',
+      password: null
+    }
+  },
+  {
+    userId: 90351,
+    channelId: 2,
+    status_UserInChannel: 'member',
+    muted: null,
+    period: null,
+    channel: {
+      id_channel: 2,
+      name: 'kkoko',
+      visibility: 'public',
+      password: null
+    }
+  },
+  {
+    userId: 90351,
+    channelId: 3,
+    status_UserInChannel: 'member',
+    muted: null,
+    period: null,
+    channel: {
+      id_channel: 3,
+      name: 'hallo',
+      visibility: 'public',
+      password: null
+    }
+  },
+  {
+    userId: 90351,
+    channelId: 4,
+    status_UserInChannel: 'owner',
+    muted: null,
+    period: null,
+    channel: {
+      id_channel: 4,
+      name: 'test',
+      visibility: 'public',
+      password: null
+    }
+  },
+  {
+    userId: 90351,
+    channelId: 5,
+    status_UserInChannel: 'owner',
+    muted: null,
+    period: null,
+    channel: {
+      id_channel: 5,
+      name: 'test2',
+      visibility: 'public',
+      password: null
+    }
+  }
+]
+###################################################
+
+
+
+Format :::
+  // channel_id: el.channelId,ok
+  //       image: el.image,
+  //       name: el.name,ok
+  //       owner: el.owner,
+  //       admin: el.admin,
+  //       members: el.members,
+  //       last_messages: el.latest_message,
+  //       time: el.time,
+  //       unread: el.unread,
+  //       channel_type: el.channel_type,
