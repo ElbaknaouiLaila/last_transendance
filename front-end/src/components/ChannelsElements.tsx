@@ -22,10 +22,10 @@ const StyledChatBox = styled(Box)(() => ({
   },
 }));
 
-const SmallAvatar = styled(Avatar)(({ theme }) => ({
+const SmallAvatar = styled(Avatar)(() => ({
     width: 22,
     height: 22,
-    border: `2px solid ${theme.palette.background.paper}`,
+    // border: `2px solid ${theme.palette.background.paper}`,
   }));
 
 const ChannelElements = (id: IdType) => {

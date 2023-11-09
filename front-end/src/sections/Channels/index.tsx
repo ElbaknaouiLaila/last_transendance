@@ -11,10 +11,12 @@ import CreateChannel from "../../components/channels/CreateChannel";
 import JoinChannel from "../../components/channels/JoinChannel";
 import { ChatList } from "../../data";
 import ChannelElements from "../../components/ChannelsElements";
+import { useAppSelector } from "../../redux/store/store";
 
 const Channels = () => {
   const [openCreateChannel, setOpenCreateChannel] = useState(false);
   const [openJoinChannel, setOpenJoinChannel] = useState(false);
+  const { channels } = useAppSelector(state => state);
 
   // this is will close join channel modal
   const handleCloseJoinChannel = () => {
@@ -46,7 +48,11 @@ const Channels = () => {
               />
             </Search>
           </Stack>
-          <Stack justifyContent={"space-between"} padding={"10px 15px 20px"} spacing={2}>
+          <Stack
+            justifyContent={"space-between"}
+            padding={"10px 15px 20px"}
+            spacing={2}
+          >
             <Stack
               direction={"row"}
               alignContent={"center"}
@@ -82,14 +88,13 @@ const Channels = () => {
                 }}
                 startIcon={<PlusCircle size={26} />}
                 sx={{
-                  fontSize: "18px", // Adjust the font size as needed
-                  padding: "10px 17px", // Adjust the padding as needed
-                  // neeed to make it center
-                  backgroundColor: "#806EA9", // Change the background color to purple
-                  color: "#3D2E5F", // Change the text color to white
+                  fontSize: "18px",
+                  padding: "10px 17px",
+                  backgroundColor: "#806EA9",
+                  color: "#3D2E5F",
                   borderRadius: "21px",
                   "&:hover": {
-                    backgroundColor: "#684C83", // Change the background color on hover
+                    backgroundColor: "#684C83",
                     color: "#C7BBD1",
                   },
                 }}
@@ -103,15 +108,17 @@ const Channels = () => {
           <Stack
             direction={"column"}
             sx={{
-              flexGrow: 1, overflowY: "auto",
+              flexGrow: 1,
+              overflowY: "auto",
               "&::-webkit-scrollbar": {
                 width: "0.4em",
-              }, height: "100%"
+              },
+              height: "100%",
             }}
           >
             {/* <SimpleBarStyle> */}
             <Stack>
-              {ChatList.filter((el) => !el.pinned).map((el, index) => {
+              {channels.channels.map((el, index) => {
                 return <ChannelElements key={index} {...el} />;
               })}
             </Stack>
@@ -136,4 +143,3 @@ const Channels = () => {
 };
 
 export default Channels;
-
