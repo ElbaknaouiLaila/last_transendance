@@ -41,6 +41,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
    handleConnection(client: Socket) 
   {
 
+    // start my code 
     this.logger.log(client.handshake.query.user_id);
     // this.logger.log(`Client Connected : ${this.i}`);
     // const id: string = client.handshake.query.user_id[0];
@@ -55,6 +56,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     for (const [key, value] of this.connectedClients) {
      console.log(`Key: ${key}, Value: ${value}`);
    }
+  //  end my code 
   }
 
    handleDisconnect(client: Socket) {

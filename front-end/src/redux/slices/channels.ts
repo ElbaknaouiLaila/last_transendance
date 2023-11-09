@@ -5,6 +5,13 @@ import { useDispatch } from 'react-redux';
 export interface Channel {
   members: [];
   channel_id: string;
+  image: string;
+  name: string;
+  owner: [];
+  admin: [];
+  last_messages: string;
+  time: string;
+  unread: number;
   current_messages: [];
   channel_type: string;
 }
@@ -42,7 +49,7 @@ export const ChannelsSlice = createSlice({
       console.log(action.payload);
       // state.channels = action.payload;
       state.channels = action.payload.map((el: any) => ({
-        channel_id: el.channelId,
+        channel_id: el.channel_id,
         image: el.image,
         name: el.name,
         owner: el.owner,

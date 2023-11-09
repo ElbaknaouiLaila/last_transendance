@@ -75,7 +75,7 @@ const ChatGeneral: React.FC = () => {
           }}
           className="shadow-2xl bg-gradient-to-tr from-[#2A2742] via-[#3f3a5f] to-[#2A2742]"
         >
-          {contact.type_chat === "individual" &&
+          {contact.type_chat !== "" &&
           contact.room_id.toString() !== "" ? (
             <Converstation />
           ) : (

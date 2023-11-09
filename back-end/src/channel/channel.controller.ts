@@ -30,14 +30,13 @@ export class ChannelsController {
     //const user = await this.UsersService.findById(req.user.userId);
     // console.log(req.cookies); 
     // const id = req.cookies['me']; it show me undefined.
-  
     console.log("------ Starting Creating a Channel ");
     console.log(data);
     console.log(data.title);
     console.log(data.password);
     console.log(data.type);
-    // console.log(`length of data.memebers is ${data.members.length}`);
-    console.log(data.members);
+    console.log(`length of data.memebers is ${data.members.length}`);
+    console.log(data.members[0]);
     console.log(req.cookies); 
     console.log("--------------------------");
    
@@ -52,6 +51,10 @@ export class ChannelsController {
     const channel = await this.channelsService.createChannel(data,user.id_user);
     // I think hena u must return a boolean true if the creation of channel is passed correct.
     console.log("End of Creating A Channel ");
+
+    // this.channelsService.getAllChannels(user.id_user);
+
+    // this.getAllChannels(user.id_user);
     return true;
   }
   @Post('join')
@@ -171,12 +174,69 @@ export class ChannelsController {
     return this.channelsService.getProtectedChannels();
   }
 
+
+
+
+
+
   @Get('allChannels')
+  // async getAllChannels(@Req() req, @Body() data: any)
+
   async getAllChannels(@Req() req, @Body() data: any)
   {
+    console.log("all channels");
     const decode = this.jwt.verify(req.cookies['cookie']);
+    console.log("Reshe");
     const user = await this.UsersService.findById(decode.id);
-    return this.channelsService.getAllChannels(user.id_user);
-      
-  }
+    // const user = await this.UsersService.findById(id);
+
+
+    // console.log("Reshe   222");
+
+    const myAllChannels = await this.channelsService.getAllChannels(user.id_user);
+    console.log("START LOOPING ");
+    let message = "";
+    let sent: Date | null = null;
+
+    if(myAllChannels)
+    {
+        const arrayOfChannels = [];
+        for (const channels of myAllChannels) 
+        {
+          const lastMsg  = await this.channelsService.getTheLastMessageOfChannel(channels.channelId);
+          if (lastMsg)
+          {
+            message = lastMsg.message;
+            sent = lastMsg.dateSent;
+          }
+          const admins = await this.channelsService.getAllAdmins(channels.channelId);
+          console.log("ADMINS ARE : ");
+          console.log(admins);
+          const memebers = await this.channelsService.getAllMembers(channels.channelId);
+          console.log("memebers ARE : ");
+          console.log(memebers);
+          const owners = await this.channelsService.getAllOwners(channels.channelId);
+          console.log("owners ARE : ");
+          console.log(owners);
+          const newCh = {
+            channel_id:channels.channelId,
+            image: channels.channelId,
+            name: channels.channel.name,
+            owner: owners,
+            admin: admins,
+            members: memebers,
+            last_messages: message,
+            time: sent,
+            unread: 0,
+            channel_type: channels.channel.visibility,
+          };
+          arrayOfChannels.push(newCh);
+        }
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.log(arrayOfChannels);
+        console.log("ENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNND");
+        return arrayOfChannels;
+    }
+}
+
 }

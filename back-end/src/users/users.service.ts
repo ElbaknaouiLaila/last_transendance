@@ -12,6 +12,7 @@ export class UsersService {
     });
 
     if (!user) {
+      console.log("user not found\n");
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 

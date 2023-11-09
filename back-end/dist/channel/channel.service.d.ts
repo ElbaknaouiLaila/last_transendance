@@ -47,4 +47,14 @@ export declare class ChannelsService {
         muted: boolean;
         period: Date;
     })[]>;
+    getAllAdmins(idch: number): Promise<string[]>;
+    getAllMembers(idch: number): Promise<string[]>;
+    getAllOwners(idch: number): Promise<string[]>;
+    getTheLastMessageOfChannel(idch: number): Promise<{
+        id_disc: number;
+        message: string;
+        dateSent: Date;
+        userId: number;
+        channelId: number;
+    }>;
 }
