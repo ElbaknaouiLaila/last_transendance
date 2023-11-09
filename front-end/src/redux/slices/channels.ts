@@ -53,11 +53,23 @@ export const ChannelsSlice = createSlice({
     },
     setCurrentChannel(state, action: PayloadAction<Channel>) {
       //! set current channel
+      console.log(action.payload);
       state.current_channel = action.payload;
+      const messages: any = action.payload;
+      const formatted_messages = messages.map((el: any) => ({
+        id: el.id,
+        type: "msg",
+        subtype: el.type,
+        message: el.text,
+        incoming: el.incoming, // ! get user id from profile
+        outgoing: el.outgoing,
+      }));
+      state.current_messages = formatted_messages;
     },
     fetchCurrentMessages(state, action: PayloadAction<[]>) {
       //! get all messages of current channel
       state.current_messages = action.payload;
+      
     },
     updateChannelsMessages(state, action: PayloadAction<[]>) {
       state.current_messages.push(action.payload);

@@ -10,6 +10,7 @@ import {
 import CreateChannel from "../../components/channels/CreateChannel";
 import JoinChannel from "../../components/channels/JoinChannel";
 import { ChatList } from "../../data";
+import ChannelElements from "../../components/ChannelsElements";
 
 const Channels = () => {
   const [openCreateChannel, setOpenCreateChannel] = useState(false);
@@ -111,7 +112,7 @@ const Channels = () => {
             {/* <SimpleBarStyle> */}
             <Stack>
               {ChatList.filter((el) => !el.pinned).map((el, index) => {
-                return <ChatElements key={index} {...el} />;
+                return <ChannelElements key={index} {...el} />;
               })}
             </Stack>
             {/* </SimpleBarStyle> */}
