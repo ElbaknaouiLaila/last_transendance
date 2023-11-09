@@ -33,4 +33,18 @@ export declare class ChannelsService {
     kickUser(data: any, idus: number, kickcus: number): Promise<void>;
     banUser(data: any, idus: number, user_banned: number): Promise<void>;
     muteUser(data: any, idus: number, user_muted: number): Promise<void>;
+    getAllChannels(idUser: number): Promise<({
+        channel: {
+            id_channel: number;
+            name: string;
+            visibility: string;
+            password: string;
+        };
+    } & {
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    })[]>;
 }

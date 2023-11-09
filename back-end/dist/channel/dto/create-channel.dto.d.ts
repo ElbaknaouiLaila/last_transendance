@@ -8,3 +8,10 @@ export declare class CreateMemberDto {
     readonly channelId: number;
     readonly status_UserInChannel: string;
 }
+export declare class CreateDmDto {
+    id_dm: number;
+    senderId: number;
+    receiverId: number;
+    unread: number;
+    pinned: Boolean;
+}

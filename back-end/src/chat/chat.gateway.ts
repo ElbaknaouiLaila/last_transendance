@@ -1,7 +1,7 @@
-import { SubscribeMessage, WebSocketGateway, MessageBody, WebSocketServer, OnGatewayInit } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway , MessageBody, WebSocketServer, OnGatewayInit} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { OnGatewayConnection, OnGatewayDisconnect, ConnectedSocket } from '@nestjs/websockets';
-import { Logger, OnModuleInit } from '@nestjs/common';
+import {Logger, OnModuleInit } from '@nestjs/common';
 import { JwtService } from 'src/jwt/jwtservice.service';
 import { ChatService } from './chat.service';
 import { UsersService } from 'src/users/users.service';
@@ -16,9 +16,9 @@ import { UsersService } from 'src/users/users.service';
 //     origin: '*',
 //   },
 // })
-@WebSocketGateway({ cors: { origin: 'http://localhost:5173', methods: ['GET', 'POST'] } })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private jwt: JwtService, private readonly ChatService: ChatService, private readonly UsersService: UsersService) { }
+ @WebSocketGateway({ cors: { origin: 'http://localhost:5173', methods: ['GET', 'POST'] } })
+export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{  
+  constructor(private jwt :JwtService,private readonly ChatService: ChatService, private readonly UsersService: UsersService) {}
 
   // Assuming you have a map of connected clients with user IDs
   // private connectedClients = new Map<string, Socket>();
@@ -38,7 +38,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   //it gets automatically called each time a client connects to the WebSocket server. 
   //it logs the socket ID of the connected client using NestJS's logger.
-  handleConnection(client: Socket) {
+   handleConnection(client: Socket) 
+  {
 
     this.logger.log(client.handshake.query.user_id);
     // this.logger.log(`Client Connected : ${this.i}`);
@@ -52,11 +53,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // this.connectedClients.set(this.i,client);
     console.log("####### First connection :: OUTPUT MAP OF CONNECTE CLIENTS");
     for (const [key, value] of this.connectedClients) {
-      console.log(`Key: ${key}, Value: ${value}`);
-    }
+     console.log(`Key: ${key}, Value: ${value}`);
+   }
   }
 
-  handleDisconnect(client: Socket) {
+   handleDisconnect(client: Socket) {
     // Handle disconnection event
     // this.logger.log(`Client Connected : ${this.i}`);
     const id: number = Number(client.handshake.query.user_id);
@@ -64,8 +65,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.connectedClients.delete(id);
     console.log("***** Client Disconnection :: OUTPUT MAP OF CONNECTE CLIENTS");
     for (const [key, value] of this.connectedClients) {
-      console.log(`Key: ${key}, Value: ${value}`);
-    }
+     console.log(`Key: ${key}, Value: ${value}`);
+   }
     // this.connectedClients.delete(this.i);
     // this.i--;
     //call for leave room :
@@ -74,84 +75,86 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   // I think u don't need to save those roomNames, just create aroom then use it.
-  createRoom(senderId: string, recieverId: string) {
+  createRoom(senderId: string, recieverId: string)
+  {
     console.log(`From Create Room Server Side : sender is ${senderId} and reciever is ${recieverId}`);
     const roomName1 = `room_${senderId}_${recieverId}`;
     const roomName2 = `room_${recieverId}_${senderId}`;
 
     console.log(`roomName1 is ${roomName1} and roomName2 is ${roomName2}`);
-    const check1: number = this.roomsDm.indexOf(roomName1);
+    const   check1: number = this.roomsDm.indexOf(roomName1);
 
-    const check2: number = this.roomsDm.indexOf(roomName2);
+    const   check2: number = this.roomsDm.indexOf(roomName2);
     console.log(`From create room server side after check `);
     // check if the both name are not exist in database ? 
-    if (check1 === -1 && check2 === -1) {
-      this.roomsDm.push(roomName1);
-      return roomName1;
+    if (check1 === -1  && check2 === -1) {
+        this.roomsDm.push(roomName1);
+        return roomName1;
     }
     if (check1 !== -1)
-      return this.roomsDm[check1];
+        return this.roomsDm[check1];
     else
-      return this.roomsDm[check2];
+        return this.roomsDm[check2];
   }
   // leave a room:
   // qst  when must call this function ????
   leaveRoom(client: Socket, roomName: string) {
     client.leave(roomName);
   }
-  // Join a client to a room
+    // Join a client to a room
   joinRoom(client: Socket, roomName: any) {
     if (client)
       client.join(roomName);
   }
 
-  async handling_joinRoom_dm(room: string, senderId: number, receiverId: number, message: string) {
+  async handling_joinRoom_dm(room: string, senderId: number, receiverId: number, message: string)
+  {
     const senderClient: Socket = this.connectedClients.get(senderId);
 
     const receiverClient: Socket = this.connectedClients.get(receiverId);
 
 
     // console.log("####### :: OUTPUT MAP OF CONNECTE CLIENTS");
-    //   for (const [key, value] of this.connectedClients) {
-    //    console.log(`Key: ${key}, Value: ${value}`);
-    // //  }
-    //   console.log(`***** From Dm handlingRoom Dm : sender is ${senderId} and reciver is ${receiverId}`);
+  //   for (const [key, value] of this.connectedClients) {
+  //    console.log(`Key: ${key}, Value: ${value}`);
+  // //  }
+  //   console.log(`***** From Dm handlingRoom Dm : sender is ${senderId} and reciver is ${receiverId}`);
 
-    //   console.log(`***** From Dm handlingRoom Dm : Socketsender is ${senderClient} and Socketreciver is ${receiverClient}`);
+  //   console.log(`***** From Dm handlingRoom Dm : Socketsender is ${senderClient} and Socketreciver is ${receiverClient}`);
     // const size = this.connectedClients.size;
 
     // console.log(`****** size of map of clients connected is ${size}`);
     // if (senderClient && receiverClient) {
-    // Send the message to the specified room
-    this.joinRoom(senderClient, room);
-    this.joinRoom(receiverClient, room);
-    // chatTodm is the name of event li ana mn back kansifto lfront (li khaso yb9a yelisteni elih)
+      // Send the message to the specified room
+      this.joinRoom(senderClient, room);
+      this.joinRoom(receiverClient, room);
+      // chatTodm is the name of event li ana mn back kansifto lfront (li khaso yb9a yelisteni elih)
 
-    console.log("starting sending");
-    // start cheaking database :
-    const dm = await this.ChatService.checkDm(
-      senderId,
-      receiverId,
-    );
-    console.log(`FROM gatways value of Dm is ${dm}`);
-    // console.log(dm);
-    const insertDm = await this.ChatService.createMsg(
-      senderId,
-      receiverId,
-      dm,
-      message,
-      "text"
-    );
-    // console.log(`value of insertDm is ${insertDm}`);
-    const data = {
-      id: dm.id_dm,
-      message: message,
-      send: senderId,
-      recieve: receiverId
-    };
-    this.server.to(room).emit('chatToDm', data);
-    console.log("after sending");
-    // process o database .
+      console.log("starting sending");
+      // start cheaking database :
+      const dm = await this.ChatService.checkDm(
+        senderId,
+        receiverId,
+      );
+      console.log(`FROM gatways value of Dm is ${dm}`);
+      // console.log(dm);
+      const insertDm = await this.ChatService.createMsg(
+        senderId,
+        receiverId,
+        dm,
+        message,
+        "text"
+      );
+      // console.log(`value of insertDm is ${insertDm}`);
+      const data = {
+        id:dm.id_dm,
+        message: message,
+        send: senderId, 
+        recieve:receiverId
+      };
+      this.server.to(room).emit('chatToDm', data);
+      console.log("after sending");
+      // process o database .
 
     // } else {
     //   console.error(`Sender or receiver is not connected.`);
@@ -160,12 +163,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 
   @SubscribeMessage('direct_message')
-  process_dm(@ConnectedSocket() client: Socket, @MessageBody() data: any): string {
+  process_dm(@ConnectedSocket() client: Socket,@MessageBody() data: any): string {
     // Business logic to save the message to the database
     // I need to check if this sender is already exist in conversatin table or not :
     // const senderId = "71";
     // const receiverId = "72";
-    let room;
+    let room ;
 
     //  room = this.createRoom(senderId, receiverId);
     console.log(data);
@@ -183,31 +186,32 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
 
-
-  handling_joinRoom_group(data: any, users: any) {
+  
+  handling_joinRoom_group(data:any, users:any)
+  {
 
     // u need more check 
-    const room = `room_${data.id}`;
+    const room= `room_${data.id}`;
     for (const user of users) {
       // Access and process individual user properties
       // clientsChannel.push(this.connectedClients[user.userId]);
       // const client = this.connectedClients[user.userId];
       const client: Socket = this.connectedClients.get(user.userId);
-      this.joinRoom(client, room);
+      this.joinRoom(client,room);
       // saving into databases :
 
       const save = this.ChatService.createDiscussion(data.senderId, data.message, data.id)
       const result = {
-        id: data.id,
+        id:data.id,
         message: data.message,
-        send: data.senderId,
+        send: data.senderId, 
       };
       this.server.to(room).emit('chatToGroup', result);
     }
   }
 
   @SubscribeMessage('channel_message')
-  async sendInChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
+  async sendInChannel(@ConnectedSocket() client: Socket,@MessageBody() data: any): Promise<any> {
     // Business logic to save the message to the database 
     // output the map :
     // I think I do need just the id of channel and the message.
@@ -225,7 +229,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // Create a new channel.
     // check is the channel is exist :
     const channel = await this.ChatService.findChannel(data.id);
-    if (channel) {
+    if (channel)
+    {
       const users = await this.ChatService.getUsersInChannel(
         data.id
       );
@@ -237,33 +242,38 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   // I emitted to room + user id to target just this user who doing this request.
+  // all dms.
   @SubscribeMessage('allConversationsDm')
-  async allConversationsDm(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-
-    console.log["*"];
+  async allConversationsDm(@ConnectedSocket() client: Socket,@MessageBody() data: any)
+  {
+    // I need the id of current User :
+    // data.id = 
+    console.log["*************"];
     const userId: number = Number(client.handshake.query.user_id);
-    // console.log(`Socket from allDms is ${client.id}`);
-    // console.log(`User id from allDms is ${data._id}`);
-
+    console.log(`Socket from allDms is ${client.id}`);
+    // console.log(`User id from hansshake is ${userId}`);
+    // console.log(`id coming from front is ${data._id}`);
+    // console.log(`From allConversationsDm ${userId}`);
     const user = await this.UsersService.findById(userId);
-    const dms = await this.ChatService.getAllConversations(user.id_user);
-    // console.log("|||||");
+    const dms =  await this.ChatService.getAllConversations(user.id_user);
+    console.log("|||||||||||||||||||||||||");
 
-    if (dms) {
-      const arrayOfDms = [];
-      for (const dmm of dms) {
+    if(dms)
+    {
+        const arrayOfDms = [];
+        for (const dmm of dms) {
 
         const getUser = await this.UsersService.findById(dmm.receiverId);
-        const lastMsg = await this.ChatService.getTheLastMessage(dmm.id_dm);
+        const lastMsg  = await this.ChatService.getTheLastMessage(dmm.id_dm);
         console.log(`Last message is ${lastMsg.text}`);
-        console.log(dmm.id_dm);
+        console.log(dmm.id_dm); 
         const newDm = {
           id_room:dmm.id_dm,
           id: dmm.receiverId,
           user_id: dmm.senderId,
           name: getUser.name,
           online: getUser.status_user,
-          img: user.avatar,
+          img: getUser.avatar,
           msg: lastMsg.text,
           time: lastMsg.dateSent,
           unread: dmm.unread,
@@ -271,29 +281,36 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         };
         arrayOfDms.push(newDm);
       }
-      // console.log("ZZZZZZZZZZZZZZ");
+      console.log("ZZZZZZZZZZZZZZ");
       console.log(arrayOfDms);
-      client.emit('response', arrayOfDms);
+      client.emit('response', arrayOfDms); 
     }
+      // console.log(`Lensth is ${dms.length}`);
+      // must loop on each dm :
+    // const room = `room_${userId}`;
+    // this.server.to(room).emit('Response_allDms', dms);
+  // sending response to this client :
+    // preparing data for front :
 
     console.log("after allconDms");
   }
 
   @SubscribeMessage('allMessagesDm')
-  async getAllMessages(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+  async getAllMessages(@ConnectedSocket() client: Socket,@MessageBody() data: any)
+  {
     // I need the id of room (dm).
     const userId: number = Number(client.handshake.query.user_id);
 
     const user = await this.UsersService.findById(userId);
-    if (user) {
-      console.log("before sending: ", data.room_id);
-      // console.log("before sending: ", data.room_id);
-      const messages = await this.ChatService.getAllMessages(data.room_id);
-      // const room = `room_${data.id}`;
+    if (user)
+    {
+      const messages = await  this.ChatService.getAllMessages(data.room_id);
+      const room = `room_${data.room_id}`;
+      console.log(`messages are ${messages}`);
+      client.emit('historyDms', messages); 
+
       // this.server.to(room).emit('Response_messages_Dms', messages);
-      // console.log("after sending", messages);
-      client.emit('historyDms', messages)
-      // console.log("after sending");
+      console.log("after sending");
     }
     else
       console.log("Error user does not exist");
@@ -302,14 +319,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   // for channels
   // EXpecting the id room(channel)
   @SubscribeMessage('allMessagesRoom')
-  async getAllMessagesRoom(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+  async getAllMessagesRoom(@ConnectedSocket() client: Socket,@MessageBody() data: any)
+  {
     // I need the id of room (dm).
     const userId: number = Number(client.handshake.query.user_id);
 
     const user = await this.UsersService.findById(userId);
-    if (user) {
+    if (user)
+    {
       // data.id is id of channel.
-      const messages = this.ChatService.getAllMessagesRoom(data.id);
+      const messages =  this.ChatService.getAllMessagesRoom(data.id);
       const room = `room_${data.id}`;
       this.server.to(room).emit('Response_messages_Channel', messages);
       console.log("after sending");
@@ -333,9 +352,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   // @SubscribeMessage('typing')
   // async typing()
   // {
-
+       
   // }
-
+  
   // @SubscribeMessage('join')
   // joinRoom(@MessageBody() msg: string, @ConnectedSocket() client: Socket)
   // {

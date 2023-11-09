@@ -69,7 +69,10 @@ const ChatTabs = () => {
         console.log(data);
         dispatch(fetchConverstations({ conversations: data, user_id: _id }));
       });
-      dispatch(FetchChannels());
+      socket.emit("allMessagesRoom", {_id});
+      socket.on("Response_messages_Channel", (data:any) => {
+        console.log(data);
+      })
     }
     // socket.emit("get_direct_conversations", { _id }, (data:any) => {
     //   console.log(data); // this data is the list of conversations
@@ -83,7 +86,7 @@ const ChatTabs = () => {
 
     //     dispatch(FetchChannelConversations({ conversations: data }));
     //   });
-  }, [_id]);
+  }, [_id, dispatch]);
   // !! fetch all conversations with user_id
 
   return (

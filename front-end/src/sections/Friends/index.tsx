@@ -91,9 +91,9 @@ const Friends = () => {
               {
                 // ~ ==>  here's where i will do contact <==
               }
-              {friends.map((el: any) => {
+              {friends.map((el, index) => {
                 // console.log(el);
-                return <ContactElements {...el} />;
+                return <ContactElements key={index} {...el} />;
               })}
             </ScrollBar>
           </Stack>

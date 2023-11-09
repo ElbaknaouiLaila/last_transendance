@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateMemberDto = exports.CreateChannelDto = void 0;
+exports.CreateDmDto = exports.CreateMemberDto = exports.CreateChannelDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateChannelDto {
 }
@@ -33,4 +33,7 @@ __decorate([
 class CreateMemberDto {
 }
 exports.CreateMemberDto = CreateMemberDto;
+class CreateDmDto {
+}
+exports.CreateDmDto = CreateDmDto;
 //# sourceMappingURL=create-channel.dto.js.map

@@ -128,9 +128,24 @@ export class ChannelsService {
     console.log("join channel from service");
     let join = 0;
     let pass ="lola123";
+    
+    
     const ch = await this.getChannelByName(data.name);
     console.log("channel is " +ch.name);
     console.log("channel is " +ch.visibility);
+    // must cheak is this user has already banned from this channel or not, if yes must prevent him.
+    const cheak = await this.prisma.channelBan.findUnique({
+      where : {
+
+        bannedUserId_channelId: {
+          bannedUserId: usid, 
+          channelId: ch.id_channel,
+        },
+        },
+    });
+    if (!cheak)
+      throw new NotFoundException(`your not allowed to join this channel ${ch.name} cuz  you are banned`);
+
     if (ch)
     {
       if (ch.visibility === "protected")
@@ -637,4 +652,21 @@ export class ChannelsService {
   }
 }
 
+
+    // get all Channels of current user that has joined them:
+    async getAllChannels(idUser : number )
+    {
+
+        const channels = await this.prisma.memberChannel.findMany({
+        where: {
+            userId: idUser,
+              },
+        include: {
+            channel: true,
+     },
+    });
+
+        console.log(channels);
+        return channels;
+    }
 }

@@ -37,9 +37,10 @@ export const ChannelsSlice = createSlice({
   initialState,
 
   reducers: {
-    fetchChannels(state, action: PayloadAction<ConversationChannel[]>) {
+    fetchChannels(state, action) {
       //! get all channels conversation
-      console.log(action);
+      console.log(action.payload);
+      state.channels = action.payload;
       // state.channels_conversation = action.payload;
     },
     updatedChannels(state, action: PayloadAction<Channel[]>) {
@@ -58,23 +59,24 @@ export const ChannelsSlice = createSlice({
       //! get all messages of current channel
       state.current_messages = action.payload;
     },
-    addMessage(state, action: PayloadAction<[]>) {
-      // state.current_messages.push(action);
+    updateChannelsMessages(state, action: PayloadAction<[]>) {
+      state.current_messages.push(action.payload);
     },
   },
 });
 
 
 
-export default ChannelsSlice.reducer;
 
 export function FetchChannels() {
   const dispatch = useDispatch();
   return async () => {
     await axios
-      .get("http://localhost:3000/auth/get-user", { withCredentials: true })
+      .get("http://localhost:3000/channels/allChannels", { withCredentials: true, headers: {
+        "Content-Type": "application/json",
+    }, })
       .then((res) => {
-        dispatch(ChannelsSlice.actions.fetchChannels(res.data));
+        dispatch(fetchChannels(res.data));
       })
       .catch((err) => console.log(err));
   };
@@ -86,5 +88,7 @@ export const {
   addNewChannel,
   setCurrentChannel,
   fetchCurrentMessages,
-  addMessage,
+  updateChannelsMessages,
 } = ChannelsSlice.actions;
+
+export default ChannelsSlice.reducer;
