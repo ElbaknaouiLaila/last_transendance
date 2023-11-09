@@ -41,7 +41,7 @@ const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(
       <BaseTabPanel
         ref={ref}
         className={clsx(
-          " py-5 px-3 bg--[#f78562] dark:bg-[#f78562] border-slate-200 dark:border-slate-700 rounded-[46px] w-full h-full font-sans text-sm",
+          " py-5 px-3 bg--[#FABA91] dark:bg-[#FABA91] border-slate-200 dark:border-slate-700 rounded-[46px] w-full h-full font-sans text-sm",
           className
         )}
         {...other}

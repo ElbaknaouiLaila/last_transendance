@@ -15,7 +15,6 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  app.enableCors();
   app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173', // Replace with the domain of your frontend

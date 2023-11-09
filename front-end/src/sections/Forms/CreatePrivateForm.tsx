@@ -45,6 +45,7 @@ const CreatePrivateForm = ({ handleClose }: any) => {
         })
       );
       // call api
+      
       console.log("DATA", data);
     } catch (error) {
       console.log("error", error);

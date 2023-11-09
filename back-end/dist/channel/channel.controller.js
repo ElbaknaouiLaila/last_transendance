@@ -24,32 +24,31 @@ let ChannelsController = class ChannelsController {
         this.UsersService = UsersService;
     }
     async create(req, data) {
-        console.log(...oo_oo(`1389527523_33_4_33_54_4`, "------ Starting Creating a Channel "));
-        console.log(...oo_oo(`1389527523_34_4_34_21_4`, data));
-        console.log(...oo_oo(`1389527523_35_4_35_27_4`, data.title));
-        console.log(...oo_oo(`1389527523_36_4_36_30_4`, data.password));
-        console.log(...oo_oo(`1389527523_37_4_37_26_4`, data.type));
-        console.log(...oo_oo(`1389527523_38_4_38_68_4`, `length of data.memebers is ${data.members.length}`));
-        console.log(...oo_oo(`1389527523_39_4_39_32_4`, data.members[0]));
-        console.log(...oo_oo(`1389527523_40_4_40_28_4`, req.cookies));
-        console.log(...oo_oo(`1389527523_41_4_41_45_4`, "--------------------------"));
+        console.log(...oo_oo(`1379514259_34_4_34_54_4`, "------ Starting Creating a Channel "));
+        console.log(...oo_oo(`1379514259_35_4_35_21_4`, data));
+        console.log(...oo_oo(`1379514259_36_4_36_27_4`, data.title));
+        console.log(...oo_oo(`1379514259_37_4_37_30_4`, data.password));
+        console.log(...oo_oo(`1379514259_38_4_38_26_4`, data.type));
+        console.log(...oo_oo(`1379514259_40_4_40_29_4`, data.members));
+        console.log(...oo_oo(`1379514259_41_4_41_28_4`, req.cookies));
+        console.log(...oo_oo(`1379514259_42_4_42_45_4`, "--------------------------"));
         const decode = this.jwt.verify(req.cookies['cookie']);
-        console.log(...oo_oo(`1389527523_45_4_45_23_4`, decode));
-        console.log(...oo_oo(`1389527523_46_4_46_37_4`, `id is ${decode.id}`));
-        console.log(...oo_oo(`1389527523_48_4_48_36_4`, "*****************"));
+        console.log(...oo_oo(`1379514259_46_4_46_23_4`, decode));
+        console.log(...oo_oo(`1379514259_47_4_47_37_4`, `id is ${decode.id}`));
+        console.log(...oo_oo(`1379514259_49_4_49_36_4`, "*****************"));
         const user = await this.UsersService.findById(decode.id);
-        console.log(...oo_oo(`1389527523_50_4_50_37_4`, "##################"));
+        console.log(...oo_oo(`1379514259_51_4_51_37_4`, "##################"));
         const channel = await this.channelsService.createChannel(data, user.id_user);
-        console.log(...oo_oo(`1389527523_53_4_53_45_4`, "End of Creating A Channel "));
+        console.log(...oo_oo(`1379514259_54_4_54_45_4`, "End of Creating A Channel "));
         return true;
     }
     async join(req, data) {
-        console.log(...oo_oo(`1389527523_59_4_59_53_4`, "------ Starting Joining a Channel "));
-        console.log(...oo_oo(`1389527523_60_4_60_26_4`, data.name));
+        console.log(...oo_oo(`1379514259_60_4_60_53_4`, "------ Starting Joining a Channel "));
+        console.log(...oo_oo(`1379514259_61_4_61_26_4`, data.name));
         const decode = this.jwt.verify(req.cookies['cookie']);
-        console.log(...oo_oo(`1389527523_63_4_63_23_4`, decode));
-        console.log(...oo_oo(`1389527523_64_4_64_37_4`, `id is ${decode.id}`));
-        console.log(...oo_oo(`1389527523_65_4_65_36_4`, "*****************"));
+        console.log(...oo_oo(`1379514259_64_4_64_23_4`, decode));
+        console.log(...oo_oo(`1379514259_65_4_65_37_4`, `id is ${decode.id}`));
+        console.log(...oo_oo(`1379514259_66_4_66_36_4`, "*****************"));
         const user = await this.UsersService.findById(decode.id);
         const name = "Assila";
         const memberChannel = await this.channelsService.joinChannel(data, user.id_user);
@@ -61,7 +60,7 @@ let ChannelsController = class ChannelsController {
         await this.channelsService.updatePass(data, user.id_user);
     }
     async removePass(req, data) {
-        console.log(...oo_oo(`1389527523_90_4_90_29_4`, "removePass"));
+        console.log(...oo_oo(`1379514259_91_4_91_29_4`, "removePass"));
         const decode = this.jwt.verify(req.cookies['cookie']);
         const user = await this.UsersService.findById(decode.id);
         await this.channelsService.removePass(data, user.id_user);
@@ -79,7 +78,7 @@ let ChannelsController = class ChannelsController {
         await this.channelsService.setAdmin(data, user.id_user, updatedUser.id_user);
     }
     async kickUser(req, data) {
-        console.log(...oo_oo(`1389527523_125_4_125_27_4`, "kickUser"));
+        console.log(...oo_oo(`1379514259_126_4_126_27_4`, "kickUser"));
         const decode = this.jwt.verify(req.cookies['cookie']);
         const user = await this.UsersService.findById(decode.id);
         const decode2 = this.jwt.verify(data.updated_user);
@@ -87,7 +86,7 @@ let ChannelsController = class ChannelsController {
         await this.channelsService.kickUser(data, user.id_user, updatedUser.id_user);
     }
     async banUser(req, data) {
-        console.log(...oo_oo(`1389527523_138_4_138_29_4`, "bannedUser"));
+        console.log(...oo_oo(`1379514259_139_4_139_29_4`, "bannedUser"));
         const decode = this.jwt.verify(req.cookies['cookie']);
         const user = await this.UsersService.findById(decode.id);
         const decode2 = this.jwt.verify(data.updated_user);
@@ -95,7 +94,7 @@ let ChannelsController = class ChannelsController {
         await this.channelsService.banUser(data, user.id_user, updatedUser.id_user);
     }
     async muteUser(req, data) {
-        console.log(...oo_oo(`1389527523_152_4_152_28_4`, "mutedUser"));
+        console.log(...oo_oo(`1379514259_153_4_153_28_4`, "mutedUser"));
         const decode = this.jwt.verify(req.cookies['cookie']);
         const user = await this.UsersService.findById(decode.id);
         const decode2 = this.jwt.verify(data.updated_user);

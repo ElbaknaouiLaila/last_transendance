@@ -15,7 +15,6 @@ export const store = configureStore({
     profile: ProfileSlice.reducer,
     characters: CharacterSlice.reducer,
     channels: ChannelsSlice.reducer,
-
   },
 });
 export type RootState = ReturnType<typeof store.getState>;

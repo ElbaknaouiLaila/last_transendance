@@ -30,13 +30,14 @@ export class ChannelsController {
     //const user = await this.UsersService.findById(req.user.userId);
     // console.log(req.cookies); 
     // const id = req.cookies['me']; it show me undefined.
+  
     console.log("------ Starting Creating a Channel ");
     console.log(data);
     console.log(data.title);
     console.log(data.password);
     console.log(data.type);
-    console.log(`length of data.memebers is ${data.members.length}`);
-    console.log(data.members[0]);
+    // console.log(`length of data.memebers is ${data.members.length}`);
+    console.log(data.members);
     console.log(req.cookies); 
     console.log("--------------------------");
    
