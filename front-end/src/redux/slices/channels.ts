@@ -87,9 +87,10 @@ export const ChannelsSlice = createSlice({
     fetchCurrentMessages(state, action: PayloadAction<[]>) {
       //! get all messages of current channel
       state.current_messages = action.payload;
-      
+
     },
     updateChannelsMessages(state, action: PayloadAction<[]>) {
+      console.log(action.payload)
       state.current_messages.push(action.payload);
     },
   },
@@ -102,9 +103,11 @@ export function FetchChannels() {
   const dispatch = useDispatch();
   return async () => {
     await axios
-      .get("http://localhost:3000/channels/allChannels", { withCredentials: true, headers: {
-        "Content-Type": "application/json",
-    }, })
+      .get("http://localhost:3000/channels/allChannels", {
+        withCredentials: true, headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((res) => {
         console.log(res.data);
         dispatch(fetchChannels(res.data));

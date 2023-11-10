@@ -1,6 +1,6 @@
 import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import { setCurrentChannel } from "../redux/slices/channels";
+import { updateChannelsMessages } from "../redux/slices/channels";
 import { selectConversation } from "../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import { socket } from "../socket";
@@ -52,10 +52,9 @@ const ChannelElements = (id: IdType) => {
             avatar: id.image,
           })
         );
-        socket.on("Response_messages_Channel", (data: any) => {
+        socket.on("chatToGroup", (data: any) => {
           console.log("data", data);
-          dispatch(setCurrentChannel(data));
-
+          dispatch(updateChannelsMessages(data));
         });
       }}
       sx={{

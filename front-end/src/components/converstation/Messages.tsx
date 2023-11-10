@@ -11,31 +11,37 @@ import axios from "axios";
 
 const Messages = () => {
   const dispatch = useAppDispatch();
-  const { conversations, current_messages } = useAppSelector(
-    (state) => state.converstation.direct_chat
-  );
-  const { room_id } = useAppSelector((state) => state.contact);
+  const { contact } = useAppSelector(state => state);
+  const { room_id, type_chat } = contact;
+  console.log(type_chat);
+  var messages: any = [];
+  if (type_chat === "individual") {
+    const { current_messages } = useAppSelector(
+      state => state.converstation.direct_chat
+    );
+    messages = current_messages;
+  } else {
+    const { current_messages } = useAppSelector(state => state.channels);
+    console.log(current_messages);
+    messages = current_messages;
+  }
 
-  
   useEffect(() => {
     // ! fatch all messages of room_id
     // const current = conversations.find((el) => el?.id === room_id);
-
     // socket.emit("get_messages", { conversation_id: current?.id }, (data) => {
     //   // data => list of messages
     //   console.log(data, "List of messages");
     //   dispatch(FetchCurrentMessages({ messages: data }));
     // });
-
-
     // dispatch(setCurrentConverstation(current));
-  }, [conversations, room_id, dispatch]);
+  }, [room_id, dispatch]);
 
   return (
     <Box p={1} sx={{ width: "100%", borderRadius: "64px" }}>
       {/* <ScrollBar> */}
       <Stack spacing={2}>
-        {current_messages.map((el: any) => {
+        {messages.map((el: any) => {
           // console.log(el)
           switch (el.type) {
             case "divider":
@@ -44,12 +50,6 @@ const Messages = () => {
               switch (el.subtype) {
                 case "img":
                   return <MediaMsg el={el} />;
-                case "doc":
-                  // doc msg
-                  break;
-                case "link":
-                  // link msg
-                  break;
                 case "reply":
                   return <ReplyMsg el={el} />;
                 default:
