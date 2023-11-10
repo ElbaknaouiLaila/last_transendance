@@ -54,7 +54,9 @@ const ChannelElements = (id: IdType) => {
         );
         socket.on("chatToGroup", (data: any) => {
           console.log("data", data);
-          dispatch(updateChannelsMessages(data));
+          dispatch(
+            updateChannelsMessages({ messages: data, user_id: profile._id })
+          );
         });
       }}
       sx={{
