@@ -85,21 +85,23 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
                   size={32}
                   color="#C7BBD1"
                   onClick={() => {
+                    console.log(contact.room_id);
+                    console.log(profile._id);
                     if (!linkify(value)) return;
                     const _id = parseInt(contact.room_id.toString());
                     console.log(contact.type_chat);
-                    socket.emit(
-                      contact.type_chat === "individual"
-                        ? "direct_message"
-                        : "channel_message",
-                      {
-                        message: linkify(value),
-                        // conversation_id: room_id,
-                        from: profile._id,
-                        to: _id,
-                        // type: containsUrl(v›alue) ? "Link" : "Text",
-                      }
-                    );
+                    // socket.emit(
+                    //   contact.type_chat === "individual"
+                    //     ? "direct_message"
+                    //     : "channel_message",
+                    //   {
+                    //     message: linkify(value),
+                    //     // conversation_id: room_id,
+                    //     from: profile._id,
+                    //     to: _id,
+                    //     // type: containsUrl(v›alue) ? "Link" : "Text",
+                    //   }
+                    // );
                     setValue("");
                   }}
                 />{" "}
