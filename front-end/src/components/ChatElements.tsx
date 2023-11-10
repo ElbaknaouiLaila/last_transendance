@@ -8,6 +8,7 @@ import {
   fetchCurrentMessages,
   setCurrentConverstation,
 } from "../redux/slices/converstation";
+import { useEffect } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 // import { SelectConversation } from "../redux/slices/App";
 // import { SelectConversation } from "../redux/slices/app";
@@ -41,21 +42,49 @@ const ChatElements = (id: IdType) => {
     isSelected = false;
   }
 
+  useEffect(() => {
+    const handleHistoryDms = (data: any) => {
+      console.log("history data", data);
+      dispatch(setCurrentConverstation(data));
+    };
+
+    const handleChatToDm = (data: any) => {
+      console.log("chat data", data);
+      dispatch(
+        fetchCurrentMessages({
+          id: data.id,
+          type: "msg",
+          subtype: data.subtype,
+          message: data.message,
+          outgoing: data.send === profile._id, //incoming
+          incoming: data.recieve === profile._id, //outgoing
+        })
+      );
+    };
+    console.log("selected_id", selected_id);
+    console.log("contact", contact.room_id);
+    // if (selected_id === contact.room_id) {
+      // socket.emit("allMessagesDm", { room_id: selected_id });
+      // socket.once("historyDms", handleHistoryDms);
+      socket.on("chatToDm", handleChatToDm);
+    // }
+  }, [selected_id, dispatch]);
+
   return (
     <StyledChatBox
       onClick={() => {
-        socket.emit("allMessagesDm", { room_id: selected_id });
-        socket.on("historyDms", (data: any) => {
-          dispatch(setCurrentConverstation(data));
-          dispatch(
-            selectConversation({
-              room_id: selected_id,
-              name: id.name,
-              type_chat: "individual",
-              avatar: id.img,
-            })
-          );
-        });
+        dispatch(
+          selectConversation({
+            room_id: selected_id,
+            name: id.name,
+            type_chat: "individual",
+            avatar: id.img,
+          })
+        );
+        // socket.emit("allMessagesDm", { room_id: selected_id });
+        // socket.on("historyDms", (data: any) => {
+        //   dispatch(setCurrentConverstation(data));
+        // });
       }}
       sx={{
         width: "100%",

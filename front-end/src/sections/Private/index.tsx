@@ -11,7 +11,11 @@ import { ChatList } from "../../data";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { useEffect } from "react";
 import { socket } from "../../socket";
-import { fetchConverstations } from "../../redux/slices/converstation";
+import {
+  fetchConverstations,
+  fetchCurrentMessages,
+  setCurrentConverstation,
+} from "../../redux/slices/converstation";
 
 const ColorButton = styled(Button)<ButtonProps>(() => ({
   color: "#C7BBD1",
@@ -27,6 +31,7 @@ const Privates = () => {
   const { conversations } = useAppSelector(
     state => state.converstation.direct_chat
   );
+  const { profile, contact } = useAppSelector(state => state);
   // console.log(conversations);
   // const { _id } = useAppSelector((state) => state.profile);
 
@@ -38,6 +43,16 @@ const Privates = () => {
   //     dispatch(fetchConverstations({ conversations: data }));
   //   });
   // }, []);
+
+  useEffect(() => {
+    const handleHistoryDms = (data: any) => {
+      console.log("history data", data);
+      dispatch(setCurrentConverstation(data));
+    };
+
+    socket.emit("allMessagesDm", { room_id: contact.room_id });
+    socket.once("historyDms", handleHistoryDms);
+  }, [profile, contact, dispatch]);
 
   return (
     <Box

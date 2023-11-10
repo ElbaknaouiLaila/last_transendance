@@ -16,6 +16,7 @@ const Messages = () => {
   console.log(type_chat);
   var messages: any = [];
   if (type_chat === "individual") {
+    console.log("individual");
     const { current_messages } = useAppSelector(
       state => state.converstation.direct_chat
     );
