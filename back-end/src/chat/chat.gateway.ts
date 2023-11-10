@@ -137,6 +137,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
       console.log("starting sending");
       // start cheaking database :
+      console.log(senderId);
+      console.log(receiverId);
+      // had line be3d lmerat kaytera fih error !!!
       const dm = await this.ChatService.checkDm(
         senderId,
         receiverId,
@@ -166,6 +169,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // }
   }
 
+  // ERRor li kaytra f dm que reciever ma3ndisssshhh !!!!!!!
 
   @SubscribeMessage('direct_message')
   process_dm(@ConnectedSocket() client: Socket,@MessageBody() data: any): string {
@@ -177,6 +181,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log("*************   direct_message");
 
     //  room = this.createRoom(senderId, receiverId);
+    // hafid makysiftsh liya reciever !!!!!!!!!!!!!!!!!
     console.log(data);
     room = this.createRoom(data.from, data.to);
     this.handling_joinRoom_dm(room, data.from, data.to, data.message);
@@ -214,8 +219,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       const save = await this.ChatService.createDiscussion(data.from, data.message, data.to)
       const result = {
         id:data.to,
+        sender_id:data.from, 
+        type: "msg",
+        subtype: "",
         message: data.message,
-        send: data.from, 
       };
 
       console.log("befoor emiting in groups");
@@ -312,6 +319,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // console.log("after allconDms");
   }
 
+  // history dm
   @SubscribeMessage('allMessagesDm')
   async getAllMessages(@ConnectedSocket() client: Socket,@MessageBody() data: any)
   {
@@ -337,68 +345,51 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   // for channels
   // EXpecting the id room(channel)
+  // History of Channel :
   @SubscribeMessage('allMessagesRoom')
   async getAllMessagesRoom(@ConnectedSocket() client: Socket,@MessageBody() data: any)
   {
     // I need the id of room (dm).
     console.log("********************** allMessagesRoom");
-    const userId: number = Number(client.handshake.query.user_id);
-
-    const user = await this.UsersService.findById(userId);
+    // const userId: number = Number(client.handshake.query.user_id);
+    console.log(data)
+    const user = await this.UsersService.findById(data.user_id);
     if (user)
     {
       // data.id is id of channel.
-      const messages =  this.ChatService.getAllMessagesRoom(data.id);
+      const messages =  await this.ChatService.getAllMessagesRoom(data.id);
       const room = `room_${data.id}`;
-      this.server.to(room).emit('Response_messages_Channel', messages);
+
+      console.log(messages)
+      
+      client.emit('hostoryChannel', messages);  // way 1
+      // this.server.to(room).emit('hostoryChannel', messages); way 2
       // console.log("after sending");
     }
     else
       console.log("Error user does not exist");
   }
 
-  // @SubscribeMessage('findAllMessages')
-  // findAll()
-  // {
-  //   return "All messages f dm";
-  // }
-  // // add new message to tables
-  // @SubscribeMessage('createMessage')
-  // create(@MessageBody() msg : String)
-  // {
-  //   return " create new msg and pushi f database";
-  // }
-
-  // @SubscribeMessage('typing')
-  // async typing()
-  // {
-       
-  // }
-  
-  // @SubscribeMessage('join')
-  // joinRoom(@MessageBody() msg: string, @ConnectedSocket() client: Socket)
-  // {
-  //   console.log(msg);
-  //   console.log(`client id from join event: ${client.id}`);
-  // }
+  @SubscribeMessage('leaveRoom')
+  async leavingRoom(@ConnectedSocket() client: Socket,@MessageBody() data: any)
+  {
+    // I need the id of room (dm). and rhe user.
+    console.log("********************** leaveRoom");
+    // const userId: number = Number(client.handshake.query.user_id);
+    console.log(data)
+    const user = await this.UsersService.findById(data.user_id);
+    if (user)
+    {
+      // data.id is id of channel.
+      const leave =  await this.ChatService.getLeavingRoom(data.id, data.user_id);
+      if (leave)
+      {
+        console.log("User with ${data.user_id} is leaving room with id ${data.id}");
+        return true;
+      }
+    }
+    else
+      console.log("Error user does not exist");
+  }
 
 }
-
-// plan of afternon :::
-// watch that forst : https://www.youtube.com/watch?v=atbdpX4CViM&t=280s&ab_channel=MariusEspejo
-// then had playlist :
-// https://www.youtube.com/playlist?list=PLBHzlq7ILbsaL1sZxJIxrc4ofSPAMSTzr
-// then start by asking chatgpt.
-// NOte you will need just this gatways  and service, gatways will handle events and connections
-//while service will handle busness logic .
-// you  will need to specify namspace to separate sockets of chat and ganme. 
-
-
-
-// 3/10/23
-// Notte : tefrji f had playlist bash tefhmi rooms mzzzzzzn (indeed)
-// https://www.youtube.com/watch?v=3V1DBEUoImo&list=PLBHzlq7ILbsaL1sZxJIxrc4ofSPAMSTzr&index=5
-// then hadi mn b3d :
-// https://www.youtube.com/watch?v=atbdpX4CViM
-
-// then 9eray hadshi : https://www.joshmorony.com/creating-a-simple-live-chat-server-with-nestjs-websockets/

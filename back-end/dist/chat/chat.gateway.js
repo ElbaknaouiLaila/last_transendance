@@ -82,6 +82,8 @@ let ChatGateway = class ChatGateway {
         this.joinRoom(senderClient, room);
         this.joinRoom(receiverClient, room);
         console.log("starting sending");
+        console.log(senderId);
+        console.log(receiverId);
         const dm = await this.ChatService.checkDm(senderId, receiverId);
         console.log(`FROM gatways value of Dm is ${dm}`);
         const insertDm = await this.ChatService.createMsg(senderId, receiverId, dm, message, "text");
@@ -115,8 +117,10 @@ let ChatGateway = class ChatGateway {
         const save = await this.ChatService.createDiscussion(data.from, data.message, data.to);
         const result = {
             id: data.to,
+            sender_id: data.from,
+            type: "msg",
+            subtype: "",
             message: data.message,
-            send: data.from,
         };
         console.log("befoor emiting in groups");
         console.log(save);
@@ -177,12 +181,27 @@ let ChatGateway = class ChatGateway {
     }
     async getAllMessagesRoom(client, data) {
         console.log("********************** allMessagesRoom");
-        const userId = Number(client.handshake.query.user_id);
-        const user = await this.UsersService.findById(userId);
+        console.log(data);
+        const user = await this.UsersService.findById(data.user_id);
         if (user) {
-            const messages = this.ChatService.getAllMessagesRoom(data.id);
+            const messages = await this.ChatService.getAllMessagesRoom(data.id);
             const room = `room_${data.id}`;
-            this.server.to(room).emit('Response_messages_Channel', messages);
+            console.log(messages);
+            client.emit('hostoryChannel', messages);
+        }
+        else
+            console.log("Error user does not exist");
+    }
+    async leavingRoom(client, data) {
+        console.log("********************** leaveRoom");
+        console.log(data);
+        const user = await this.UsersService.findById(data.user_id);
+        if (user) {
+            const leave = await this.ChatService.getLeavingRoom(data.id, data.user_id);
+            if (leave) {
+                console.log("User with ${data.user_id} is leaving room with id ${data.id}");
+                return true;
+            }
         }
         else
             console.log("Error user does not exist");
@@ -233,6 +252,14 @@ __decorate([
     __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
     __metadata("design:returntype", Promise)
 ], ChatGateway.prototype, "getAllMessagesRoom", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('leaveRoom'),
+    __param(0, (0, websockets_2.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "leavingRoom", null);
 exports.ChatGateway = ChatGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({ cors: { origin: 'http://localhost:5173', methods: ['GET', 'POST'] } }),
     __metadata("design:paramtypes", [jwtservice_service_1.JwtService, chat_service_1.ChatService, users_service_1.UsersService])

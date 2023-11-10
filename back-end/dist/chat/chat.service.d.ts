@@ -71,4 +71,11 @@ export declare class ChatService {
         type: string;
         idDm: number;
     }>;
+    getLeavingRoom(idUs: number, idch: number): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    }>;
 }

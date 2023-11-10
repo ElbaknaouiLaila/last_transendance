@@ -15,17 +15,53 @@ export declare class ChannelsController {
     kickUser(req: any, data: any): Promise<void>;
     banUser(req: any, data: any): Promise<void>;
     muteUser(req: any, data: any): Promise<void>;
-    getPublicChannels(): Promise<{
+    getPublicChannels(): Promise<({
+        users: ({
+            user: {
+                id_user: number;
+                name: string;
+                avatar: string;
+                TwoFactor: boolean;
+                IsFirstTime: boolean;
+                secretKey: string;
+                status_user: string;
+            };
+        } & {
+            userId: number;
+            channelId: number;
+            status_UserInChannel: string;
+            muted: boolean;
+            period: Date;
+        })[];
+    } & {
         id_channel: number;
         name: string;
         visibility: string;
         password: string;
-    }[]>;
-    getProtectedChannels(): Promise<{
+    })[]>;
+    getProtectedChannels(): Promise<({
+        users: ({
+            user: {
+                id_user: number;
+                name: string;
+                avatar: string;
+                TwoFactor: boolean;
+                IsFirstTime: boolean;
+                secretKey: string;
+                status_user: string;
+            };
+        } & {
+            userId: number;
+            channelId: number;
+            status_UserInChannel: string;
+            muted: boolean;
+            period: Date;
+        })[];
+    } & {
         id_channel: number;
         name: string;
         visibility: string;
         password: string;
-    }[]>;
+    })[]>;
     getAllChannels(req: any, data: any): Promise<any[]>;
 }

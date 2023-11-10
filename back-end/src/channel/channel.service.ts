@@ -21,12 +21,22 @@ export class ChannelsService {
   {
     try{
 
-      const channels = await this.prisma.channel.findMany({
+      const publicChannelsWithUsers = await this.prisma.channel.findMany({
         where: {
-          visibility: 'public'
-        }
+          visibility: 'public',
+        },
+        include: {
+          users: {
+            include: {
+              user: true,
+            },
+          },
+        },
       });
-      return channels;
+      console.log("||||||||||||||||||||||||||||||||||||||||");
+      
+      console.log(publicChannelsWithUsers);
+      return publicChannelsWithUsers;
     }
     catch (error) {
       console.error('we have no public channels', error);
@@ -36,17 +46,39 @@ export class ChannelsService {
   async getProtectedChannels()
   {
     try{
-      
-      const channels = await this.prisma.channel.findMany({
+
+      const protectedChannelsWithUsers = await this.prisma.channel.findMany({
         where: {
-          visibility: 'protected'
-        }
+          visibility: 'protected',
+        },
+        include: {
+          users: {
+            include: {
+              user: true,
+            },
+          },
+        },
       });
-      return channels;
+      console.log("||||||||||||||||||||||||||||||||||||||||");
+
+      console.log(protectedChannelsWithUsers);
+      return protectedChannelsWithUsers;
     }
     catch (error) {
       console.error('we have no protected channels', error);
     }
+    // try{
+      
+    //   const channels = await this.prisma.channel.findMany({
+    //     where: {
+    //       visibility: 'protected'
+    //     }
+    //   });
+    //   return channels;
+    // }
+    // catch (error) {
+    //   console.error('we have no protected channels', error);
+    // }
   }
   async createChannel(data: any,userId: number) {
 

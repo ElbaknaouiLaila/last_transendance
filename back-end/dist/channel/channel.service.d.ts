@@ -6,18 +6,54 @@ export declare class ChannelsService {
     constructor(prisma: PrismaService, userService: UsersService);
     hashPassword(password: string): Promise<string>;
     verifyPassword(plainTextPassword: string, hashedPassword: string): Promise<boolean>;
-    getPublicChannels(): Promise<{
+    getPublicChannels(): Promise<({
+        users: ({
+            user: {
+                id_user: number;
+                name: string;
+                avatar: string;
+                TwoFactor: boolean;
+                IsFirstTime: boolean;
+                secretKey: string;
+                status_user: string;
+            };
+        } & {
+            userId: number;
+            channelId: number;
+            status_UserInChannel: string;
+            muted: boolean;
+            period: Date;
+        })[];
+    } & {
         id_channel: number;
         name: string;
         visibility: string;
         password: string;
-    }[]>;
-    getProtectedChannels(): Promise<{
+    })[]>;
+    getProtectedChannels(): Promise<({
+        users: ({
+            user: {
+                id_user: number;
+                name: string;
+                avatar: string;
+                TwoFactor: boolean;
+                IsFirstTime: boolean;
+                secretKey: string;
+                status_user: string;
+            };
+        } & {
+            userId: number;
+            channelId: number;
+            status_UserInChannel: string;
+            muted: boolean;
+            period: Date;
+        })[];
+    } & {
         id_channel: number;
         name: string;
         visibility: string;
         password: string;
-    }[]>;
+    })[]>;
     createChannel(data: any, userId: number): Promise<boolean>;
     getChannelByName(nameVar: string): Promise<{
         id_channel: number;

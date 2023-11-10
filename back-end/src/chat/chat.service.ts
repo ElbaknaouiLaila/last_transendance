@@ -171,7 +171,7 @@ export class ChatService {
             return messages;
             }
             catch (error) {
-                  console.error('we have no public channels', error);
+                  console.error('we have no messages in this  channel', error);
             }
         }
 
@@ -192,6 +192,40 @@ export class ChatService {
             catch (error) {
                   console.error('we have no public channels', error);
             }
+        }
+
+
+        async getLeavingRoom(idUs:number, idch:number)
+        {
+          try{
+          
+            const record = await this.prisma.memberChannel.findUnique({
+              where : {
+        
+                userId_channelId: {
+                  userId: idUs, 
+                  channelId: idch,
+                },
+                },
+            });
+            if (record)
+            {
+              const result = await this.prisma.memberChannel.delete({
+                where : {
+          
+                  userId_channelId: {
+                    userId: idUs, 
+                    channelId: idch,
+                  },
+                  },
+              });
+              return result;
+            }
+            }
+            catch (error) {
+                  console.error('you are not in this channel', error);
+            }
+
         }
 
 }

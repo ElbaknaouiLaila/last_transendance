@@ -26,4 +26,5 @@ export declare class ChatGateway implements OnGatewayInit, OnGatewayConnection, 
     allConversationsDm(client: Socket, data: any): Promise<void>;
     getAllMessages(client: Socket, data: any): Promise<void>;
     getAllMessagesRoom(client: Socket, data: any): Promise<void>;
+    leavingRoom(client: Socket, data: any): Promise<boolean>;
 }

@@ -60,6 +60,7 @@ export class ChannelsController {
   @Post('join')
   async join(@Req() req, @Body() data: any) {
 
+    // data that I need is name of channel and id user , and if its protected I need password.
     console.log("------ Starting Joining a Channel ");
     console.log(data.name);
     //to decode the req and get the id.
