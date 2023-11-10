@@ -313,14 +313,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async getAllMessages(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     // I need the id of room (dm).
     console.log("*************   allMessagesDm");
-
+    console.log(client.handshake.query.user_id);
+    console.log(data);
     const userId: number = Number(client.handshake.query.user_id);
 
     const user = await this.UsersService.findById(userId);
     if (user) {
       const messages = await this.ChatService.getAllMessages(data.room_id);
       const room = `room_${data.room_id}`;
-      // console.log(`messages are ${messages}`);
+      console.log(messages);
       client.emit('historyDms', messages);
 
       // this.server.to(room).emit('Response_messages_Dms', messages);

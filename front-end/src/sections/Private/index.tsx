@@ -33,6 +33,7 @@ const Privates = () => {
   );
   const { profile, contact } = useAppSelector(state => state);
   // console.log(conversations);
+  console.log(contact.room_id);
   // const { _id } = useAppSelector((state) => state.profile);
 
   // useEffect(() => {
@@ -49,10 +50,12 @@ const Privates = () => {
       console.log("history data", data);
       dispatch(setCurrentConverstation(data));
     };
+    if(!contact.room_id) return
+    console.log(contact.room_id);
 
     socket.emit("allMessagesDm", { room_id: contact.room_id });
     socket.once("historyDms", handleHistoryDms);
-  }, [profile, contact, dispatch]);
+  }, [contact.room_id]);
 
   return (
     <Box
@@ -121,23 +124,6 @@ const Privates = () => {
         >
           {/* <SimpleBarStyle timeout={500} clickOnTrack={false}> */}
           <Stack>
-            {/* every converstation == */}
-            {/* {Object.keys(rooms).map((key) => {
-                  return (
-                    <ChatElements
-                      key={key}
-                      name={rooms[key].name}
-                      img={rooms[key].img}
-                      msg={"the last msg"}
-                      time={"10:45 PM"}
-                      unread={2}
-                      online={true}
-                      roomId={key}
-                      active={roomId === key}
-                      // onClick={() => handleJoinRoom(key)}
-                    />
-                  );
-                })} */}
             {conversations
               .filter((el: any) => !el.pinned)
               .map((el, index) => {

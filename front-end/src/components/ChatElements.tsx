@@ -33,7 +33,7 @@ const StyledChatBox = styled(Box)(() => ({
 const ChatElements = (id: IdType) => {
   const { contact, profile } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
-  const selected_id = id.room_id;
+  const selected_id = id.id;
 
   const selectedChatId = contact.room_id;
   let isSelected = +selectedChatId === id.id;
@@ -64,11 +64,11 @@ const ChatElements = (id: IdType) => {
     console.log("selected_id", selected_id);
     console.log("contact", contact.room_id);
     // if (selected_id === contact.room_id) {
-      // socket.emit("allMessagesDm", { room_id: selected_id });
-      // socket.once("historyDms", handleHistoryDms);
-      socket.on("chatToDm", handleChatToDm);
+    // socket.emit("allMessagesDm", { room_id: selected_id });
+    // socket.once("historyDms", handleHistoryDms);
+    socket.on("chatToDm", handleChatToDm);
     // }
-  }, [selected_id, dispatch]);
+  }, [selected_id]);
 
   return (
     <StyledChatBox

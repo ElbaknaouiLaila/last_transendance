@@ -30,20 +30,20 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
       // Prevent the default behavior of "Enter" key in a textarea
       event.preventDefault();
       // console.log(linkify(value));
-      console.log(contact.room_id);
+      console.log(contact);
       console.log(profile._id);
       if (!value) return;
-      // socket.emit(
-      //   contact.type_chat === "individual"
-      //     ? "direct_message"
-      //     : "channel_message",
-      //   {
-      //     message: linkify(value),
-      //     subtype: "text",
-      //     from: profile._id,
-      //     to: contact.room_id,
-      //   }
-      // );
+      socket.emit(
+        contact.type_chat === "individual"
+          ? "direct_message"
+          : "channel_message",
+        {
+          message: linkify(value),
+          subtype: "text",
+          from: profile._id,
+          to: contact.room_id,
+        }
+      );
       setValue("");
     }
   };
@@ -90,18 +90,18 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
                     if (!linkify(value)) return;
                     const _id = parseInt(contact.room_id.toString());
                     console.log(contact.type_chat);
-                    // socket.emit(
-                    //   contact.type_chat === "individual"
-                    //     ? "direct_message"
-                    //     : "channel_message",
-                    //   {
-                    //     message: linkify(value),
-                    //     // conversation_id: room_id,
-                    //     from: profile._id,
-                    //     to: _id,
-                    //     // type: containsUrl(v›alue) ? "Link" : "Text",
-                    //   }
-                    // );
+                    socket.emit(
+                      contact.type_chat === "individual"
+                        ? "direct_message"
+                        : "channel_message",
+                      {
+                        message: linkify(value),
+                        // conversation_id: room_id,
+                        from: profile._id,
+                        to: _id,
+                        // type: containsUrl(v›alue) ? "Link" : "Text",
+                      }
+                    );
                     setValue("");
                   }}
                 />{" "}

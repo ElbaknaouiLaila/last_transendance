@@ -13,10 +13,10 @@ const Messages = () => {
   const dispatch = useAppDispatch();
   const { contact } = useAppSelector(state => state);
   const { room_id, type_chat } = contact;
-  console.log(type_chat);
+  // console.log(type_chat);
   var messages: any = [];
   if (type_chat === "individual") {
-    console.log("individual");
+    // console.log("individual");
     const { current_messages } = useAppSelector(
       state => state.converstation.direct_chat
     );

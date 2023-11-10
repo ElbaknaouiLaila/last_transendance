@@ -13,7 +13,7 @@ import {
   SpeakerSimpleSlash,
   UserMinus,
 } from "@phosphor-icons/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { mutedContact, selectConversation } from "../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import StyledBadge from "./StyledBadge";
@@ -37,17 +37,10 @@ interface Props {
 
 const ContactElements = (cont: any) => {
   // console.log(cont);
-  // const { contact } = useAppSelector((state) => state);
+  const { contact } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
   const id = cont.id_user;
-  // const selectedChatId = contact.room_id;
-  // const isSelected = +selectedChatId === cont.id;
-
-  // if (!selectedChatId) {
-  //   isSelected = false;
-  // }
-  // console.log(contact.room_id, contact.type_chat);
-
+  // console.log(id);
   const [values, setValues] = React.useState<State>({
     amount: "",
     password: "",
@@ -72,6 +65,17 @@ const ContactElements = (cont: any) => {
       muted: !values.muted,
     });
   };
+
+  useEffect(() => {
+    if (contact.room_id) {
+      console.log(contact.room_id);
+      socket.emit("allMessagesDm", { room_id: id });
+      socket.once("historyDms", (data: any) => {
+        console.log(data);
+        dispatch(setCurrentConverstation(data));
+      });
+    }
+  }, [contact.room_id]);
 
   return (
     <Box
@@ -109,20 +113,15 @@ const ContactElements = (cont: any) => {
         <Stack direction={"row"} spacing={1}>
           <IconButton
             onClick={() => {
-              console.log("Start Converstation");
               // ! emit "start_converstation" event
-              socket.emit("allMessagesDm", { room_id: id });
-              socket.on("historyDms", (data: any) => {
-                dispatch(setCurrentConverstation(data));
-                dispatch(
-                  selectConversation({
-                    room_id: id,
-                    name: cont.name,
-                    avatar: cont.avatar,
-                    type_chat: "individual",
-                  })
-                );
-              });
+              dispatch(
+                selectConversation({
+                  room_id: id,
+                  name: cont.name,
+                  avatar: cont.avatar,
+                  type_chat: "individual",
+                })
+              );
             }}
           >
             <Chat />

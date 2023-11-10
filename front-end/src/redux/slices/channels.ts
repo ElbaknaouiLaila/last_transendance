@@ -52,17 +52,17 @@ export const ChannelsSlice = createSlice({
   reducers: {
     fetchPublicChannels(state, action) {
       //~ get all public channels
-      console.log(action.payload);
+      // console.log(action.payload);
       state.publicChannels = action.payload;
     },
     fetchProtectedChannels(state, action) {
       //~ get all protected channels
-      console.log(action.payload);
+      // console.log(action.payload);
       state.protectedChannels = action.payload;
     },
     fetchChannels(state, action) {
       //! get all channels conversation
-      console.log(action.payload);
+      // console.log(action.payload);
       // state.channels = action.payload;
       state.channels = action.payload.map((el: any) => ({
         channel_id: el.channel_id,
@@ -87,7 +87,7 @@ export const ChannelsSlice = createSlice({
     },
     setCurrentChannel(state, action) {
       //! set current channel
-      console.log(action.payload);
+      // console.log(action.payload);
       state.current_channel = action.payload;
       const user_id = action.payload.user_id;
       const messages: any = action.payload.messages;
@@ -106,7 +106,7 @@ export const ChannelsSlice = createSlice({
       state.current_messages = action.payload;
     },
     updateChannelsMessages(state, action) {
-      console.log(action.payload)
+      // console.log(action.payload)
       const message: any = action.payload.messages; // Assuming 'messages' is a single message object
       const user_id: any = action.payload.user_id;
       // console.log(message);
@@ -139,7 +139,7 @@ export function FetchChannels() {
         },
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         dispatch(fetchChannels(res.data));
       })
       .catch((err) => console.log(err));
@@ -156,7 +156,7 @@ export function FetchPublicChannels() {
         },
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         dispatch(fetchPublicChannels(res.data));
       })
       .catch((err) => console.log(err));
@@ -173,7 +173,7 @@ export function FetchProtectedChannels() {
         },
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         dispatch(fetchProtectedChannels(res.data));
       })
       .catch((err) => console.log(err));
