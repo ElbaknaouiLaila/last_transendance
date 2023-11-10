@@ -69,18 +69,19 @@ export const ChannelsSlice = createSlice({
       //! add new channel
       state.channels.push(action.payload);
     },
-    setCurrentChannel(state, action: PayloadAction<Channel>) {
+    setCurrentChannel(state, action) {
       //! set current channel
       console.log(action.payload);
       state.current_channel = action.payload;
-      const messages: any = action.payload;
+      const user_id = action.payload.user_id;
+      const messages: any = action.payload.messages;
       const formatted_messages = messages.map((el: any) => ({
         id: el.id,
         type: "msg",
-        subtype: el.type,
-        message: el.text,
-        incoming: el.incoming, // ! get user id from profile
-        outgoing: el.outgoing,
+        subtype: el.subtype,
+        message: el.message,
+        incoming: el.id === user_id,
+        outgoing: el.id === user_id,
       }));
       state.current_messages = formatted_messages;
     },
@@ -88,7 +89,7 @@ export const ChannelsSlice = createSlice({
       //! get all messages of current channel
       state.current_messages = action.payload;
     },
-    updateChannelsMessages(state, action: any) {
+    updateChannelsMessages(state, action) {
       console.log(action.payload)
       const message: any = action.payload.messages; // Assuming 'messages' is a single message object
       const user_id: any = action.payload.user_id;
@@ -100,7 +101,7 @@ export const ChannelsSlice = createSlice({
         subtype: message.subtype,
         message: message.message,
         incoming: message.id === user_id,
-        outgoing: message.sender_id === user_id,
+        outgoing: message.id === user_id,
       };
       // console.log(formatted_message);
 

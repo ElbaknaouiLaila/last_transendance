@@ -13,7 +13,7 @@ import Privates from "../../sections/Private";
 import { socket } from "../../socket";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { fetchConverstations } from "../../redux/slices/converstation";
-import { FetchChannels } from "../../redux/slices/channels";
+import { FetchChannels, setCurrentChannel } from "../../redux/slices/channels";
 
 const resolveSlotProps = (fn: unknown, args: unknown) =>
   typeof fn === "function" ? fn(args) : fn;
@@ -60,19 +60,23 @@ const ChatTabs = () => {
   const dispatch = useAppDispatch();
 
   // !!! fetch all conversations with user_is
-  const { _id } = useAppSelector(state => state.profile);
+  const { profile, contact } = useAppSelector(state => state);
   React.useEffect(() => {
     // console.log(socket?.connected);
     if (socket) {
-      socket.emit("allConversationsDm", { _id }); 
+      socket.emit("allConversationsDm", { _id: profile._id });
       socket.on("response", (data: any) => {
         console.log(data);
-        dispatch(fetchConverstations({ conversations: data, user_id: _id }));
+        dispatch(
+          fetchConverstations({ conversations: data, user_id: profile._id })
+        );
       });
-      socket.emit("allMessagesRoom", {_id});
-      socket.on("Response_messages_Channel", (data:any) => {
-        console.log(data);
-      })
+
+      // socket.emit("allMessagesRoom", { id: contact.room_id });
+      // socket.on("hostoryChannel", (data: any) => {
+      //   console.log("data", data);
+      //   dispatch(setCurrentChannel({ messages: data, user_id: profile._id }));
+      // });
     }
     // socket.emit("get_direct_conversations", { _id }, (data:any) => {
     //   console.log(data); // this data is the list of conversations
@@ -86,7 +90,7 @@ const ChatTabs = () => {
 
     //     dispatch(FetchChannelConversations({ conversations: data }));
     //   });
-  }, [_id, dispatch]);
+  }, [profile, dispatch]);
   // !! fetch all conversations with user_id
 
   return (

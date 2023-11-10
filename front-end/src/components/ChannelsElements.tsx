@@ -1,9 +1,13 @@
 import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import { updateChannelsMessages } from "../redux/slices/channels";
 import { selectConversation } from "../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import { socket } from "../socket";
+import {
+  setCurrentChannel,
+  updateChannelsMessages,
+} from "../redux/slices/channels";
+import { useEffect } from "react";
 
 interface IdType {
   channel_id: string;
@@ -32,6 +36,7 @@ const ChannelElements = (id: IdType) => {
   const { contact, profile } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
   const selected_id = id.channel_id;
+  console.log("selected_id", selected_id);
   const selectedChatId = contact.room_id;
   let isSelected = +selectedChatId === parseInt(selected_id);
 
@@ -39,11 +44,22 @@ const ChannelElements = (id: IdType) => {
     isSelected = false;
   }
 
+  useEffect(() => {
+    console.log("selected_id", selected_id);
+    if (parseInt(selected_id) == contact.room_id) {
+      console.log("selected_id", selected_id);
+      socket.emit("allMessagesRoom", { id: selected_id, user_id: profile._id });
+      socket.on("hostoryChannel", (data: any) => {
+        console.log("data", data);
+        dispatch(setCurrentChannel({ messages: data, user_id: profile._id }));
+      });
+    }
+  }, [selected_id, socket]);
+
   return (
     <StyledChatBox
       onClick={() => {
         console.log("id", selected_id);
-        socket.emit("allMessagesRoom", { room_id: selected_id });
         dispatch(
           selectConversation({
             room_id: selected_id,

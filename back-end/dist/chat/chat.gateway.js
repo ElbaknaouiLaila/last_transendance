@@ -37,28 +37,28 @@ let ChatGateway = class ChatGateway {
         const id = Number(client.handshake.query.user_id);
         this.logger.log(` ********  User  Connected : ${id} and its sockets is ${client.id}`);
         this.connectedClients.set(id, client);
-        console.log(...oo_oo(`2480177961_54_4_54_77_4`, "####### First connection :: OUTPUT MAP OF CONNECTE CLIENTS"));
+        console.log(...oo_oo(`213696474_54_4_54_77_4`, "####### First connection :: OUTPUT MAP OF CONNECTE CLIENTS"));
         for (const [key, value] of this.connectedClients) {
-            console.log(...oo_oo(`2480177961_56_6_56_49_4`, `Key: ${key}, Value: ${value}`));
+            console.log(...oo_oo(`213696474_56_6_56_49_4`, `Key: ${key}, Value: ${value}`));
         }
     }
     handleDisconnect(client) {
         const id = Number(client.handshake.query.user_id);
         this.logger.log(` ******   Client Disconnect : ${id}`);
         this.connectedClients.delete(id);
-        console.log(...oo_oo(`2480177961_67_4_67_79_4`, "***** Client Disconnection :: OUTPUT MAP OF CONNECTE CLIENTS"));
+        console.log(...oo_oo(`213696474_67_4_67_79_4`, "***** Client Disconnection :: OUTPUT MAP OF CONNECTE CLIENTS"));
         for (const [key, value] of this.connectedClients) {
-            console.log(...oo_oo(`2480177961_69_6_69_49_4`, `Key: ${key}, Value: ${value}`));
+            console.log(...oo_oo(`213696474_69_6_69_49_4`, `Key: ${key}, Value: ${value}`));
         }
     }
     createRoom(senderId, recieverId) {
-        console.log(...oo_oo(`2480177961_80_4_80_101_4`, `From Create Room Server Side : sender is ${senderId} and reciever is ${recieverId}`));
+        console.log(...oo_oo(`213696474_80_4_80_101_4`, `From Create Room Server Side : sender is ${senderId} and reciever is ${recieverId}`));
         const roomName1 = `room_${senderId}_${recieverId}`;
         const roomName2 = `room_${recieverId}_${senderId}`;
-        console.log(...oo_oo(`2480177961_84_4_84_74_4`, `roomName1 is ${roomName1} and roomName2 is ${roomName2}`));
+        console.log(...oo_oo(`213696474_84_4_84_74_4`, `roomName1 is ${roomName1} and roomName2 is ${roomName2}`));
         const check1 = this.roomsDm.indexOf(roomName1);
         const check2 = this.roomsDm.indexOf(roomName2);
-        console.log(...oo_oo(`2480177961_88_4_88_60_4`, `From create room server side after check `));
+        console.log(...oo_oo(`213696474_88_4_88_60_4`, `From create room server side after check `));
         if (check1 === -1 && check2 === -1) {
             this.roomsDm.push(roomName1);
             return roomName1;
@@ -78,12 +78,12 @@ let ChatGateway = class ChatGateway {
     async handling_joinRoom_dm(room, senderId, receiverId, message) {
         const senderClient = this.connectedClients.get(senderId);
         const receiverClient = this.connectedClients.get(receiverId);
-        console.log(...oo_oo(`2480177961_129_4_129_55_4`, "*************   handling_joinRoom_dm"));
+        console.log(...oo_oo(`213696474_129_4_129_55_4`, "*************   handling_joinRoom_dm"));
         this.joinRoom(senderClient, room);
         this.joinRoom(receiverClient, room);
-        console.log(...oo_oo(`2480177961_135_4_135_35_4`, "starting sending"));
+        console.log(...oo_oo(`213696474_135_4_135_35_4`, "starting sending"));
         const dm = await this.ChatService.checkDm(senderId, receiverId);
-        console.log(...oo_oo(`2480177961_141_4_141_52_4`, `FROM gatways value of Dm is ${dm}`));
+        console.log(...oo_oo(`213696474_141_4_141_52_4`, `FROM gatways value of Dm is ${dm}`));
         const insertDm = await this.ChatService.createMsg(senderId, receiverId, dm, message, "text");
         const data = {
             id: dm.id_dm,
@@ -92,25 +92,25 @@ let ChatGateway = class ChatGateway {
             recieve: receiverId
         };
         this.server.to(room).emit('chatToDm', data);
-        console.log(...oo_oo(`2480177961_158_4_158_32_4`, "after sending"));
+        console.log(...oo_oo(`213696474_158_4_158_32_4`, "after sending"));
     }
     process_dm(client, data) {
         let room;
-        console.log(...oo_oo(`2480177961_174_4_174_49_4`, "*************   direct_message"));
-        console.log(...oo_oo(`2480177961_177_4_177_21_4`, data));
+        console.log(...oo_oo(`213696474_174_4_174_49_4`, "*************   direct_message"));
+        console.log(...oo_oo(`213696474_177_4_177_21_4`, data));
         room = this.createRoom(data.from, data.to);
         this.handling_joinRoom_dm(room, data.from, data.to, data.message);
         return 'Hello world!';
     }
     async handling_joinRoom_group(data, users) {
-        console.log(...oo_oo(`2480177961_196_4_196_58_4`, "*************   handling_joinRoom_group"));
+        console.log(...oo_oo(`213696474_196_4_196_58_4`, "*************   handling_joinRoom_group"));
         const room = `room_${data.id}`;
         for (const user of users) {
-            console.log(...oo_oo(`2480177961_203_6_203_45_4`, "Inside sockets of groups"));
+            console.log(...oo_oo(`213696474_203_6_203_45_4`, "Inside sockets of groups"));
             const client = this.connectedClients.get(user.userId);
-            console.log(...oo_oo(`2480177961_205_6_205_53_4`, "11111111111111111111111111111111"));
+            console.log(...oo_oo(`213696474_205_6_205_53_4`, "11111111111111111111111111111111"));
             this.joinRoom(client, room);
-            console.log(...oo_oo(`2480177961_207_6_207_59_4`, "22222222222222222222222222222222222222"));
+            console.log(...oo_oo(`213696474_207_6_207_59_4`, "22222222222222222222222222222222222222"));
         }
         const save = await this.ChatService.createDiscussion(data.from, data.message, data.to);
         const result = {
@@ -120,15 +120,15 @@ let ChatGateway = class ChatGateway {
             subtype: "",
             message: data.message,
         };
-        console.log(...oo_oo(`2480177961_219_4_219_43_4`, "befoor emiting in groups"));
-        console.log(...oo_oo(`2480177961_220_4_220_21_4`, save));
+        console.log(...oo_oo(`213696474_219_4_219_43_4`, "befoor emiting in groups"));
+        console.log(...oo_oo(`213696474_220_4_220_21_4`, save));
         this.server.to(room).emit('chatToGroup', result);
-        console.log(...oo_oo(`2480177961_222_4_222_36_4`, "ENDING JOINGROUP "));
+        console.log(...oo_oo(`213696474_222_4_222_36_4`, "ENDING JOINGROUP "));
     }
     async sendInChannel(client, data) {
-        console.log(...oo_oo(`2480177961_243_4_243_64_4`, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"));
-        console.log(...oo_oo(`2480177961_244_4_244_50_4`, "*************   channel_message"));
-        console.log(...oo_oo(`2480177961_245_4_245_21_4`, data));
+        console.log(...oo_oo(`213696474_243_4_243_64_4`, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"));
+        console.log(...oo_oo(`213696474_244_4_244_50_4`, "*************   channel_message"));
+        console.log(...oo_oo(`213696474_245_4_245_21_4`, data));
         const channel = await this.ChatService.findChannel(data.to);
         if (channel) {
             const users = await this.ChatService.getUsersInChannel(data.to);
@@ -137,7 +137,7 @@ let ChatGateway = class ChatGateway {
         return "OK";
     }
     async allConversationsDm(client, data) {
-        console.log(...oo_oo(`2480177961_264_4_264_53_4`, "*************   allConversationsDm"));
+        console.log(...oo_oo(`213696474_264_4_264_53_4`, "*************   allConversationsDm"));
         const userId = Number(client.handshake.query.user_id);
         const user = await this.UsersService.findById(userId);
         const dms = await this.ChatService.getAllConversations(user.id_user);
@@ -146,8 +146,8 @@ let ChatGateway = class ChatGateway {
             for (const dmm of dms) {
                 const getUser = await this.UsersService.findById(dmm.receiverId);
                 const lastMsg = await this.ChatService.getTheLastMessage(dmm.id_dm);
-                console.log(...oo_oo(`2480177961_280_8_280_54_4`, `Last message is ${lastMsg.text}`));
-                console.log(...oo_oo(`2480177961_281_8_281_30_4`, dmm.id_dm));
+                console.log(...oo_oo(`213696474_280_8_280_54_4`, `Last message is ${lastMsg.text}`));
+                console.log(...oo_oo(`213696474_281_8_281_30_4`, dmm.id_dm));
                 const newDm = {
                     id_room: dmm.id_dm,
                     id: dmm.receiverId,
@@ -166,7 +166,7 @@ let ChatGateway = class ChatGateway {
         }
     }
     async getAllMessages(client, data) {
-        console.log(...oo_oo(`2480177961_313_4_313_48_4`, "*************   allMessagesDm"));
+        console.log(...oo_oo(`213696474_313_4_313_48_4`, "*************   allMessagesDm"));
         const userId = Number(client.handshake.query.user_id);
         const user = await this.UsersService.findById(userId);
         if (user) {
@@ -175,19 +175,21 @@ let ChatGateway = class ChatGateway {
             client.emit('historyDms', messages);
         }
         else
-            console.log(...oo_oo(`2480177961_328_6_328_46_4`, "Error user does not exist"));
+            console.log(...oo_oo(`213696474_328_6_328_46_4`, "Error user does not exist"));
     }
     async getAllMessagesRoom(client, data) {
-        console.log(...oo_oo(`2480177961_336_4_336_57_4`, "********************** allMessagesRoom"));
-        const userId = Number(client.handshake.query.user_id);
-        const user = await this.UsersService.findById(userId);
+        console.log(...oo_oo(`213696474_336_4_336_37_4`, "** allMessagesRoom"));
+        console.log(...oo_oo(`213696474_338_4_338_21_4`, data));
+        console.log(...oo_oo(`213696474_339_4_339_29_4`, data.user_id));
+        const user = await this.UsersService.findById(data.user_id);
         if (user) {
-            const messages = this.ChatService.getAllMessagesRoom(data.id);
-            const room = `room_${data.id}`;
-            this.server.to(room).emit('Response_messages_Channel', messages);
+            const messages = await this.ChatService.getAllMessagesRoom(data.id);
+            const room = `room${data.id}`;
+            console.log(...oo_oo(`213696474_346_6_346_27_4`, messages));
+            client.emit('hostoryChannel', messages);
         }
         else
-            console.log(...oo_oo(`2480177961_348_6_348_46_4`, "Error user does not exist"));
+            console.log(...oo_oo(`213696474_353_6_353_46_4`, "Error user does not exist"));
     }
 };
 exports.ChatGateway = ChatGateway;
