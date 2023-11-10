@@ -29,20 +29,21 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
     if (event.key === "Enter") {
       // Prevent the default behavior of "Enter" key in a textarea
       event.preventDefault();
-      console.log(linkify(value));
-      console.log(contact.type_chat);
+      // console.log(linkify(value));
+      console.log(contact.room_id);
+      console.log(profile._id);
       if (!value) return;
-      socket.emit(
-        contact.type_chat === "individual"
-          ? "direct_message"
-          : "channel_message",
-        {
-          message: linkify(value),
-          subtype: "text",
-          from: profile._id,
-          to: contact.room_id,
-        }
-      );
+      // socket.emit(
+      //   contact.type_chat === "individual"
+      //     ? "direct_message"
+      //     : "channel_message",
+      //   {
+      //     message: linkify(value),
+      //     subtype: "text",
+      //     from: profile._id,
+      //     to: contact.room_id,
+      //   }
+      // );
       setValue("");
     }
   };
