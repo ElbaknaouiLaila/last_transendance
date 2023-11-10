@@ -7,7 +7,7 @@ import Home from "./pages/Home";
 import { closeSnackBar } from "./redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "./redux/store/store";
 import { FetchFriends } from "./redux/slices/app";
-import { FetchChannels } from "./redux/slices/channels";
+import { FetchChannels, FetchProtectedChannels, FetchPublicChannels } from "./redux/slices/channels";
 
 const vertical = "top";
 const horizontal = "center";
@@ -22,7 +22,9 @@ function App() {
   );
   const dispatch = useAppDispatch();
   dispatch(FetchFriends());
-  dispatch(FetchChannels())
+  dispatch(FetchChannels());
+  dispatch(FetchProtectedChannels());
+  dispatch(FetchPublicChannels());
 
   return (
     <div>

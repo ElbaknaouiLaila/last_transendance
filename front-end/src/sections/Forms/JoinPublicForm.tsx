@@ -14,7 +14,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { showSnackbar } from "../../redux/slices/contact";
-import { useAppDispatch } from "../../redux/store/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import axios from "axios";
 
 const channelOptions: Option[] = [
   { key: 24716, label: "RandomGamingManiac", value: "Public Channel 1" },
@@ -32,21 +33,20 @@ const channelOptions: Option[] = [
   { key: 9290, label: "UnpredictableGamingGuy", value: "Public Channel 9" },
   { key: 16227, label: "GamingInRandomMode", value: "Public Channel 10" },
   { key: 30893, label: "GameOnWithRandom", value: "Public Channel 11" },
-]; 
+];
 interface Option {
   value: string;
   label: string;
   key: number;
 }
 
-
 interface JoinPublicFormData {
   mySelect: Option; // Store the selected option object
 }
 
 const JoinPublicForm = ({ handleClose }: any) => {
-
   const dispatch = useAppDispatch();
+  const { publicChannels } = useAppSelector(state => state.channels);
 
   const schema = Yup.object().shape({
     mySelect: Yup.object().shape({
@@ -56,38 +56,38 @@ const JoinPublicForm = ({ handleClose }: any) => {
     }),
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState,
-  } = useForm({
+  const { register, handleSubmit, formState } = useForm({
     defaultValues: {
       mySelect: {
         value: "",
         label: "",
         key: 0,
-      }
+      },
     },
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
   });
 
   const { errors } = formState;
 
   const onSubmit = (data: JoinPublicFormData) => {
     try {
+      // Access the selected option value and label from the form data
+      const selectedValue = data.mySelect.value;
+      const selectedLabel = data.mySelect.label;
+      axios.post(
+        "http://localhost:3000/channels/join",
+        { data: { selectedValue, selectedLabel } },
+        { withCredentials: true }
+      );
+      // Call API with form data, including the selected channel value and label
+      console.log("Selected Channel Value:", selectedValue);
+      console.log("Selected Channel Label:", selectedLabel);
       dispatch(
         showSnackbar({
           severity: "success",
           message: `You Join to ${data.mySelect.value} successfully`,
         })
       );
-      // Access the selected option value and label from the form data
-      const selectedValue = data.mySelect.value;
-      const selectedLabel = data.mySelect.label;
-
-      // Call API with form data, including the selected channel value and label
-      console.log("Selected Channel Value:", selectedValue);
-      console.log("Selected Channel Label:", selectedLabel);
     } catch (error) {
       console.error("error", error);
       dispatch(
@@ -100,28 +100,45 @@ const JoinPublicForm = ({ handleClose }: any) => {
   };
 
   // State to store the selected option
-  const [selectedOption, setSelectedOption] = useState<Option>({key: 0, value: "", label: "" });
+  const [selectedOption, setSelectedOption] = useState<Option>({
+    key: 0,
+    value: "",
+    label: "",
+  });
 
   return (
-    <form onSubmit={handleSubmit((data) => onSubmit({ mySelect: selectedOption }))}>
+    <form
+      onSubmit={handleSubmit(data => onSubmit({ mySelect: selectedOption }))}
+    >
       <Stack spacing={3}>
         <FormControl fullWidth>
           <InputLabel>Choose a Channel</InputLabel>
           <Select
             {...register("mySelect.value")}
-            onChange={(event) => {
+            onChange={(event: any) => {
               const selectedValue = event.target.value;
-              const selectedOption = channelOptions.find((option) => option.value === selectedValue);
-              setSelectedOption(selectedOption || { key: 0, value: "", label: "" });
+              const selectedOption = publicChannels.find(
+                (option: any) => option.value === selectedValue
+              );
+              setSelectedOption(
+                selectedOption || { key: 0, value: "", label: "" }
+              );
             }}
             label="Choose a Channel"
             fullWidth
             required
           >
-            {channelOptions.map((option) => (
+            {publicChannels.map((option: any) => (
               <MenuItem key={option.key} value={option.value}>
-                <Stack direction={"row"} alignItems={"center"} justifyContent={"space-around"}>
-                  <Avatar src={faker.image.avatar()} sx={{ width: 52, height: 52, marginRight: 2 }} />
+                <Stack
+                  direction={"row"}
+                  alignItems={"center"}
+                  justifyContent={"space-around"}
+                >
+                  <Avatar
+                    src={faker.image.avatar()}
+                    sx={{ width: 52, height: 52, marginRight: 2 }}
+                  />
                   <Typography variant="subtitle2" color={"black"}>
                     {option.label}
                   </Typography>
@@ -140,9 +157,8 @@ const JoinPublicForm = ({ handleClose }: any) => {
             "&:hover": {
               backgroundColor: "#684C83",
               color: "#C7BBD1",
-            }
-          }
-          }
+            },
+          }}
           type="submit"
           variant="contained"
         >

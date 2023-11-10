@@ -133,6 +133,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // chatTodm is the name of event li ana mn back kansifto lfront (li khaso yb9a yelisteni elih)
 
     console.log("starting sending");
+    // console.log(senderId);
+    // console.log(receiverId);
     // start cheaking database :
     const dm = await this.ChatService.checkDm(
       senderId,

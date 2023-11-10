@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { stat } from 'fs';
 import { useDispatch } from 'react-redux';
 
 export interface Channel {
@@ -26,7 +27,10 @@ interface ConversationChannel {
   unread: number;
 }
 export interface ChannelState {
+
   channels: Channel[];
+  publicChannels: [];
+  protectedChannels: [];
   channels_conversation: ConversationChannel[];
   current_channel: Channel | null;
   current_messages: [];
@@ -34,6 +38,8 @@ export interface ChannelState {
 
 const initialState: ChannelState = {
   channels: [],
+  publicChannels: [],
+  protectedChannels: [],
   channels_conversation: [],
   current_channel: null,
   current_messages: [],
@@ -44,6 +50,16 @@ export const ChannelsSlice = createSlice({
   initialState,
 
   reducers: {
+    fetchPublicChannels(state, action) {
+      //~ get all public channels
+      console.log(action.payload);
+      state.publicChannels = action.payload;
+    },
+    fetchProtectedChannels(state, action) {
+      //~ get all protected channels
+      console.log(action.payload);
+      state.protectedChannels = action.payload;
+    },
     fetchChannels(state, action) {
       //! get all channels conversation
       console.log(action.payload);
@@ -130,7 +146,43 @@ export function FetchChannels() {
   };
 }
 
+export function FetchPublicChannels() {
+  const dispatch = useDispatch();
+  return async () => {
+    await axios
+      .get("http://localhost:3000/channels/allPublic", {
+        withCredentials: true, headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        dispatch(fetchPublicChannels(res.data));
+      })
+      .catch((err) => console.log(err));
+  };
+}
+
+export function FetchProtectedChannels() {
+  const dispatch = useDispatch();
+  return async () => {
+    await axios
+      .get("http://localhost:3000/channels/allProtected", {
+        withCredentials: true, headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        dispatch(fetchProtectedChannels(res.data));
+      })
+      .catch((err) => console.log(err));
+  };
+}
+
 export const {
+  fetchProtectedChannels,
+  fetchPublicChannels,
   fetchChannels,
   updatedChannels,
   addNewChannel,
