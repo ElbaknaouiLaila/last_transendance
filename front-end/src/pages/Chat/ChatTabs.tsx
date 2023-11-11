@@ -66,7 +66,7 @@ const ChatTabs = () => {
     if (socket) {
       socket.emit("allConversationsDm", { _id: profile._id });
       socket.on("response", (data: any) => {
-        console.log(data);
+        // console.log(data);
         dispatch(
           fetchConverstations({ conversations: data, user_id: profile._id })
         );

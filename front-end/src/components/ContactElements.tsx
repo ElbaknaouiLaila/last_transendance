@@ -83,8 +83,7 @@ const ContactElements = (cont: any) => {
     const handleHistoryDms = (data: any) => {
       // console.log("history data", data);
       // console.log(data.length);
-      if (data === null) 
-      {
+      if (data === null) {
         console.log("null");
         dispatch(emptyConverstation([]));
       } else {
@@ -97,6 +96,7 @@ const ContactElements = (cont: any) => {
     console.log(contact.room_id);
     console.log(profile._id);
 
+    // if (contact.room_id === )
     socket.emit("allMessagesDm", {
       room_id: contact.room_id, // selected conversation
       user_id: profile._id, // current user
