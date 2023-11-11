@@ -45,11 +45,8 @@ let ChannelsController = class ChannelsController {
     }
     async join(req, data) {
         console.log("------ Starting Joining a Channel ");
-        console.log(data.name);
+        console.log(data);
         const decode = this.jwt.verify(req.cookies['cookie']);
-        console.log(decode);
-        console.log(`id is ${decode.id}`);
-        console.log("*****************");
         const user = await this.UsersService.findById(decode.id);
         const name = "Assila";
         const memberChannel = await this.channelsService.joinChannel(data, user.id_user);

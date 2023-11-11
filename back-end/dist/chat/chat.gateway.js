@@ -99,7 +99,6 @@ let ChatGateway = class ChatGateway {
     process_dm(client, data) {
         let room;
         console.log("*************   direct_message");
-        console.log(data);
         room = this.createRoom(data.from, data.to);
         this.handling_joinRoom_dm(room, data.from, data.to, data.message);
         return 'Hello world!';
@@ -123,14 +122,12 @@ let ChatGateway = class ChatGateway {
             message: data.message,
         };
         console.log("befoor emiting in groups");
-        console.log(save);
         this.server.to(room).emit('chatToGroup', result);
         console.log("ENDING JOINGROUP ");
     }
     async sendInChannel(client, data) {
         console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
         console.log("*************   channel_message");
-        console.log(data);
         const channel = await this.ChatService.findChannel(data.to);
         if (channel) {
             const users = await this.ChatService.getUsersInChannel(data.to);
@@ -143,20 +140,39 @@ let ChatGateway = class ChatGateway {
         const userId = Number(client.handshake.query.user_id);
         const user = await this.UsersService.findById(userId);
         const dms = await this.ChatService.getAllConversations(user.id_user);
+        console.log(`##################################### DMS of ${user.id_user}`);
+        console.log(dms);
+        let recv;
+        let send;
+        let namerecv;
+        let avatarrecv;
+        let statusrecv;
         if (dms) {
             const arrayOfDms = [];
             for (const dmm of dms) {
-                const getUser = await this.UsersService.findById(dmm.receiverId);
+                const getRecvUser = await this.UsersService.findById(dmm.receiverId);
+                const getSendUser = await this.UsersService.findById(dmm.senderId);
                 const lastMsg = await this.ChatService.getTheLastMessage(dmm.id_dm);
-                console.log(`Last message is ${lastMsg.text}`);
                 console.log(dmm.id_dm);
+                recv = dmm.receiverId;
+                send = dmm.senderId;
+                namerecv = getRecvUser.name;
+                statusrecv = getRecvUser.status_user;
+                avatarrecv = getRecvUser.avatar;
+                if (user.id_user === dmm.receiverId) {
+                    recv = dmm.senderId;
+                    send = dmm.receiverId;
+                    namerecv = getSendUser.name;
+                    avatarrecv = getSendUser.avatar;
+                    statusrecv = getSendUser.status_user;
+                }
                 const newDm = {
                     id_room: dmm.id_dm,
-                    id: dmm.receiverId,
-                    user_id: dmm.senderId,
-                    name: getUser.name,
-                    online: getUser.status_user,
-                    img: getUser.avatar,
+                    id: recv,
+                    user_id: send,
+                    name: namerecv,
+                    online: statusrecv,
+                    img: avatarrecv,
                     msg: lastMsg.text,
                     time: lastMsg.dateSent,
                     unread: dmm.unread,
@@ -164,6 +180,8 @@ let ChatGateway = class ChatGateway {
                 };
                 arrayOfDms.push(newDm);
             }
+            console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+            console.log(arrayOfDms);
             client.emit('response', arrayOfDms);
         }
     }
@@ -176,6 +194,7 @@ let ChatGateway = class ChatGateway {
             const existDm = await this.ChatService.getDm(data.user_id, data.room_id);
             if (existDm) {
                 const messages = await this.ChatService.getAllMessages(existDm.id_dm);
+                console.log(messages);
                 client.emit('historyDms', messages);
             }
         }
@@ -189,7 +208,6 @@ let ChatGateway = class ChatGateway {
         if (user) {
             const messages = await this.ChatService.getAllMessagesRoom(data.id);
             const room = `room_${data.id}`;
-            console.log(messages);
             client.emit('hostoryChannel', messages);
         }
         else

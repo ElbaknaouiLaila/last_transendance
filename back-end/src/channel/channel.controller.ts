@@ -62,12 +62,12 @@ export class ChannelsController {
 
     // data that I need is name of channel and id user , and if its protected I need password.
     console.log("------ Starting Joining a Channel ");
-    console.log(data.name);
+    console.log(data);
     //to decode the req and get the id.
     const decode = this.jwt.verify(req.cookies['cookie']);
-    console.log(decode);
-    console.log(`id is ${decode.id}`);
-    console.log("*****************");
+    // console.log(decode);
+    // console.log(`id is ${decode.id}`);
+    // console.log("*****************");
     const user = await this.UsersService.findById(decode.id);
     const name = "Assila";
     const memberChannel = await this.channelsService.joinChannel(
@@ -169,6 +169,7 @@ export class ChannelsController {
   {
     return this.channelsService.getPublicChannels();
   }
+
   @Get('allProtected')
   async getProtectedChannels()
   {

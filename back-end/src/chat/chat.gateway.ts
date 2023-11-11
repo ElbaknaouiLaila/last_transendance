@@ -182,7 +182,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     //  room = this.createRoom(senderId, receiverId);
     // hafid makysiftsh liya reciever !!!!!!!!!!!!!!!!!
-    console.log(data);
+    // console.log(data);
     room = this.createRoom(data.from, data.to);
     this.handling_joinRoom_dm(room, data.from, data.to, data.message);
     //  console.log("####### OUTPUT MAP OF CONNECTE CLIENTS");
@@ -226,7 +226,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       };
 
       console.log("befoor emiting in groups");
-      console.log(save);
+      // console.log(save);
       this.server.to(room).emit('chatToGroup', result);
     console.log("ENDING JOINGROUP ");
   }
@@ -251,7 +251,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // check is the channel is exist :
     console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     console.log("*************   channel_message");
-    console.log(data);
+    // console.log(data);
     const channel = await this.ChatService.findChannel(data.to);
     if (channel)
     {
@@ -278,26 +278,52 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // console.log(`User id from hansshake is ${userId}`);
     // console.log(`id coming from front is ${data._id}`);
     // console.log(`From allConversationsDm ${userId}`);
+
     const user = await this.UsersService.findById(userId);
     const dms =  await this.ChatService.getAllConversations(user.id_user);
     // console.log("|||||||||||||||||||||||||");
-
+    console.log(`##################################### DMS of ${user.id_user}`);
+    console.log(dms);
+    let recv ;
+    let send;
+    let namerecv;
+    let avatarrecv;
+    let statusrecv;
     if(dms)
     {
         const arrayOfDms = [];
         for (const dmm of dms) {
 
-        const getUser = await this.UsersService.findById(dmm.receiverId);
+        const getRecvUser = await this.UsersService.findById(dmm.receiverId);
+        const getSendUser = await this.UsersService.findById(dmm.senderId);
         const lastMsg  = await this.ChatService.getTheLastMessage(dmm.id_dm);
-        console.log(`Last message is ${lastMsg.text}`);
-        console.log(dmm.id_dm); 
+        // console.log(`Last message is ${lastMsg.text}`);
+        console.log(dmm.id_dm);
+
+        recv  = dmm.receiverId;
+        send = dmm.senderId;
+        namerecv =  getRecvUser.name;
+        statusrecv = getRecvUser.status_user;
+        avatarrecv = getRecvUser.avatar;
+
+        if (user.id_user === dmm.receiverId)
+        {
+          recv  = dmm.senderId;
+          send = dmm.receiverId;
+          namerecv = getSendUser.name;
+          avatarrecv = getSendUser.avatar;
+          statusrecv = getSendUser.status_user;
+
+        }
         const newDm = {
           id_room:dmm.id_dm,
-          id: dmm.receiverId,
-          user_id: dmm.senderId,
-          name: getUser.name,
-          online: getUser.status_user,
-          img: getUser.avatar,
+
+          id: recv,
+          user_id: send,
+          name: namerecv,
+          online: statusrecv,
+          img: avatarrecv,
+
           msg: lastMsg.text,
           time: lastMsg.dateSent,
           unread: dmm.unread,
@@ -305,8 +331,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         };
         arrayOfDms.push(newDm);
       }
-      // console.log("ZZZZZZZZZZZZZZ");
-      // console.log(arrayOfDms);
+      console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+      console.log(arrayOfDms);
       client.emit('response', arrayOfDms); 
     }
       // console.log(`Lensth is ${dms.length}`);
@@ -343,6 +369,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       {
         const messages = await  this.ChatService.getAllMessages(existDm.id_dm);
         // const room = `room_${existDm.id_dm}`;
+        console.log(messages);
         client.emit('historyDms', messages); 
 
       }
@@ -371,7 +398,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       const messages =  await this.ChatService.getAllMessagesRoom(data.id);
       const room = `room_${data.id}`;
 
-      console.log(messages)
+      // console.log(messages)
       
       client.emit('hostoryChannel', messages);  // way 1
       // this.server.to(room).emit('hostoryChannel', messages); way 2

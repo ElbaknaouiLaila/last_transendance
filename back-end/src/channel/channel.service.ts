@@ -33,9 +33,10 @@ export class ChannelsService {
           },
         },
       });
-      console.log("||||||||||||||||||||||||||||||||||||||||");
+      // console.log("||||||||||||||||||||||||||||||||||||||||");
       
-      console.log(publicChannelsWithUsers);
+      // console.log(publicChannelsWithUsers);
+
       return publicChannelsWithUsers;
     }
     catch (error) {
@@ -59,9 +60,10 @@ export class ChannelsService {
           },
         },
       });
-      console.log("||||||||||||||||||||||||||||||||||||||||");
+      // console.log("||||||||||||||||||||||||||||||||||||||||");
 
-      console.log(protectedChannelsWithUsers);
+      // console.log(protectedChannelsWithUsers);
+
       return protectedChannelsWithUsers;
     }
     catch (error) {

@@ -41,8 +41,6 @@ let ChannelsService = class ChannelsService {
                     },
                 },
             });
-            console.log("||||||||||||||||||||||||||||||||||||||||");
-            console.log(publicChannelsWithUsers);
             return publicChannelsWithUsers;
         }
         catch (error) {
@@ -63,8 +61,6 @@ let ChannelsService = class ChannelsService {
                     },
                 },
             });
-            console.log("||||||||||||||||||||||||||||||||||||||||");
-            console.log(protectedChannelsWithUsers);
             return protectedChannelsWithUsers;
         }
         catch (error) {
