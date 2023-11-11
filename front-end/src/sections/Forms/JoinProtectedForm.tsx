@@ -149,6 +149,7 @@ const JoinProtectedForm = ({ handleClose }: any) => {
             required
           >
             {protectedChannels.map((option: any) => (
+              
               <MenuItem key={option.key} value={option.value}>
                 <Stack
                   direction={"row"}

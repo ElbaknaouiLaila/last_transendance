@@ -48,7 +48,7 @@ const ContactElements = (cont: any) => {
     state => state.converstation.direct_chat
   );
   // console.log(cont);
-  const { contact } = useAppSelector(state => state);
+  const { contact, profile } = useAppSelector(state => state);
   // console.log(contact);
   const dispatch = useAppDispatch();
   const id = cont.id_user;
@@ -83,7 +83,9 @@ const ContactElements = (cont: any) => {
     const handleHistoryDms = (data: any) => {
       // console.log("history data", data);
       // console.log(data.length);
-      if (data.length === 0) {
+      if (data === null) 
+      {
+        console.log("null");
         dispatch(emptyConverstation([]));
       } else {
         dispatch(setCurrentConverstation(data));
@@ -91,32 +93,20 @@ const ContactElements = (cont: any) => {
     };
 
     if (!contact.room_id) return;
-    // console.log(contact);
-    const current = conversations.find((el: any) => el?.id === contact.room_id);
-    if (current) {
-      dispatch(selectChat({ room_id: current.room_id }));
-      socket.emit("allMessagesDm", { room_id: current?.room_id });
-      socket.once("historyDms", handleHistoryDms);
-    } else {
-      const new_conversation = {
-        id: contact.room_id,
-        name: cont.name,
-        avatar: cont.avatar,
-        online: cont.status_user,
-        unread: 0,
-        msg: "",
-        time: "",
-      };
-      dispatch(addNewConversation(new_conversation));
-      dispatch(selectChat({ room_id: 0 }));
-      console.log("current is null", contact, cont);
-    }
-    // console.log(current.room_id);
+    // console.log(conversations);
+    console.log(contact.room_id);
+    console.log(profile._id);
+
+    socket.emit("allMessagesDm", {
+      room_id: contact.room_id, // selected conversation
+      user_id: profile._id, // current user
+    });
+    socket.once("historyDms", handleHistoryDms);
 
     return () => {
       socket.off("historyDms", handleHistoryDms);
     };
-  }, [contact.room_id, conversations, dispatch]);
+  }, [contact.room_id, profile._id, dispatch]);
   return (
     <Box
       sx={{

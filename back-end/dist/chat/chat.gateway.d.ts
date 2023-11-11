@@ -4,11 +4,13 @@ import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { JwtService } from 'src/jwt/jwtservice.service';
 import { ChatService } from './chat.service';
 import { UsersService } from 'src/users/users.service';
+import { PrismaService } from '../prisma.service';
 export declare class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
     private jwt;
     private readonly ChatService;
     private readonly UsersService;
-    constructor(jwt: JwtService, ChatService: ChatService, UsersService: UsersService);
+    private prisma;
+    constructor(jwt: JwtService, ChatService: ChatService, UsersService: UsersService, prisma: PrismaService);
     private connectedClients;
     private roomsDm;
     server: Server;

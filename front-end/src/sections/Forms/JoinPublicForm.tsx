@@ -112,7 +112,8 @@ const JoinPublicForm = ({ handleClose }: any) => {
             required
           >
             {publicChannels.map((option: any) => (
-              <MenuItem key={option.key} value={option.value}>
+              console.log(option),
+              <MenuItem key={option.key} value={option.name}>
                 <Stack
                   direction={"row"}
                   alignItems={"center"}
@@ -123,7 +124,7 @@ const JoinPublicForm = ({ handleClose }: any) => {
                     sx={{ width: 52, height: 52, marginRight: 2 }}
                   />
                   <Typography variant="subtitle2" color={"black"}>
-                    {option.label}
+                    {option.name}
                   </Typography>
                 </Stack>
               </MenuItem>

@@ -24,10 +24,11 @@ const Converstation = () => {
     }
 
     const handleChatToDm = (data: any) => {
+      console.log(data);
       // Check if the received message is from the currently selected conversation
       // if (conversation.direct_chat.current_conversation.id === data.id) {.
-      console.log(data.id, contact.chat_id);
-      if (data.id === contact.chat_id) {
+      console.log(contact.room_id, profile._id);
+      if (data.recieve === contact.room_id) {
         dispatch(
           fetchCurrentMessages({
             id: data.id,
@@ -41,11 +42,11 @@ const Converstation = () => {
       }
       // }
     };
-    socket.on("chatToDm", handleChatToDm);
-    return () => {
-      socket.off("chatToDm", handleChatToDm);
-    };
-  }, [dispatch, profile._id, contact.chat_id]);
+    socket.once("chatToDm", handleChatToDm);
+    // return () => {
+    //   socket.off("chatToDm", handleChatToDm);
+    // };
+  }, [dispatch, profile._id, contact.room_id]);
 
   return (
     <Stack

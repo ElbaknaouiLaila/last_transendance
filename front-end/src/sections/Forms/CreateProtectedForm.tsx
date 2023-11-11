@@ -18,7 +18,7 @@ const CreateProtectedForm = ({ handleClose }: any) => {
 
   const ProtectedSchema = Yup.object().shape({
     title: Yup.string().required("Title is Required!!"),
-    members: Yup.array().min(3, "Must have at least 3 Members"),
+    members: Yup.array().min(2, "Must have at least 2 Members"),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
       .required("Password is required"),

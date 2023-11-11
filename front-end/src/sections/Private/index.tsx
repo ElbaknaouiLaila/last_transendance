@@ -1,22 +1,19 @@
 import { Box, Button, ButtonProps, Divider, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ArchiveBox, MagnifyingGlass } from "@phosphor-icons/react";
+import { useEffect } from "react";
 import ChatElements from "../../components/ChatElements";
 import {
   Search,
   SearchIconWrapper,
   StyledInputBase,
 } from "../../components/search";
-import { ChatList } from "../../data";
-import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import { useEffect } from "react";
-import { socket } from "../../socket";
 import {
-  fetchConverstations,
-  fetchCurrentMessages,
+  emptyConverstation,
   setCurrentConverstation,
 } from "../../redux/slices/converstation";
-import { selectChat } from "../../redux/slices/contact";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import { socket } from "../../socket";
 
 const ColorButton = styled(Button)<ButtonProps>(() => ({
   color: "#C7BBD1",
@@ -35,22 +32,28 @@ const Privates = () => {
   const { profile, contact } = useAppSelector(state => state);
 
   useEffect(() => {
-
     const handleHistoryDms = (data: any) => {
       console.log("history data", data);
-      dispatch(setCurrentConverstation(data));
+      if (data === null) {
+        console.log("null");
+        dispatch(emptyConverstation([]));
+      } else {
+        dispatch(setCurrentConverstation(data));
+      }
     };
     if (!contact.room_id) return;
-    const current = conversations.find((el: any) => el?.id === contact.room_id);
-    if (!current) return;
-    dispatch(selectChat({ room_id: current?.room_id }));
-    socket.emit("allMessagesDm", { room_id: current?.room_id });
+    console.log(contact.room_id);
+    console.log(profile._id);
+    socket.emit("allMessagesDm", {
+      room_id: contact.room_id, // selected conversation
+      user_id: profile._id, // current user
+    });
     socket.once("historyDms", handleHistoryDms);
 
     return () => {
       socket.off("historyDms", handleHistoryDms);
     };
-  }, [contact.room_id, conversations, dispatch]);
+  }, [contact.room_id, profile._id, dispatch]);
 
   return (
     <Box

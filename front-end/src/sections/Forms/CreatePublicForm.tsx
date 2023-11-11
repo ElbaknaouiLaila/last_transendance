@@ -13,7 +13,7 @@ const CreatePublicForm = ({ handleClose }: any) => {
   const dispatch = useAppDispatch();
   const PublicSchema = Yup.object().shape({
     title: Yup.string().required("Title is Required!!"),
-    members: Yup.array().min(3, "Must have at least 3 Members"),
+    members: Yup.array().min(2, "Must have at least 2 Members"),
   });
 
   const defaultValues = {
@@ -47,6 +47,8 @@ const CreatePublicForm = ({ handleClose }: any) => {
           message: "New Public Channel has Created",
         })
       );
+      reset();
+      handleClose();
       // call api
     } catch (error) {
       dispatch(
@@ -57,6 +59,7 @@ const CreatePublicForm = ({ handleClose }: any) => {
       );
       console.log("error", error);
       reset();
+      handleClose();
     }
   };
   return (

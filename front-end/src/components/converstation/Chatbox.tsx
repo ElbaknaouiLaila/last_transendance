@@ -62,12 +62,6 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
         disableUnderline: true,
         endAdornment: (
           <InputAdornment position="end">
-            <Tooltip title="Photo/Video">
-              <IconButton>
-                {" "}
-                <ImageSquare size={32} color="#C7BBD1" />{" "}
-              </IconButton>
-            </Tooltip>
             <Tooltip title="Emojis">
               <IconButton
                 onClick={() => {

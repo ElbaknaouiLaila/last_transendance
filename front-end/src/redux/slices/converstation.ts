@@ -86,7 +86,10 @@ export const ConverstationSlice = createSlice({
     },
     emptyConverstation(state, action) {
       // ! empty converstation
-      state.direct_chat.conversations = [];
+      // console.log("empty converstation");
+      // state.direct_chat.conversations = [];
+      state.direct_chat.current_conversation = null;
+      state.direct_chat.current_messages = [];
     }
     ,
     addNewConversation(state, action) {

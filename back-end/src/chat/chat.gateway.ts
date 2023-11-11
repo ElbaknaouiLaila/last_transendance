@@ -5,6 +5,8 @@ import { Logger, OnModuleInit } from '@nestjs/common';
 import { JwtService } from 'src/jwt/jwtservice.service';
 import { ChatService } from './chat.service';
 import { UsersService } from 'src/users/users.service';
+import { PrismaService } from '../prisma.service';
+
 // it is like cntroller,  ghi instead of working with api endpoints, we working
 //  on Events
 //I give to my gatway a name , in case there are alots of gatways, in this way I can separate between my gatways
@@ -18,7 +20,8 @@ import { UsersService } from 'src/users/users.service';
 // })
 @WebSocketGateway({ cors: { origin: 'http://localhost:5173', methods: ['GET', 'POST'] } })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private jwt: JwtService, private readonly ChatService: ChatService, private readonly UsersService: UsersService) { }
+  constructor(private jwt: JwtService, private readonly ChatService: ChatService, private readonly UsersService: UsersService,
+    private prisma: PrismaService) { }
 
   // Assuming you have a map of connected clients with user IDs
   // private connectedClients = new Map<string, Socket>();
@@ -312,23 +315,33 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('allMessagesDm')
   async getAllMessages(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     // I need the id of room (dm).
-    // console.log("*************   allMessagesDm");
-    console.log(client.handshake.query.user_id);
-    console.log(data);
-    const userId: number = Number(client.handshake.query.user_id);
-
-    const user = await this.UsersService.findById(userId);
-    if (user) {
-      const messages = await this.ChatService.getAllMessages(data.room_id);
-      const room = `room_${data.room_id}`;
-      console.log(messages);
+    console.log("*************   allMessagesDm");
+    const DM = await this.prisma.dm.findFirst({
+      where:{
+        OR:[
+          {
+            senderId:data.room_id,
+            receiverId:data.user_id
+          },
+          {
+            senderId:data.user_id,
+            receiverId:data.room_id
+          }
+        ]
+      },
+      include:{
+        conversation:true
+      }
+    });
+    if (DM)
+    {
+      const messages = DM.conversation;
       client.emit('historyDms', messages);
-
-      // this.server.to(room).emit('Response_messages_Dms', messages);
-      // console.log("after sending");
     }
     else
-      console.log("Error user does not exist");
+    {
+      client.emit('historyDms', null);
+    }
   }
 
   // for channels

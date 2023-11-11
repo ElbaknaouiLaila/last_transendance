@@ -72,7 +72,7 @@ const ChatTabs = () => {
         );
       });
     }
-  }, [profile, dispatch]);
+  }, [profile._id]);
   // !! fetch all conversations with user_id
 
   return (
