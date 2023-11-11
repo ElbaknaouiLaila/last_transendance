@@ -16,6 +16,7 @@ import {
   fetchCurrentMessages,
   setCurrentConverstation,
 } from "../../redux/slices/converstation";
+import { selectChat } from "../../redux/slices/contact";
 
 const ColorButton = styled(Button)<ButtonProps>(() => ({
   color: "#C7BBD1",
@@ -32,30 +33,24 @@ const Privates = () => {
     state => state.converstation.direct_chat
   );
   const { profile, contact } = useAppSelector(state => state);
-  // console.log(conversations);
-  console.log(contact.room_id);
-  // const { _id } = useAppSelector((state) => state.profile);
-
-  // useEffect(() => {
-  //   socket.emit("get_direct_conversations", { _id }, (data) => {
-  //     console.log(data); // this data is the list of conversations
-  //     // dispatch action
-
-  //     dispatch(fetchConverstations({ conversations: data }));
-  //   });
-  // }, []);
 
   useEffect(() => {
+
     const handleHistoryDms = (data: any) => {
       console.log("history data", data);
       dispatch(setCurrentConverstation(data));
     };
-    if(!contact.room_id) return
-    console.log(contact.room_id);
-
-    socket.emit("allMessagesDm", { room_id: contact.room_id });
+    if (!contact.room_id) return;
+    const current = conversations.find((el: any) => el?.id === contact.room_id);
+    if (!current) return;
+    dispatch(selectChat({ room_id: current?.room_id }));
+    socket.emit("allMessagesDm", { room_id: current?.room_id });
     socket.once("historyDms", handleHistoryDms);
-  }, [contact.room_id]);
+
+    return () => {
+      socket.off("historyDms", handleHistoryDms);
+    };
+  }, [contact.room_id, conversations, dispatch]);
 
   return (
     <Box

@@ -71,25 +71,7 @@ const ChatTabs = () => {
           fetchConverstations({ conversations: data, user_id: profile._id })
         );
       });
-
-      // socket.emit("allMessagesRoom", { id: contact.room_id });
-      // socket.on("hostoryChannel", (data: any) => {
-      //   console.log("data", data);
-      //   dispatch(setCurrentChannel({ messages: data, user_id: profile._id }));
-      // });
     }
-    // socket.emit("get_direct_conversations", { _id }, (data:any) => {
-    //   console.log(data); // this data is the list of conversations
-    //   // dispatch action
-
-    //   // dispatch(fetchConverstations({ conversations: data }));
-    // });
-    // socket.emit("get_channels_conversations", { _id }, (data) => {
-    //     console.log(data); // this data is the list of conversations
-    //     // dispatch action
-
-    //     dispatch(FetchChannelConversations({ conversations: data }));
-    //   });
   }, [profile, dispatch]);
   // !! fetch all conversations with user_id
 
@@ -104,9 +86,6 @@ const ChatTabs = () => {
           <Tab value={2}>Private</Tab>
           <Tab value={3}>Channels</Tab>
         </TabsList>
-        {/*
-         * this is for friends
-         */}
         <TabPanel value={0}>
           <Friends />
         </TabPanel>

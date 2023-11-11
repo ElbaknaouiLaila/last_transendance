@@ -312,7 +312,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('allMessagesDm')
   async getAllMessages(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     // I need the id of room (dm).
-    console.log("*************   allMessagesDm");
+    // console.log("*************   allMessagesDm");
     console.log(client.handshake.query.user_id);
     console.log(data);
     const userId: number = Number(client.handshake.query.user_id);

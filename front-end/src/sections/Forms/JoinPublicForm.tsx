@@ -17,23 +17,6 @@ import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import axios from "axios";
 
-const channelOptions: Option[] = [
-  { key: 24716, label: "RandomGamingManiac", value: "Public Channel 1" },
-  { key: 33511, label: "GamingFrenzyFun", value: "Public Channel 2" },
-  { key: 19437, label: "InsaneGamingQuest", value: "Public Channel 3" },
-  { key: 25601, label: "TheRandomGameTime", value: "Public Channel 4" },
-  { key: 39502, label: "GamerExtraordinaire", value: "Public Channel 5" },
-  { key: 45408, label: "QuirkyGameGuru", value: "Public Channel 6" },
-  { key: 4004, label: "GameOnWithRandom", value: "Public Channel 7" },
-  { key: 5212, label: "LuckyGamingChamp", value: "Public Channel 8" },
-  { key: 40572, label: "UnpredictableGamingGuy", value: "Public Channel 9" },
-  { key: 21985, label: "GamingInRandomMode", value: "Public Channel 10" },
-  { key: 31006, label: "GameOnWithRandom", value: "Public Channel 11" },
-  { key: 20110, label: "LuckyGamingChamp", value: "Public Channel 8" },
-  { key: 9290, label: "UnpredictableGamingGuy", value: "Public Channel 9" },
-  { key: 16227, label: "GamingInRandomMode", value: "Public Channel 10" },
-  { key: 30893, label: "GameOnWithRandom", value: "Public Channel 11" },
-];
 interface Option {
   value: string;
   label: string;

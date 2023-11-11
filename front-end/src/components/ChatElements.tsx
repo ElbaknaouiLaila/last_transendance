@@ -48,31 +48,32 @@ const ChatElements = (id: IdType) => {
       dispatch(setCurrentConverstation(data));
     };
 
-    const handleChatToDm = (data: any) => {
-      console.log("chat data", data);
-      dispatch(
-        fetchCurrentMessages({
-          id: data.id,
-          type: "msg",
-          subtype: data.subtype,
-          message: data.message,
-          outgoing: data.send === profile._id, //incoming
-          incoming: data.recieve === profile._id, //outgoing
-        })
-      );
-    };
-    console.log("selected_id", selected_id);
-    console.log("contact", contact.room_id);
-    // if (selected_id === contact.room_id) {
-    // socket.emit("allMessagesDm", { room_id: selected_id });
-    // socket.once("historyDms", handleHistoryDms);
-    socket.on("chatToDm", handleChatToDm);
+    // const handleChatToDm = (data: any) => {
+    //   console.log("chat data", data);
+    //   dispatch(
+    //     fetchCurrentMessages({
+    //       id: data.id,
+    //       type: "msg",
+    //       subtype: data.subtype,
+    //       message: data.message,
+    //       outgoing: data.send === profile._id, //incoming
+    //       incoming: data.recieve === profile._id, //outgoing
+    //     })
+    //   );
+    // };
+    // // console.log("selected_id", selected_id);
+    // // console.log("contact", contact.room_id);
+    // // if (selected_id === contact.room_id) {
+    // // socket.emit("allMessagesDm", { room_id: selected_id });
+    // // socket.once("historyDms", handleHistoryDms);
+    // socket.on("chatToDm", handleChatToDm);
     // }
   }, [selected_id]);
 
   return (
     <StyledChatBox
       onClick={() => {
+        console.log("click", id.id);
         dispatch(
           selectConversation({
             room_id: selected_id,

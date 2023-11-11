@@ -156,7 +156,7 @@ export function FetchPublicChannels() {
         },
       })
       .then((res) => {
-        // console.log(res.data);
+        console.log(res.data);
         dispatch(fetchPublicChannels(res.data));
       })
       .catch((err) => console.log(err));
@@ -173,7 +173,7 @@ export function FetchProtectedChannels() {
         },
       })
       .then((res) => {
-        // console.log(res.data);
+        console.log(res.data);
         dispatch(fetchProtectedChannels(res.data));
       })
       .catch((err) => console.log(err));

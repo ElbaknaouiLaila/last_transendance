@@ -21,99 +21,6 @@ import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import axios from "axios";
 
-const channelOptions: Option[] = [
-  {
-    key: 2133140,
-    label: "RandomGamingManiac",
-    value: "Public Channel 1",
-    password: "vDR9i1Lc0uU28",
-  },
-  {
-    key: 3497838,
-    label: "GamingFrenzyFun",
-    value: "Public Channel 2",
-    password: "y5CdnKXAUg2Kw",
-  },
-  {
-    key: 3030394,
-    label: "InsaneGamingQuest",
-    value: "Public Channel 3",
-    password: "Jxd5nSqOb4y1o",
-  },
-  {
-    key: 5173520,
-    label: "TheRandomGameTime",
-    value: "Public Channel 4",
-    password: "EzOcwxBWPWCZH",
-  },
-  {
-    key: 4958154,
-    label: "GamerExtraordinaire",
-    value: "Public Channel 5",
-    password: "OIa6i8AKYbgUc",
-  },
-  {
-    key: 3053517,
-    label: "QuirkyGameGuru",
-    value: "Public Channel 6",
-    password: "ARpWBBiZ2NeAW",
-  },
-  {
-    key: 1019799,
-    label: "GameOnWithRandom",
-    value: "Public Channel 7",
-    password: "3LgJ7ekRPXJ9t",
-  },
-  {
-    key: 606187,
-    label: "LuckyGamingChamp",
-    value: "Public Channel 8",
-    password: "QrLmY7uNibVJb",
-  },
-  {
-    key: 1579342,
-    label: "UnpredictableGamingGuy",
-    value: "Public Channel 9",
-    password: "RGLuEfi4XmOt9",
-  },
-  {
-    key: 2836728,
-    label: "GamingInRandomMode",
-    value: "Public Channel 10",
-    password: "tYwXYWO2pV9b2",
-  },
-  {
-    key: 237783,
-    label: "GameOnWithRandom",
-    value: "Public Channel 11",
-    password: "RopLZn193D9vs",
-  },
-  {
-    key: 2615389,
-    label: "LuckyGamingChamp",
-    value: "Public Channel 8",
-    password: "6MiBzRuZnRgUr",
-  },
-  {
-    key: 438539,
-    label: "UnpredictableGamingGuy",
-    value: "Public Channel 9",
-    password: "szyBoTbXCCGIb",
-  },
-  {
-    key: 3590170,
-    label: "GamingInRandomMode",
-    value: "Public Channel 10",
-    password: "4oDA6PKwYfHdB",
-  },
-  {
-    key: 2979652,
-    label: "GameOnWithRandom",
-    value: "Public Channel 11",
-    password: "VN6aUDXCJgkG2",
-  },
-];
-
 interface Option {
   value: string;
   label: string;
@@ -233,7 +140,9 @@ const JoinProtectedForm = ({ handleClose }: any) => {
               const selectedOption: any = protectedChannels.find(
                 (option: any) => option.value === selectedValue
               );
-              setSelectedOption(selectedOption || protectedChannels[0]);
+              setSelectedOption(
+                selectedOption || protectedChannels[0] || undefined
+              );
             }}
             label="Choose a Channel"
             fullWidth

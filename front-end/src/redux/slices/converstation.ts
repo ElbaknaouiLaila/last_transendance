@@ -84,13 +84,20 @@ export const ConverstationSlice = createSlice({
         }
       );
     },
+    emptyConverstation(state, action) {
+      // ! empty converstation
+      state.direct_chat.conversations = [];
+    }
+    ,
     addNewConversation(state, action) {
       // ? adding new conversation
-      state.direct_chat.current_conversation = action.payload;
+      console.log(action.payload);
+      const new_conversation = action.payload;
+      state.direct_chat.conversations.push(new_conversation);
     },
     setCurrentConverstation(state, action) {
       // ! set current converstation
-      console.log(action.payload);
+      // console.log(action.payload);
       state.direct_chat.current_conversation = action.payload;
       const messages: any = action.payload;
       const formatted_messages = messages.map((el: any) => ({
@@ -105,9 +112,8 @@ export const ConverstationSlice = createSlice({
     },
     fetchCurrentMessages(state, action) {
       // ! get all messages of current converstation
-      // console.log(action.payload)
-      // const messages: any = action.payload;
-      // state.direct_chat.current_messages.push(messages);
+      const messages: any = action.payload;
+      state.direct_chat.current_messages.push(messages);
       // state.direct_chat.current_messages.push();
     },
   },
@@ -121,6 +127,7 @@ export const {
   addNewConversation,
   setCurrentConverstation,
   fetchCurrentMessages,
+  emptyConverstation,
 } = ConverstationSlice.actions;
 
 /*
