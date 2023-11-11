@@ -20,41 +20,39 @@ export const ConverstationSlice = createSlice({
   reducers: {
     fetchConverstations(state, action) {
       // ! get all converstation
-      const list = action.payload.conversations.map((el: any) => {
-        // console.log(el);
-        const formatDateTime = (dateString: string): string => {
-          const inputDate = new Date(dateString);
-          const currentDate = new Date();
+      const list: any[] = action.payload.conversations
+        .filter((el: any) => !(el.room_id === action.payload.user_id || el.user_id !== action.payload.user_id))
+        .map((el: any) => {
+          const formatDateTime = (dateString: string): string => {
+            const inputDate = new Date(dateString);
+            const currentDate = new Date();
 
-          const isToday = inputDate.toDateString() === currentDate.toDateString();
+            const isToday = inputDate.toDateString() === currentDate.toDateString();
 
-          if (isToday) {
-            const hours = inputDate.getHours();
-            const minutes = inputDate.getMinutes();
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-          } else {
-            const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
-            return inputDate.toLocaleDateString(undefined, options);
-          }
-        };
+            if (isToday) {
+              const hours = inputDate.getHours();
+              const minutes = inputDate.getMinutes();
+              return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            } else {
+              const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+              return inputDate.toLocaleDateString(undefined, options);
+            }
+          };
 
-        // const user = el.find(
-        //   (elm: any) => elm.id_dm.toString() !== action.payload.user_id.toString()
-        // );
-        // console.log(el.id_room);
-        return {
-          room_id: el?.id_room,
-          id: el?.id,
-          user_id: el?.user_id,
-          name: el?.name,
-          online: el?.online === "Online",
-          img: el?.img,
-          msg: el?.msg,
-          time: formatDateTime(el?.time),
-          unread: el?.unread,
-          pinned: el?.pinned,
-        };
-      });
+          return {
+            room_id: el?.id_room,
+            id: el?.id,
+            user_id: el?.user_id,
+            name: el?.name,
+            online: el?.online === "Online",
+            img: el?.img,
+            msg: el?.msg,
+            time: formatDateTime(el?.time),
+            unread: el?.unread,
+            pinned: el?.pinned,
+          };
+        });
+
       state.direct_chat.conversations = list;
     },
     updatedConverstation(state, action) {
