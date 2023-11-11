@@ -19,15 +19,11 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import axios from "axios";
 
 interface Option {
-  id_channel: number;
   name: string;
   visibility: string;
-  value: string;
-  label: string;
-  key: number;
+  id_channel: number;
   password: string;
 }
 
@@ -44,9 +40,9 @@ const JoinProtectedForm = ({ handleClose }: any) => {
 
   const ProtectedChannelSchema = Yup.object().shape({
     mySelect: Yup.object().shape({
-      value: Yup.string(),
-      label: Yup.string(),
-      key: Yup.number(),
+      name: Yup.string(),
+      visibility: Yup.string(),
+      id_channel: Yup.number(),
       password: Yup.string(),
     }),
     password: Yup.string().required("Password is required"),
@@ -54,10 +50,10 @@ const JoinProtectedForm = ({ handleClose }: any) => {
 
   const defaultValues = {
     mySelect: {
-      value: "",
-      label: "",
+      name: "",
+      visibility: "",
       password: "",
-      key: 0,
+      id_channel: 0,
     },
     password: "",
   };
@@ -65,9 +61,9 @@ const JoinProtectedForm = ({ handleClose }: any) => {
   const { register, handleSubmit, formState } = useForm({
     defaultValues: {
       mySelect: {
-        value: "",
-        label: "",
-        key: 0,
+        name: "",
+        visibility: "",
+        id_channel: 0,
       },
     },
     resolver: yupResolver(ProtectedChannelSchema),
@@ -77,15 +73,16 @@ const JoinProtectedForm = ({ handleClose }: any) => {
 
   const onSubmit = async (data: JoinProtectedFormData) => {
     try {
-      axios.post(
-        "http://localhost:3000/channels/join",
-        { data },
-        { withCredentials: true }
-      );
+      console.log("DATA", data);
+      // axios.post(
+      //   "http://localhost:3000/channels/join",
+      //   { data },
+      //   { withCredentials: true }
+      // );
       dispatch(
         showSnackbar({
           severity: "success",
-          message: `You Join to ${data.mySelect.value} successfully`,
+          message: `You Join to ${data.mySelect.name} successfully`,
         })
       );
       // if (data.mySelect.password === data.password) {
@@ -110,16 +107,16 @@ const JoinProtectedForm = ({ handleClose }: any) => {
       dispatch(
         showSnackbar({
           severity: "failed",
-          message: `You Failed Join to ${data.mySelect.value}`,
+          message: `You Failed Join to ${data.mySelect.name}`,
         })
       );
     }
   };
 
   const [selectedOption, setSelectedOption] = React.useState<Option>({
-    key: 0,
-    value: "",
-    label: "",
+    id_channel: 0,
+    name: "",
+    visibility: "",
     password: "",
   });
 
@@ -137,11 +134,11 @@ const JoinProtectedForm = ({ handleClose }: any) => {
         <FormControl fullWidth>
           <InputLabel>Choose a Channel</InputLabel>
           <Select
-            {...register("mySelect.value")}
+            {...register("mySelect.name")}
             onChange={(event: any) => {
               const selectedValue: any = event.target.value;
               const selectedOption: any = protectedChannels.find(
-                (option: any) => option.value === selectedValue
+                (option: any) => option.name === selectedValue
               );
               setSelectedOption(
                 selectedOption || protectedChannels[0] || undefined
@@ -152,7 +149,7 @@ const JoinProtectedForm = ({ handleClose }: any) => {
             required
           >
             {protectedChannels.map((option: any) => (
-              <MenuItem key={option.key} value={option.value}>
+              <MenuItem key={option.id_channel} value={option.name}>
                 <Stack
                   direction={"row"}
                   alignItems={"center"}
@@ -163,7 +160,7 @@ const JoinProtectedForm = ({ handleClose }: any) => {
                     sx={{ width: 52, height: 52, marginRight: 2 }}
                   />
                   <Typography variant="subtitle2" color={"black"}>
-                    {option.label}
+                    {option.name}
                   </Typography>
                 </Stack>
               </MenuItem>

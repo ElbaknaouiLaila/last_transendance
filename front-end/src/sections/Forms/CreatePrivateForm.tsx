@@ -1,12 +1,12 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Stack } from "@mui/material";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
-import FormProvider from "../../components/hook-form/FormProvider";
-import { Button, Stack } from "@mui/material";
 import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
-import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import FormProvider from "../../components/hook-form/FormProvider";
 import { showSnackbar } from "../../redux/slices/contact";
-import LoadingButton from "@mui/lab/LoadingButton";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
 const CreatePrivateForm = ({ handleClose }: any) => {
   const dispatch = useAppDispatch();
@@ -37,18 +37,27 @@ const CreatePrivateForm = ({ handleClose }: any) => {
   const { friends } = useAppSelector(state => state.app);
   const onSubmit = async (data: any) => {
     try {
+      await axios.post("http://localhost:3000/channels/create", data, {
+        withCredentials: true,
+      });
       dispatch(
         showSnackbar({
           severity: "success",
           message: "New Private Channel has Created",
         })
       );
-      // call api
-
+      handleClose();
       console.log("DATA", data);
     } catch (error) {
       console.log("error", error);
+      dispatch(
+        showSnackbar({
+          severity: "failed",
+          message: "Create Private Channel Failed",
+        })
+      );
       reset();
+      handleClose();
     }
   };
 

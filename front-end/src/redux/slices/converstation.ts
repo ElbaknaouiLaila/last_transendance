@@ -19,6 +19,7 @@ export const ConverstationSlice = createSlice({
   initialState,
   reducers: {
     fetchConverstations(state, action) {
+      console.log(action.payload.conversations);
       // ! get all converstation
       const list: any[] = action.payload.conversations
         .filter((el: any) => !(el.room_id === action.payload.user_id || el.user_id !== action.payload.user_id))
