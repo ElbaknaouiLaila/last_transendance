@@ -329,12 +329,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const userId: number = Number(client.handshake.query.user_id);
 
     const user = await this.UsersService.findById(userId);
+    console.log(data);
     if (user)
     {
-      const messages = await  this.ChatService.getAllMessages(data.room_id);
-      const room = `room_${data.room_id}`;
-      // console.log(`messages are ${messages}`);
-      client.emit('historyDms', messages); 
+      // // start old version
+      // const messages = await  this.ChatService.getAllMessages(data.room_id);
+      // const room = `room_${data.room_id}`;
+      // client.emit('historyDms', messages); 
+      // //end old version
+      // start new :
+      const existDm = await  this.ChatService.getDm(data.user_id, data.room_id);
+      if (existDm)
+      {
+        const messages = await  this.ChatService.getAllMessages(existDm.id_dm);
+        // const room = `room_${existDm.id_dm}`;
+        client.emit('historyDms', messages); 
+
+      }
 
       // this.server.to(room).emit('Response_messages_Dms', messages);
       // console.log("after sending");

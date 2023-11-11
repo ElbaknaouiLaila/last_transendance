@@ -106,6 +106,37 @@ let ChatService = class ChatService {
             console.error('there is no dms , error');
         }
     }
+    async getDm(idSend, idRecv) {
+        try {
+            const dm1 = await this.prisma.dm.findUnique({
+                where: {
+                    senderId_receiverId: {
+                        senderId: idSend,
+                        receiverId: idRecv,
+                    },
+                },
+            });
+            if (dm1) {
+                console.log(`get Dm1 |${dm1}|`);
+                return dm1;
+            }
+            const dm2 = await this.prisma.dm.findUnique({
+                where: {
+                    senderId_receiverId: {
+                        senderId: idRecv,
+                        receiverId: idSend,
+                    },
+                },
+            });
+            if (dm2) {
+                console.log(`get dm2 |${dm2}|`);
+                return dm2;
+            }
+        }
+        catch (error) {
+            console.error('we have no dm for those users', error);
+        }
+    }
     async getAllMessages(id) {
         try {
             const messages = await this.prisma.conversation.findMany({

@@ -179,7 +179,7 @@ export class ChannelsController {
 
 
 
-
+// all channels , that a user inside them .
   @Get('allChannels')
   // async getAllChannels(@Req() req, @Body() data: any)
 

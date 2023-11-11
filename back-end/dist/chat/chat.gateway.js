@@ -171,10 +171,13 @@ let ChatGateway = class ChatGateway {
         console.log("*************   allMessagesDm");
         const userId = Number(client.handshake.query.user_id);
         const user = await this.UsersService.findById(userId);
+        console.log(data);
         if (user) {
-            const messages = await this.ChatService.getAllMessages(data.room_id);
-            const room = `room_${data.room_id}`;
-            client.emit('historyDms', messages);
+            const existDm = await this.ChatService.getDm(data.user_id, data.room_id);
+            if (existDm) {
+                const messages = await this.ChatService.getAllMessages(existDm.id_dm);
+                client.emit('historyDms', messages);
+            }
         }
         else
             console.log("Error user does not exist");
