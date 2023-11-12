@@ -36,6 +36,7 @@ export declare class ChannelsController {
     } & {
         id_channel: number;
         name: string;
+        img: string;
         visibility: string;
         password: string;
     })[]>;
@@ -60,6 +61,7 @@ export declare class ChannelsController {
     } & {
         id_channel: number;
         name: string;
+        img: string;
         visibility: string;
         password: string;
     })[]>;

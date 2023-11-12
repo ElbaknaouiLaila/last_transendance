@@ -27,6 +27,7 @@ export declare class ChannelsService {
     } & {
         id_channel: number;
         name: string;
+        img: string;
         visibility: string;
         password: string;
     })[]>;
@@ -51,6 +52,7 @@ export declare class ChannelsService {
     } & {
         id_channel: number;
         name: string;
+        img: string;
         visibility: string;
         password: string;
     })[]>;
@@ -58,6 +60,7 @@ export declare class ChannelsService {
     getChannelByName(nameVar: string): Promise<{
         id_channel: number;
         name: string;
+        img: string;
         visibility: string;
         password: string;
     }>;
@@ -73,6 +76,7 @@ export declare class ChannelsService {
         channel: {
             id_channel: number;
             name: string;
+            img: string;
             visibility: string;
             password: string;
         };

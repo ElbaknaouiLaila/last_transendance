@@ -86,6 +86,7 @@ let ChatGateway = class ChatGateway {
         console.log(receiverId);
         const dm = await this.ChatService.checkDm(senderId, receiverId);
         console.log(`FROM gatways value of Dm is ${dm}`);
+        console.log(`^^^  SENDER IS ${senderId} REciver is ${receiverId}`);
         const insertDm = await this.ChatService.createMsg(senderId, receiverId, dm, message, "text");
         const data = {
             id: dm.id_dm,
@@ -93,6 +94,7 @@ let ChatGateway = class ChatGateway {
             send: senderId,
             recieve: receiverId
         };
+        console.log(`¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤`);
         this.server.to(room).emit('chatToDm', data);
         console.log("after sending");
     }

@@ -82,8 +82,10 @@ model Conversation{
   id Int @id @default(autoincrement())
   text String
   dateSent DateTime @default(now())
-  outgoing Boolean 
-  incoming Boolean 
+  // outgoing Boolean 
+  // incoming Boolean 
+  outgoing Int 
+  incoming Int 
   type String
   // senderId Int     
   // receiverId Int  
@@ -99,6 +101,7 @@ model Conversation{
 model Channel {
   id_channel  Int        @id @default(autoincrement())
   name        String     @unique
+  img         String?
   visibility  String
   password    String?
   users       MemberChannel[]

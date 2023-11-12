@@ -65,24 +65,16 @@ let ChatService = class ChatService {
                 pinned: false,
             },
         });
+        console.log("CHECK DM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   %%%%%%%%%%%%");
         console.log(`Result is ${result}`);
         return (result);
     }
     async createMsg(idSend, idRecv, dmVar, msg, typeMsg) {
-        let var1 = false;
-        let var2 = false;
-        console.log(`FRom create msg , ${dmVar}, ${dmVar.senderId}`);
-        if (dmVar.senderId === idSend) {
-            var1 = true;
-        }
-        else {
-            var2 = true;
-        }
         const result = await this.prisma.conversation.create({
             data: {
                 text: msg,
-                outgoing: var1,
-                incoming: var2,
+                outgoing: idSend,
+                incoming: idRecv,
                 type: typeMsg,
                 idDm: dmVar.id_dm,
             },

@@ -72,28 +72,36 @@ export class ChatService {
                 pinned:false,
             },
         })
+    console.log("CHECK DM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   %%%%%%%%%%%%");
     console.log(`Result is ${result}`);
     return (result);
     }
         // get all users in a specific channel :
         async createMsg(idSend:number, idRecv:number, dmVar: Dm, msg:string, typeMsg:string)
         {
-            let var1 = false;
-            let var2 = false;
-            console.log(`FRom create msg , ${dmVar}, ${dmVar.senderId}`)
-            if (dmVar.senderId === idSend)
-            {
-                var1 = true;
-            }
-            else
-            {
-                var2 = true;
-            }
+          
+        //  let var1 = idSend;
+        //  let var2 = idSend;
+        //   console.log(`FRom create msg , ${dmVar}, ${dmVar.senderId}`)
+        //     if (dmVar.senderId === idSend)
+        //     {
+        //       console.log("9999999999999999999999999");
+        //       var1 = idSend;
+        //       // var2 = idRecv;
+        //     }
+        //     // else
+        //     // {
+        //     //   // console.log("ELLLLLLLLLLLLLLLLLLLLLLLLLLLSE");
+        //     //   var1 = idSend;
+        //     //   var2 = idRecv;
+        //     // }
+            // console.log(`OUTPUT VARS VAR1 IS ${var1} and var2 is ${var2}`);
+            // console.log(`OUTPUT VARS send IS ${idSend} and reciev is ${idRecv}`);
             const result = await this.prisma.conversation.create({
                 data: {
                 text: msg,
-                outgoing:var1,
-                incoming:var2,
+                outgoing:idSend,
+                incoming:idRecv,
                 type:typeMsg,
                 idDm:dmVar.id_dm,
             },
