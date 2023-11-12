@@ -30,7 +30,9 @@ interface JoinPublicFormData {
 
 const JoinPublicForm = ({ handleClose }: any) => {
   const dispatch = useAppDispatch();
-  const { publicChannels } = useAppSelector(state => state.channels);
+  const { publicChannels, channels } = useAppSelector(state => state.channels);
+  console.log(channels);
+  console.log(publicChannels);
 
   const schema = Yup.object().shape({
     mySelect: Yup.object().shape({
@@ -58,10 +60,16 @@ const JoinPublicForm = ({ handleClose }: any) => {
       // Access the selected option value and label from the form data
       // const selectedValue = data.mySelect.name;
       // const selectedLabel = data.mySelect.label;
+      const sendData = {
+        id_channel: data.mySelect.id_channel,
+        name: data.mySelect.name,
+        visibility: data.mySelect.visibility,
+        password: data.mySelect?.password,
+      };
       console.log("DATA", data.mySelect);
       axios.post(
         "http://localhost:3000/channels/join",
-        { data: data.mySelect },
+        { sendData },
         { withCredentials: true }
       );
       // Call API with form data, including the selected channel value and label
@@ -119,28 +127,32 @@ const JoinPublicForm = ({ handleClose }: any) => {
             fullWidth
             required
           >
-            {publicChannels.map(
-              (option: any) => (
-                // console.log(option),
-                (
-                  <MenuItem key={option.id_channel} value={option.name}>
-                    <Stack
-                      direction={"row"}
-                      alignItems={"center"}
-                      justifyContent={"space-around"}
-                    >
-                      <Avatar
-                        src={faker.image.avatar()}
-                        sx={{ width: 52, height: 52, marginRight: 2 }}
-                      />
-                      <Typography variant="subtitle2" color={"black"}>
-                        {option.name}
-                      </Typography>
-                    </Stack>
-                  </MenuItem>
-                )
+            {publicChannels
+              .filter(
+                publicChannel =>
+                  !channels.some(
+                    channel => channel.channel_id === publicChannel?.id_channel
+                  )
               )
-            )}
+              .map((option: any) => (
+                //  .filter((el: any) => !(el.id_channel === channels || el.user_id !== action.payload.user_id))
+                // console.log(option),
+                <MenuItem key={option.id_channel} value={option.name}>
+                  <Stack
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"space-around"}
+                  >
+                    <Avatar
+                      src={faker.image.avatar()}
+                      sx={{ width: 52, height: 52, marginRight: 2 }}
+                    />
+                    <Typography variant="subtitle2" color={"black"}>
+                      {option.name}
+                    </Typography>
+                  </Stack>
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
 

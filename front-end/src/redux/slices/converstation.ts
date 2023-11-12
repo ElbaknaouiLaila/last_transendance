@@ -91,7 +91,7 @@ export const ConverstationSlice = createSlice({
     ,
     addNewConversation(state, action) {
       // ~ adding new conversation
-      console.log(action.payload);
+      // console.log(action.payload);
       const new_conversation = action.payload;
       state.direct_chat.conversations.push(new_conversation);
     },

@@ -34,7 +34,9 @@ interface JoinProtectedFormData {
 }
 
 const JoinProtectedForm = ({ handleClose }: any) => {
-  const { protectedChannels } = useAppSelector(state => state.channels);
+  const { protectedChannels, channels } = useAppSelector(
+    state => state.channels
+  );
 
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = React.useState(false);
@@ -75,9 +77,15 @@ const JoinProtectedForm = ({ handleClose }: any) => {
   const onSubmit = async (data: JoinProtectedFormData) => {
     try {
       console.log("DATA", data);
+      const sendData = {
+        id_channel: data.mySelect.id_channel,
+        name: data.mySelect.name,
+        visibility: data.mySelect.visibility,
+        password: data.password,
+      };
       axios.post(
         "http://localhost:3000/channels/join",
-        { data },
+        { sendData },
         { withCredentials: true }
       );
       dispatch(
@@ -133,23 +141,31 @@ const JoinProtectedForm = ({ handleClose }: any) => {
             fullWidth
             required
           >
-            {protectedChannels.map((option: any) => (
-              <MenuItem key={option.id_channel} value={option.name}>
-                <Stack
-                  direction={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-around"}
-                >
-                  <Avatar
-                    src={faker.image.avatar()}
-                    sx={{ width: 52, height: 52, marginRight: 2 }}
-                  />
-                  <Typography variant="subtitle2" color={"black"}>
-                    {option.name}
-                  </Typography>
-                </Stack>
-              </MenuItem>
-            ))}
+            {protectedChannels
+              .filter(
+                protectedChannel =>
+                  !channels.some(
+                    channel =>
+                      channel.channel_id === protectedChannel?.id_channel
+                  )
+              )
+              .map((option: any) => (
+                <MenuItem key={option.id_channel} value={option.name}>
+                  <Stack
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"space-around"}
+                  >
+                    <Avatar
+                      src={faker.image.avatar()}
+                      sx={{ width: 52, height: 52, marginRight: 2 }}
+                    />
+                    <Typography variant="subtitle2" color={"black"}>
+                      {option.name}
+                    </Typography>
+                  </Stack>
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
         <FormControl fullWidth>

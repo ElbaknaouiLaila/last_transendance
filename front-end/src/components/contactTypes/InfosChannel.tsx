@@ -6,6 +6,7 @@ import {
   Dialog,
   Divider,
   IconButton,
+  Popover,
   Slide,
   Stack,
   Typography,
@@ -13,6 +14,7 @@ import {
 import { TransitionProps } from "@mui/material/transitions";
 import {
   CaretRight,
+  PencilSimple,
   Prohibit,
   SpeakerSimpleX,
   Star,
@@ -24,6 +26,7 @@ import { toggleDialog, updatedContactInfo } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
 import { BlockDialog, DeleteDialog, MuteDialog } from "../dialogs/Dialogs";
+import MembersSettings from "./MembersSettings";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -35,11 +38,37 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const InfosChannel = () => {
+  const currentInfos = useRef<any>(null);
   const dispatch = useAppDispatch();
-  const { contact } = useAppSelector(store => store);
+  const { contact, channels } = useAppSelector(store => store);
   console.log(contact);
 
+  console.log(channels.publicChannels);
+  if (contact.type_chat === "public") {
+    console.log("public");
+    const channel = channels.publicChannels.find(
+      channel => channel?.id_channel === contact.room_id
+    );
+    console.log(channel);
+    currentInfos.current = channel;
+    // contact.name = channel?.name;
+  } else if (contact.type_chat === "protected") {
+    console.log("protected");
+    const channel = channels.protectedChannels.find(
+      channel => channel?.id_channel === contact.room_id
+    );
+    currentInfos.current = channel;
 
+    // contact.name = channel?.name;
+  } else if (contact.type_chat === "private") {
+    console.log("private");
+    const channel = channels.privateChannels.find(
+      channel => channel?.id_channel === contact.room_id
+    );
+    currentInfos.current = channel;
+
+    // contact.name = channel?.name;
+  }
   const [openBlock, setOpenBlock] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [openMute, setOpenMute] = useState(false);
@@ -54,6 +83,17 @@ const InfosChannel = () => {
   const handleCloseMute = () => {
     setOpenMute(false);
   };
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
 
   return (
     <Dialog
@@ -69,7 +109,7 @@ const InfosChannel = () => {
       // aria-describedby="alert-dialog-slide-description"
     >
       <Typography sx={{ m: "0 8px", p: 2 }} variant="h6">
-        Contact info
+        Channel info
       </Typography>
       {/* <DialogTitle sx={{ m: "0 8px", p: 2 }} >Contact info</DialogTitle> */}
       <IconButton
@@ -91,117 +131,76 @@ const InfosChannel = () => {
         sx={{
           height: "100%",
           position: "relative",
-          flexGrow: 1,
-          overflowY: "scroll",
+          // flexGrow: 1,
+          // overflowY: "auto",
         }}
         p={3}
         spacing={3}
       >
         {/* adding image in and username */}
         <Stack alignItems={"center"} direction={"column"} spacing={2}>
-          <Avatar
-            alt={faker.person.firstName()}
-            src={faker.image.avatar()}
-            sx={{ width: 200, height: 200 }}
-          />
+          {/* ****************************************** */}
+          {/* TODO ===> NEED TO MAKE THIS CORRECT */}
+          <Stack>
+            <Avatar
+              alt={contact.name}
+              src={currentInfos.current?.image}
+              sx={{ width: 200, height: 200 }}
+              onMouseEnter={handlePopoverOpen}
+              onMouseLeave={handlePopoverClose}
+            />
+            <Popover
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handlePopoverClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+            >
+              <IconButton onClick={() => console.log("Edit clicked")}>
+                <PencilSimple size={32} weight="bold" />
+              </IconButton>
+              <Typography>Edit Avatar</Typography>
+            </Popover>
+          </Stack>
           {/* name */}
           <Stack direction={"column"} alignItems={"center"}>
-            <Typography variant="h3" color={"#322554"} sx={{ padding: 0 }}>
-              {faker.person.firstName()}
+            <Typography variant="h4" color={"#322554"} sx={{ padding: 0 }}>
+              {currentInfos.current?.name}
+            </Typography>
+            <Typography variant="h6" color={"#322554"} sx={{ padding: 0 }}>
+              {currentInfos.current?.users.length} members
             </Typography>
           </Stack>
         </Stack>
-        {/* media */}
-        <Stack alignItems={"center"} direction={"column"} spacing={1}>
-          <Box
-            sx={{
-              width: 580,
-              height: "100%",
-              padding: "25px",
-              margin: 0,
-              borderRadius: "35px",
-              backgroundColor: "#EADDFF",
-            }}
-          >
-            <Stack
-              alignItems={"center"}
-              direction={"row"}
-              justifyContent={"space-between"}
-            >
-              <Typography variant="subtitle1">Media</Typography>
-              <Button
-                onClick={() => {
-                  dispatch(updatedContactInfo("SHARED"));
-                }}
-                endIcon={<CaretRight />}
-              >
-                {/* {console.log(contact)} */}
-                401
-              </Button>
-            </Stack>
-            <Stack alignItems={"center"} direction={"row"} spacing={2}>
-              {[1, 2, 3].map(() => (
-                <Box
-                  sx={{
-                    borderRadius: "5px",
-                  }}
-                >
-                  <img
-                    src={faker.image.url()}
-                    alt={faker.person.fullName()}
-                    style={{ borderRadius: "15px" }}
-                  />
-                </Box>
-              ))}
-            </Stack>
-          </Box>
-        </Stack>
+        {/* ****************************************** */}
+
         <Divider />
-        {/* Starred messages */}
-        <Stack
-          alignItems={"center"}
-          direction={"row"}
-          justifyContent={"space-between"}
-        >
-          <Stack alignItems={"center"} direction={"row"} spacing={2}>
-            <Star />
-            <Typography variant="subtitle1">Starred Messages</Typography>
-          </Stack>
-          <IconButton
-            onClick={() => {
-              dispatch(updatedContactInfo("STARRED"));
-            }}
-          >
-            <CaretRight />
-          </IconButton>
-        </Stack>
         {/* statics */}
-        <Stack direction={"row"} alignItems={"center"}>
+        <Stack direction={"column"} alignItems={"center"}>
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
               justifyContent: "space-evenly",
               width: 580,
-              padding: "55px 0",
-              margin: "10px",
+              // height: 385,
+              padding: "25px 0",
+              // margin: "10px",
               borderRadius: "35px",
               backgroundColor: "#EADDFF",
             }}
           >
-            <Stack direction={"column"} alignItems={"center"}>
-              <Typography variant="h3">Games</Typography>
-              <Typography variant="h3">150</Typography>
-            </Stack>
-            <Divider orientation="vertical" variant="middle" flexItem />
-            <Stack direction={"column"} alignItems={"center"}>
-              <Typography variant="h3">Wins</Typography>
-              <Typography variant="h3">150</Typography>
-            </Stack>
-            <Divider orientation="vertical" variant="middle" flexItem />
-            <Stack direction={"column"} alignItems={"center"}>
-              <Typography variant="h3">Loses</Typography>
-              <Typography variant="h3">150</Typography>
+            {/* make an array */}
+            <Stack spacing={1}>
+              {currentInfos.current?.users.map((member: any) => (
+                <MembersSettings el={member} />
+              ))}
             </Stack>
           </Box>
         </Stack>

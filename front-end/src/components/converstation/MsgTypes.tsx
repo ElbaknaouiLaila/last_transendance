@@ -170,6 +170,7 @@ const MediaMsg = ({ el }: any) => {
 };
 
 const TextMsg = ({ el }: any) => {
+  console.log(el);
   return (
     // <>{console.log(el)}</>
     <Stack direction={"row"} justifyContent={el.incoming ? "start" : "end"}>
