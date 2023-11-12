@@ -106,15 +106,17 @@ code {
   .remove-arrow {
     -moz-appearance: textfield;
   }
+
   .show-div {
     opacity: 1;
     transition: opacity 0.5s ease; /* Adjust the transition duration as needed */
   }
-  
+
   .hide-div {
     opacity: 0;
     visibility: hidden;
   }
+
   .game-help-background {
     background-image: url('../src/img/astronaut_.png');
     background-size: cover; /* Adjust as needed */
@@ -124,14 +126,33 @@ code {
     opacity: 0.5; /* Adjust the opacity value as needed (0.0 to 1.0) */
     color: white; /* Text color for better contrast */
   }
+
   .bg-opacity-40 {
     opacity: 0.4;
   }
-  
+
   .text-opacity-100 {
     opacity: 1.0;
   }
+
+  .centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
   
+  .scoreboard {
+    background-color: #ffffff; /* Adjust the background color as needed */
+    border: 2px solid #000000; /* Adjust border styles as needed */
+    padding: 10px; /* Adjust padding as needed */
+    text-align: center;
+    width: 80%; /* Adjust the width of the scoreboard */
+    max-width: 400px; /* Adjust the maximum width as needed */
+    font-size: 24px; /* Adjust the font size as needed */
+    /* Add any other styles you want for the scoreboard */
+  } 
 }
 
 /* absolute w-auto p-2 m-2 min-w-max rounded-[10px] shadow-md text-white bg-gradient-to-tr from-[#fe764d59] via-[#2A2742] to-[#fe764d59] text-xs font-bold transition-all duration-100 origin-right */

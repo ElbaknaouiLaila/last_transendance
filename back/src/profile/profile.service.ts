@@ -1,6 +1,6 @@
 import { Injectable, Req, Body ,ForbiddenException} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtService } from 'src/jwt/jwtservice.service';
+import { JwtService } from '../auth/jwt/jwtservice.service';
 import { CreateUserDto } from './nameDto';
 import * as fs from 'fs';
 //import from vite.config.ts
@@ -8,7 +8,7 @@ import * as fs from 'fs';
 export class ProfileService {
     constructor(private prisma: PrismaService, private jwt:JwtService){}
 
-    async ModifyName(dat :any, req :any, res :any){
+    async ModifyName(dat :any, req :any, res :any): Promise<any>{
         // console.log('name : ' + dat.name);
         const Token = req.cookies['cookie'];
         const verifyToekn = this.jwt.verify(Token);
@@ -27,7 +27,8 @@ export class ProfileService {
 
         }catch(error){
             if (error.code == 'P2002')
-                res.status(400).json({error: 'name already exists'});
+                return ('P2002');
+                // res.status(400).json({error: 'name already exists'});
         }
     }
 
@@ -39,6 +40,7 @@ export class ProfileService {
         // console.log("filePath");
         console.log(photo.originalname);
         fs.writeFileSync(filePath, photo.buffer);
+
 
         try{
             await this.prisma.user.update({

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, Fragment , useEffect} from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { IoNotifications } from "react-icons/io5";
 import { name } from "../Data/Dataname";
@@ -10,7 +10,7 @@ import { da } from "@faker-js/faker";
 import Arcane from "../../img/Arcane.png";
 import ProfileCard from "./ProfileCard";
 import axios from "axios";
-import {socket} from "../../socket";
+import { socket } from "../../socket";
 import { set } from "react-hook-form";
 
 type User = {
@@ -30,41 +30,32 @@ function Searchbar() {
   const [AcceptFrienf , setAcceptFrienf] = useState<boolean>()
 
   const accepteFriend = (friend: any) => {
-	//friend.id_user
-	//AcceptFrienf = true
-	console.log("friend id");
-	console.log(friend);
-	console.log("status ");
-	console.log(true);
-	console.log(true);
-	// axios.post("http://localhost:3000/profile/gameinfos"	, {
-	//   homies: true,
-	//   invited: true,
-	//   homie_id: friend.id_user,
-	// }, {
-	//   withCredentials: true,
-	// })
-	// window.location.href = "http://localhost:5173/game";
-    // Update selectedFriend with the clicked friend's information
     console.log(friend);
-    axios.post("http://localhost:3000/auth/add-friends", {
-
-      id_user: friend.id_user,
-    }, {
-      withCredentials: true,
-    })  
-    .then((res) => {
-      console.log(res);
-      window.location.reload();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    axios
+      .post(
+        "http://localhost:3000/auth/add-friends",
+        {
+          id_user: friend.id_user,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        console.log("add friends fetch result ", res);
+        // window.location.reload();
+        if (socket) {
+          console.log("id_user ", friend.id_user);
+          socket.emit("newfriend", friend.id_user);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     // console.log(friend);
     // navigate(`/profileFriend/${friend.id}`);
-  }
+  };
   const [user, setUser] = useState<User[]>([]);
-  // const [Notification, setNotification] = useState<any[]>();
   const [Notification, setNotification] = useState<Array<any>>([]);
   useEffect(() => {
 
@@ -87,24 +78,48 @@ function Searchbar() {
     const fetchData = async () => {
       const { data } = await axios.get("http://localhost:3000/auth/get-user", {
         withCredentials: true,
-      })
-      const { data: data2 } = await axios.get("http://localhost:3000/profile/Notifications", {
-        withCredentials: true,
-      })
-      console.log("event notification 2222")
-      // console.log(data2);
-      setNotification(data2);
-      console.log("event notification 2222")
-      console.log(data);
-      if (data == false){
+      });
+      //protection of notificaton
+      const notif = await axios.get(
+        "http://localhost:3000/profile/Notifications",
+        {
+          withCredentials: true,
+        }
+        );
+        setNotification(notif.data);
+      // console.log("notif");
+      // console.log(notif.data);
+      console.log('data : ', data);
+      if (data == false) {
         window.location.href = "/login";
         console.log("false");
       }
 
       setUser(data);
+      if (socket) {
+        socket.on("notification", async () => {
+          // console.log("socket**************");
+          const { data } = await axios.get(
+            "http://localhost:3000/profile/Notifications",
+            {
+              withCredentials: true,
+            }
+          );
+          setNotification(data);
+        });
+        // console.log("socket**********");
+        // socket.on("notification", async () => {
+        //   const { data } = await axios.get("http://localhost:3000/profile/Notifications",{
+        //       withCredentials: true,
+        //   });
+        //     setNotification(data);
+        //     // console.log(data.obj);
+        //     // setNotification(data.obj);
+        //   });
+      }
     };
     fetchData();
-  }, []);
+  }, [Notification]);
   return (
     <header className="flex items-center justify-between p-4 space-x-2 ">
       <h1 className=" text-white text-3xl 2xl:text-4xl lg:ml-32 font-PalanquinDark font-bold">
@@ -148,25 +163,47 @@ function Searchbar() {
                 leaveTo="opacity-0 translate-y-1"
               >
                 <Popover.Panel className="absolute right-0 z-10 mt-28 w-80 -ml-72 text-white">
-                  <strong className=" flex justify-center text-xl -mt-14 mb-2">Notification</strong>
+                  <strong className=" flex justify-center text-xl -mt-14 mb-2">
+                    Notification
+                  </strong>
                   <div className="flex absolute bg-[#35324b] rounded-3xl w-full  shadow-2xl max-h-72 overflow-scroll resultContainer">
                     {/* this is the panel */}
+                    {/* if notification is empty */}
+                    {Notification.length == 0 && (
+                      <div className="flex justify-center items-center w-full h-full">
+                        <p className="mt-4 text-lg text-gray-400 ">
+                          No Notification yet ! <br />
+                        </p>
+                      </div>
+                    )}
                     <div className=" flex flex-col">
-                      {
-                      Notification.map((data) => {
+                      {Notification.map((data) => {
                         return (
                           <ul
                             key={data.id_user}
-                           role="list" className="p-6 divide-y divide-slate-200">
+                            role="list"
+                            className="p-6 divide-y divide-slate-200"
+                          >
                             <li className="flex py-4 first:pt-0 last:pb-0">
-                              <img className="h-10 w-10 rounded-full" src={data.avatar} alt="" />
+                              <img
+                                className="h-10 w-10 rounded-full"
+                                src={data?.avatar}
+                                alt=""
+                              />
                               <div className="ml-3 overflow-hidden">
-                                <p className="text-sm font-medium text-white">{data.name} </p>
+                                <p className="text-sm font-medium text-white">
+                                  {data?.name}{" "}
+                                </p>
                                 {/* <p className="text-sm text-slate-500 truncate">{data.email}</p> */}
-                                <div className="text-xs text-blue-200 dark:text-blue-200">a few moments ago</div>
+                                <div className="text-xs text-blue-200 dark:text-blue-200">
+                                  a few moments ago
+                                </div>
                               </div>
                               {/* Accepte button */}
-                              <button className="ml-auto bg-[#FE754D] hover:bg-[#ce502a] text-white font-bold  px-4 rounded-[20px]" onClick={() => accepteFriend(user)}>
+                              <button
+                                className="ml-auto bg-[#FE754D] hover:bg-[#ce502a] text-white font-bold  px-4 rounded-[20px]"
+                                onClick={() => accepteFriend(data)}
+                              >
                                 Accept
                               </button>
                             </li>
@@ -182,33 +219,44 @@ function Searchbar() {
               <TiGroup />
             </div> */}
               {/* </div> */}
-            <span className="absolute top-0 right-0 -mt-1 -mr-2">
-              <div className="flex items-center justify-center w-5 h-5 bg-[#FE754D] rounded-full text-xs text-white">
-                3
-              </div>
-            </span>
-
-            <span>
-            {user.map((data) => {
-              return (
-                <div
-                  key={data.id_user}
-                 className="flex items-center justify-start w-full h-5 bg-[#35324db2] rounded-[45px] p-4 py-8 font-PalanquinDark  text-xl text-white mr-16">
-                  {data.name}
+              <span className="absolute top-0 right-0 -mt-1 -mr-2">
+                <div className="flex items-center justify-center w-5 h-5 bg-[#FE754D] rounded-full text-xs text-white">
+                  {Notification.length}
                 </div>
-              );
-            })}
-            </span>
-            <div className="-ml-16 group">
-              <img
-                className="w-14 h-14 p-1 rounded-full ring-2 ring-[#FE754D] dark:ring-[#FE754D] "
-                src={Arcane}
-                alt="Bordered avatar"
-              />
-              <span className="profile-card group-hover:scale-100 ml-8 mt-5">
-                <ProfileCard />
               </span>
-            </div>
+
+              <span>
+                {user.map((data) => {
+                  return (
+                    <div
+                      key={data.id_user}
+                      className="flex items-center justify-start w-full h-5 bg-[#35324db2] rounded-[45px] p-4 py-8 font-PalanquinDark  text-xl text-white mr-16"
+                    >
+                      {data?.name}
+                    </div>
+                  );
+                })}
+              </span>
+              <div className="-ml-16 group">
+                {user.map((data) => {
+                  return (
+                    <img
+                      key={data.id_user}
+                      className="w-14 h-14 p-1 rounded-full ring-2 ring-[#FE754D] dark:ring-[#FE754D] "
+                      src={data?.avatar}
+                      alt="Bordered avatar"
+                    />
+                  );
+                })}
+                {/* // <img
+              //   className="w-14 h-14 p-1 rounded-full ring-2 ring-[#FE754D] dark:ring-[#FE754D] "
+              //   src={Arcane}
+              //   alt="Bordered avatar"
+              // /> */}
+                <span className="profile-card group-hover:scale-100 ml-8 mt-5">
+                  <ProfileCard />
+                </span>
+              </div>
             </>
           )}
         </Popover>

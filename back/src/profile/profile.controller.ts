@@ -10,7 +10,7 @@ import { ProfileService } from './profile.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateUserDto } from './nameDto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtService } from 'src/jwt/jwtservice.service';
+import { JwtService } from '../auth/jwt/jwtservice.service';
 
 @Controller('profile')
 export class ProfileController {
@@ -18,15 +18,18 @@ export class ProfileController {
 
 	
     @Post('modify-name')
-    Name_Modification(@Body() data: CreateUserDto, @Req() req:any, @Res() res:any)
+    async Name_Modification(@Body() data: CreateUserDto, @Req() req:any, @Res() res:any)
     {
-      this.Profile.ModifyName(data, req, res);
+      const value = await this.Profile.ModifyName(data, req, res);
       // console.log(data);
       // res.send('in profile modification route');
       // return `Received data: ${JSON.stringify(data)}`;
       // res.send('name well changed');
       // console.log('wssalt hna');
-      res.status(200).json({msg: "name well setted"});
+      if (value == 'P2002')
+        res.status(400).json({error: 'name already exists'});
+      else
+        res.status(200).json({msg: "name well setted"});
       return({msg: 'i am in the pofile controller now'});
     }
 
@@ -36,7 +39,7 @@ export class ProfileController {
 
       // console.log(data.photo);
       this.Profile.ModifyPhoto(photo, req, res);
-      console.log(photo);
+      // console.log(photo);
       // res.status(200).json({msg: 'photo well setted'});
       // const filePath = 'uploads/' + photo.originalname; // Use the original name or generate a unique name
       // fs.writeFileSync(filePath, photo.buffer);
@@ -46,8 +49,8 @@ export class ProfileController {
 	@Post('About')
     async About_me(@Body() data:any, @Req() req, @Res() res){
 
-      console.log('about well setted');
-      console.log(data);
+      // console.log('about well setted');
+      // console.log(data);
       const payload = this.jwt.verify(req.cookies['cookie']);
       const ab :string = data.About;
       await this.prisma.user.update({
@@ -58,14 +61,14 @@ export class ProfileController {
       });
     }
 
-    @Get('About')
-    async Get_About(@Req() req, @Res() res) {
-      
-      const user = await this.Profile.About_me(req, res);
-      console.log(user.About);
-      return (user.About);
-      
-    }
+  @Get('About')
+  async Get_About(@Req() req, @Res() res) {
+    
+    const user = await this.Profile.About_me(req, res);
+    console.log(user.About);
+    return (user.About);
+    
+  }
 	
 	@Post('Bot-Pong')
 	async VsBoot(@Req() req:any, @Body() body){
@@ -73,20 +76,24 @@ export class ProfileController {
 		const decoded = this.jwt.verify(req.cookies['cookie']);
 		const user = await this.prisma.user.findUnique({where: {id_user: decoded.id}});
     let gameP:number = user.games_played + 1;
-    let gameW:number = user.wins;
-    let gameL:number = user.losses;
+    let gameW:number = user.WonBot;
+    let gameL:number = user.LoseBot;
+    let avatar:string = user.avatar;
+    let name:string = user.name;
     console.log('game_played: ' +user.games_played);
-	if (body.won){
+		if (body.won){
       gameW++;
 			await this.prisma.user.update({
 				where : {id_user: decoded.id},
 					data :{
-						wins: gameW,
+						WonBot: gameW,
 						games_played: gameP,
 						history:{
 							create:{
 								winner: true,
+                username: name,
 								userscore: body.userScore,
+                useravatar: avatar,
 								enemyId: 9,
 								enemyscore: body.botScore,
 							},
@@ -99,12 +106,14 @@ export class ProfileController {
 			await this.prisma.user.update({
 				where : {id_user: decoded.id},
 					data :{
-						losses: gameL,
+						LoseBot: gameL,
 						games_played: gameP,
 						history:{
 							create:{
 								winner: false,
+                username: name,
 								userscore: body.userScore,
+                useravatar: avatar,
 								enemyId: 9,
 								enemyscore: body.botScore,
 							},
@@ -112,6 +121,19 @@ export class ProfileController {
 					},
 			})
 		}
+    if (gameW == 1){
+      await this.prisma.user.update({
+        where : {id_user: decoded.id},
+          data :{
+            achievments:{
+              create:{
+                achieve: "won Bot",
+                msg: "Wliti Bot",
+              }
+            }
+          },
+      })
+    }
 	}
 
   @Get('NotFriends')
@@ -136,7 +158,9 @@ export class ProfileController {
 
   @Get('Notifications')
   async GetNotifications(@Req() req){
+    // console.log('hnoooooooo');
     const decoded = this.jwt.verify(req.cookies['cookie']);
+    // console.log('notification : ', decoded);
     const user = await this.prisma.user.findUnique({
       where: {id_user: decoded.id},
       include:{
@@ -144,7 +168,47 @@ export class ProfileController {
       },
     });
     // console.log(user.notification);
+    if (user.notification == null)
+      return ([]);
     return (user.notification);
+  }
+
+  @Get('TopThree')
+  async TopThree(@Req() req){
+    const topUsers = await this.prisma.user.findMany({
+      orderBy: [
+      {
+        Wins_percent: 'desc',
+      }],
+      take: 3,
+    });    
+    return (topUsers);
+  }
+
+
+  @Get('Achievments')
+  async Achievments(@Req() req){
+
+    const decoded = this.jwt.verify(req.cookies['cookie']);
+
+    const userAchievements = await this.prisma.achievments.findMany({
+      where: {
+        userId: decoded.id,
+      },
+    });
+
+    return (userAchievements);
+  }
+
+  @Get('History')
+  async History(@Req() req){
+    
+    const decoded = this.jwt.verify(req.cookies['cookie']);
+    const user = await this.prisma.history.findMany({
+      where: {userId: decoded.id},
+    });
+
+    return (user);
   }
 
   @Get('avatar')

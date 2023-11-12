@@ -32,6 +32,12 @@ type User = {
   secretKey: string | null;
   About: string;
   status_user: string;
+  wins:number;
+  losses:number;
+  games_played:number;
+  Progress:number;
+  Wins_percent:number;
+  Losses_percent:number;
 };
 function MaincontentSetting() {
   const [twoFactor, setTwoFactor] = useState<User[]>([]);
@@ -200,7 +206,8 @@ function MaincontentSetting() {
             message: "Name updated successfully",
           })
         );
-
+        //clear input name
+        setName("");
         console.log("Name updated successfully");
       } catch (error) {
         dispatch(
@@ -209,6 +216,7 @@ function MaincontentSetting() {
             message: "Name updated failed",
           })
         );
+        setName("");
         console.error("Error:", error);
       }
     }
@@ -361,7 +369,7 @@ function MaincontentSetting() {
                         <div className=" flex flex-row justify-center items-center">
                           <div className="flex flex-col items-center font-semibold mr-4">
                             <div className=" text-xl text-white font-bold font-PalanquinDark">
-                              {/* {data.GamesPlayed} */}121
+                             {data.games_played}
                             </div>
                             <div className="text-sm text-[#A3AED0]">
                               Games Played
@@ -371,7 +379,7 @@ function MaincontentSetting() {
 
                           <div className="flex flex-col items-center font-semibold mx-4 ">
                             <div className=" text-xl text-white font-bold font-PalanquinDark">
-                              {/* {data.Win} */}132 %
+                              {data.Wins_percent} %
                             </div>
                             <div className="text-sm text-[#A3AED0]">Win</div>
                           </div>
@@ -379,7 +387,7 @@ function MaincontentSetting() {
 
                           <div className="flex flex-col items-center font-semibold mx-4">
                             <div className=" text-xl text-white font-bold font-PalanquinDark">
-                              {/* {data.Loss} */}12 %
+                              {data.Losses_percent} %
                             </div>
                             <div className="text-sm text-[#A3AED0]">Loss</div>
                           </div>
@@ -444,7 +452,7 @@ function MaincontentSetting() {
                     Help
                   </div>
                   <div className="h-full tablet:min-w-[40vh] lg-laptop:min-w-[16vw] lg-laptop:min-h-[30vh]  bg-gradient-to-tr from-[#3F3B5B] via-[#2a2742af] to-[#454069c7] shadow-2xl  p-8 rounded-[46px]">
-                    <p className="leading-relaxed mb-6 text-[#A3AED0]">
+                    <div className="leading-relaxed mb-6 text-[#A3AED0]">
                       <div
                        className="relative justify-center bg-cover"
                        style={{
@@ -492,7 +500,7 @@ function MaincontentSetting() {
                         </p>
                         </div>
                       </div>
-                    </p>
+                    </div>
                   </div>
                 </motion.div>
                 <motion.div

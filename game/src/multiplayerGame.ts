@@ -20,6 +20,7 @@ class MyMultiplayerGame {
 	onlineBtn!: HTMLButtonElement;
 	socket!: Socket;
 	right!: boolean;
+	userId!: number;
 	avatars!: HTMLElement;
 	exitBtn!: HTMLButtonElement;
 
@@ -132,6 +133,10 @@ class MyMultiplayerGame {
 	}
 
 	initSocketListeners(): void {
+		this.socket.on("user-id", (num: number) => {
+			this.userId = num;
+		});
+
 		this.socket.on("player-number", (num: number) => {
 			console.log(`You are player : ${num}`);
 			this.playerNumber = num;

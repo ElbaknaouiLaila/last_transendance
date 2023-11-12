@@ -21,11 +21,17 @@ model User{
   About String?
   status_user String?
   stat Stat?
-  history History[]
-  notification Notification[]
+  WonBot Int?
+  LoseBot Int?
   wins Int?
   losses Int?
   games_played Int?
+  Progress Int?
+  Wins_percent Int?
+  Losses_percent Int?
+  achievments Achievments[]
+  history History[]
+  notification Notification[]
   homies Boolean?
   invited Boolean?
   homie_id Int?
@@ -33,6 +39,14 @@ model User{
   freind Freind[]
   dms Dm[]
   channels MemberChannel[]
+}
+
+model Achievments{
+  id Int @id @default(autoincrement())
+  achieve String?
+  msg String?
+  userId Int
+  user User @relation (fields: [userId], references: [id_user])
 }
 
 model Notification {
@@ -60,9 +74,13 @@ model Stat {
 model History{
   winner Boolean?
   id_history Int @id @default(autoincrement())
+  useravatar String?
+  username String?
   userId Int
   userscore Int?
   enemyId Int?
+  enemyname String?
+  enemyavatar String?
   enemyscore Int?
   user User @relation (fields: [userId], references: [id_user])
 }
