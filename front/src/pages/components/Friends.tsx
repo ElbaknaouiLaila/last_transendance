@@ -15,7 +15,11 @@ import FriendCard from "./FriendCard";
 import DefaultCard from "./DefaultCard";
 import { Card } from "antd";
 import { useAppSelector } from "../../redux/store/store";
+<<<<<<< HEAD
 import { fa } from "@faker-js/faker";
+=======
+import { CgSpinner } from "react-icons/cg";
+>>>>>>> font&back
 type User = {
   id_user: number;
   name: string;
@@ -25,11 +29,16 @@ type User = {
   status_user: string;
   About:string;
 };
+<<<<<<< HEAD
 type AccountOwnerProps = {
 	user: User[];
   };
 function Friends({user}:AccountOwnerProps) {
 
+=======
+function Friends() {
+  const [loding, setLoding] = useState<boolean>(false);
+>>>>>>> font&back
   const {friends} = useAppSelector((state) => state.app);
   console.log("friends");
   console.log(friends);
@@ -58,6 +67,7 @@ function Friends({user}:AccountOwnerProps) {
     // Update selectedFriend with the clicked friend's information
     setSelectedFriend(friend);
     console.log(friend);
+    setLoding(true);
     // navigate(`/profileFriend/${friend.id}`);
   };
   // useEffect(() => {
@@ -147,15 +157,28 @@ function Friends({user}:AccountOwnerProps) {
                         <p className="text-sm font-medium text-white">
                           {data.name}
                         </p>
-                        <div className="text-xs text-blue-200 dark:text-blue-200">
+                        {/* <div className="text-xs text-blue-200 dark:text-blue-200">
                           a few moments ago
-                        </div>
+                        </div> */}
                       </div>
 
                       <button
+<<<<<<< HEAD
                         className="ml-auto  bg-[#868686] hover:bg-[#616060] text-white font-bold  px-7 rounded-[15px]"
                         onClick={() => InviteToPlaye(data , user)}
+=======
+                        className="flex items-center ml-auto  bg-[#868686] hover:bg-[#616060] text-white font-bold  px-7 rounded-[15px]"
+                        onClick={() => InviteToPlaye(data)}
+>>>>>>> font&back
                       >
+                        {
+                          loding && (
+                            <div className="flex justify-center ">
+                              <CgSpinner className=" animate-spin" size={20} />
+                              {/* <div className="w-6 h-6 border-t-2 border-white rounded-full animate-spin"></div> */}
+                            </div>
+                          )
+                        }
                         invite to playe
                       </button>
                     </li>

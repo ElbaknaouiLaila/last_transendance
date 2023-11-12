@@ -14,9 +14,9 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 
   private SocketContainer = new Map();
 
-	decodeCookie(client: any) {
+	decodeCookie(client: Socket) {
 		let cookieHeader;
-    // console.log(client);
+
 		cookieHeader = client.handshake.headers.cookie;
 		const cookies = cookieHeader.split(";").reduce((acc, cookie) => {
 			const [name, value] = cookie.trim().split("=");
@@ -25,15 +25,11 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 		}, {});
 
 		const specificCookie = cookies["cookie"];
-    // console.log(specificCookie);
+    console.log(specificCookie);
 		const decoded = this.jwt.verify(specificCookie);
 
 		return decoded;
 	}
-
-  afterInit(server: Server) {
-  
-  }
 
   @UseGuards(JwtAuthGuard)
   async handleConnection(client: Socket) {

@@ -200,23 +200,11 @@ function Searchbar() {
             })}
             </span>
             <div className="-ml-16 group">
-              {
-                user.map((data) => {
-                  return (
-                    <img
-                      key={data.id_user}
-                      className="w-14 h-14 p-1 rounded-full ring-2 ring-[#FE754D] dark:ring-[#FE754D] "
-                      src={data.avatar}
-                      alt="Bordered avatar"
-                    />
-                  );
-                })
-              }
-              {/* // <img
-              //   className="w-14 h-14 p-1 rounded-full ring-2 ring-[#FE754D] dark:ring-[#FE754D] "
-              //   src={Arcane}
-              //   alt="Bordered avatar"
-              // /> */}
+              <img
+                className="w-14 h-14 p-1 rounded-full ring-2 ring-[#FE754D] dark:ring-[#FE754D] "
+                src={Arcane}
+                alt="Bordered avatar"
+              />
               <span className="profile-card group-hover:scale-100 ml-8 mt-5">
                 <ProfileCard />
               </span>
