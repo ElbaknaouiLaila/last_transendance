@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import axios from "axios";
 
 interface Option {
   name: string;
@@ -85,23 +86,7 @@ const JoinProtectedForm = ({ handleClose }: any) => {
           message: `You Join to ${data.mySelect.name} successfully`,
         })
       );
-      // if (data.mySelect.password === data.password) {
-      //   dispatch(
-      //     showSnackbar({
-      //       severity: "success",
-      //       message: `You Join to ${data.mySelect.value} successfully`,
-      //     })
-      //   );
-      //   // Call API or perform action here
-      //   console.log("DATA", data);
-      // } else {
-      //   dispatch(
-      //     showSnackbar({
-      //       severity: "warning",
-      //       message: "Password is incorrect. Please try again.",
-      //     })
-      //   );
-      // }
+      handleClose();
     } catch (error) {
       console.log("error", error);
       dispatch(
