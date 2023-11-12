@@ -20,12 +20,17 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Otpinput from "../../components/Otpinput";
 import TwoFactor from "../../components/TwoFactor";
 import { CgSpinner } from "react-icons/cg";
+import astronaut from "../../img/astronaut_.png";
+import { url } from "inspector";
+import {socket, socketuser} from '../../socket'
+
 type User = {
   id_user: number;
   name: string;
   avatar: string;
   TwoFactor: boolean;
   secretKey: string | null;
+  About: string;
   status_user: string;
 };
 function MaincontentSetting() {
@@ -35,6 +40,9 @@ function MaincontentSetting() {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   useEffect(() => {
+    if (socket == undefined){
+      socketuser();
+    }
     const fetchData = async () => {
       const { data } = await axios.get("http://localhost:3000/auth/get-user", {
         withCredentials: true,
@@ -142,7 +150,14 @@ function MaincontentSetting() {
         withCredentials: true,
       });
 
-      console.log("Name updated successfully");
+      if (response.status === 200) {
+        console.log("Name updated successfully");
+        // Update your UI with the new name if needed.
+      } else if (response.status === 400) {
+        console.error("Name already exists. Handle this error appropriately.");
+        // Update your UI to display an error message to the user if needed.
+      }
+      // console.log("Name updated successfully");
       // Update your UI with the new name if needed.
     } catch (error) {
       console.error("Error:", error);
@@ -166,6 +181,19 @@ function MaincontentSetting() {
         const responseName = await axios.post(backendURLName, dataName, {
           withCredentials: true,
         });
+        // .catch((error) => {
+        //   if (error.response) {
+        //     // The request was made and the server responded with a status code
+        //     console.error("Server responded with status code:", error.response.status);
+        //     console.error("Server response data:", error.response.data);
+        //   } else if (error.request) {
+        //     // The request was made but no response was received
+        //     console.error("No response received from the server");
+        //   } else {
+        //     // Something happened in setting up the request
+        //     console.error("Error setting up the request:", error.message);
+        //   }
+        // })
         dispatch(
           showSnackbar({
             severity: "success",
@@ -194,8 +222,8 @@ function MaincontentSetting() {
         });
         dispatch(
           showSnackbar({
-            message: "Photo updated successfully",
             type: "success",
+            message: "Photo updated successfully",
           })
         );
         console.log("Photo updated successfully");
@@ -238,7 +266,7 @@ function MaincontentSetting() {
   };
   const [inputValue, setInputValue] = useState<string>("");
   const [loding, setLoding] = useState<boolean>(false);
-  
+
   function onVerify(user: User) {
     const backendURL = "http://localhost:3000/auth/verify-qrcode";
     const backURL = "http://localhost:3000/auth/TwoFactorAuth";
@@ -332,21 +360,25 @@ function MaincontentSetting() {
                       <div className=" justify-center hidden tablet:block items-center mb-3 text-sm px-4 md:w-80 bg-transparent rounded-3xl p-4">
                         <div className=" flex flex-row justify-center items-center">
                           <div className="flex flex-col items-center font-semibold mr-4">
-                            <div className=" text-xl text-white font-bold">
+                            <div className=" text-xl text-white font-bold font-PalanquinDark">
                               {/* {data.GamesPlayed} */}121
                             </div>
                             <div className="text-sm text-[#A3AED0]">
                               Games Played
                             </div>
                           </div>
-                          <div className="flex flex-col items-center font-semibold mr-4">
-                            <div className=" text-xl text-white font-bold">
+              <div className="w-px h-10 bg-[#A3AED0] rotate-180 transform origin-center"></div>
+
+                          <div className="flex flex-col items-center font-semibold mx-4 ">
+                            <div className=" text-xl text-white font-bold font-PalanquinDark">
                               {/* {data.Win} */}132 %
                             </div>
                             <div className="text-sm text-[#A3AED0]">Win</div>
                           </div>
-                          <div className="flex flex-col items-center font-semibold">
-                            <div className=" text-xl text-white font-bold">
+              <div className="w-px h-10 bg-[#A3AED0] rotate-180 transform origin-center"></div>
+
+                          <div className="flex flex-col items-center font-semibold mx-4">
+                            <div className=" text-xl text-white font-bold font-PalanquinDark">
                               {/* {data.Loss} */}12 %
                             </div>
                             <div className="text-sm text-[#A3AED0]">Loss</div>
@@ -411,12 +443,55 @@ function MaincontentSetting() {
                   <div className=" flex justify-center text-white text-xl tablet:text-4xl font-PalanquinDark mb-10 ml-10">
                     Help
                   </div>
-                  <div className="h-full tablet:min-w-[40vh] lg-laptop:min-w-[20vh] bg-gradient-to-tr from-[#3F3B5B] via-[#2a2742af] to-[#454069c7] shadow-2xl  p-8 rounded-[46px]">
+                  <div className="h-full tablet:min-w-[40vh] lg-laptop:min-w-[16vw] lg-laptop:min-h-[30vh]  bg-gradient-to-tr from-[#3F3B5B] via-[#2a2742af] to-[#454069c7] shadow-2xl  p-8 rounded-[46px]">
                     <p className="leading-relaxed mb-6 text-[#A3AED0]">
-                      Synth chartreuse iPhone lomo cray raw denim brunch
-                      everyday carry neutra before they sold out fixie 90's
-                      microdosing. Tacos pinterest fanny pack venmo, post-ironic
-                      heirloom try-hard pabst authentic iceland.
+                      <div
+                       className="relative justify-center bg-cover"
+                       style={{
+                         backgroundImage: `url(${astronaut})`,
+                         backgroundSize: "80% 100%",
+                        backgroundRepeat: "no-repeat",
+                          backgroundPosition: "center",
+                          // opacity: "0.4",
+                       }}
+                       >
+                        <div className="">
+                        <h2 className="text-center text-white  font-PalanquinDark">How to Play ft_transcendence</h2>
+                        <p>
+                          Welcome to Ping Pong Game, a real-time online pong
+                          contest. Here's a quick guide on how to play the game:
+                        </p>
+
+                        <h3 className="text-center text-white  font-PalanquinDark">Objective</h3>
+                        <p>
+                          Your goal is to score points by hitting the ball past
+                          your opponent's paddle while defending your own goal.
+                        </p>
+
+                        <h3 className="text-center text-white  font-PalanquinDark">Controls</h3>
+                        <p>Use the following controls to play the game:</p>
+                        <ul>
+                          <li>
+                            <strong>Player 1:</strong> W (Move Up) and S (Move
+                            Down)
+                          </li>
+                          <li>
+                            <strong>Player 2:</strong> Up Arrow (Move Up) and
+                            Down Arrow (Move Down)
+                          </li>
+                        </ul>
+                        <h3 className="text-center text-white  font-PalanquinDark">Chat</h3>
+                        <p>
+                          Feel free to use the real-time chat to communicate
+                          with other players during the game.
+                        </p>
+
+                        <p>
+                          Now that you know the basics, get out there and enjoy
+                          a game!
+                        </p>
+                        </div>
+                      </div>
                     </p>
                   </div>
                 </motion.div>

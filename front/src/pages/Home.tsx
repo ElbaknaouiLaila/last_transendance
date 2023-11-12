@@ -18,13 +18,13 @@ import ProfileCardUser from "./components/ProfileCardUser";
 import Login from "../components/Login";
 import NotFoundPage from "./NotFoundPage";
 let pathn: string;
+
 function Home() {
 	const location = useLocation();
 	pathn = location.pathname;
   const match = location.pathname.match(/\/profileFriend\/(\d+)/);
   console.log("match");
   const extractedPath = match && match[0];
-
   console.log(match);
   const showSidebarPaths = ["/home", "/profile", "/messages", "/friends", "/game", "/setting", extractedPath];
   const showSidebar = showSidebarPaths.includes(location.pathname);

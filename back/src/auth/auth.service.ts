@@ -41,6 +41,7 @@ export class AuthService {
                     TwoFactor : false,
                     status_user: "online",
                     IsFirstTime: true,
+					InGame: false,
                 },
             });
             return obj;

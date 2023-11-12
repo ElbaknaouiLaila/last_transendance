@@ -8,6 +8,8 @@ import { fadeIn } from "./variants";
 import bages from "../../img/bdg.png";
 import ProfileCardUser from "./ProfileCardUser";
 import axios from "axios";
+import AboutMe from "./AboutMe";
+import {socket} from "../../socket";
 // import '../../../';
 type User = {
   id_user: number;
@@ -15,6 +17,7 @@ type User = {
   avatar: string;
   TwoFactor: boolean;
   secretKey: string | null;
+  About:string;
   status_user: string;
 };
 function MaincontentProfile() {
@@ -88,7 +91,7 @@ function MaincontentProfile() {
               <div className="  w-full px-4  mt-5">
                 <div className=" flex justify-center items-center mb-8 w-full">
                   <div className="bg-light relative flex h-9 w-full  max-w-7xl  rounded-2xl bg-slate-300">
-                    <div className="bg-[#ce502ad3] absolute top-0 left-0 flex h-full w-[90%] items-center justify-center rounded-2xl text-xs font-semibold text-white">
+                    <div className="bg-[#ce502ad3] absolute top-0 left-0 flex font-PalanquinDark h-full w-[90%] items-center justify-center rounded-2xl text-lg font-semibold text-white">
                       90%
                     </div>
                   </div>
@@ -121,7 +124,14 @@ function MaincontentProfile() {
                   </div>
                   {/* <div className="flex w-full max-w-2xl h-72 px-4 md:px-12 rounded-[46px]  mx-auto"> */}
                     <p className=" text-white  flex justify-center px-3 max-w-[400px] bg-black/20 rounded-2xl shadow-2xl mt-8 font-Bad_Script mx-2 text-2xl text-center p-4 overflow-hidden">
-                    Create a Container Element: First, you need to create a container element 
+                    {
+                      user.map((item) => (
+                       <p className="whitespace-pre-line"
+                       key={item.id_user}
+                       > {item.About}</p>
+                      ))
+                    }
+                    {/* Create a Container Element: First, you need to create a container element  */}
                       {/* <div className="flex flex-row -ml-20 -mr-11 mt-5 ">
                           <Achievements />
                         </div> */}

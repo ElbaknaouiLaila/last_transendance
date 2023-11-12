@@ -12,7 +12,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { topData } from "../Data/TopStreamerData";
 import { Popover, Transition } from "@headlessui/react";
-import { Modal } from "antd"
+import { useAppSelector } from "../../redux/store/store";
+import { Modal } from "antd";
+import { socket } from "../../socket";
 import {
   Card,
   CardHeader,
@@ -31,6 +33,7 @@ import {
 } from "@material-tailwind/react";
 import { isBlock } from "typescript";
 import { Module } from "module";
+import { set } from "react-hook-form";
 
 type User = {
   id_user: number;
@@ -54,7 +57,7 @@ function FriendList() {
       date: string;
     }[]
   >([]);
-
+  const {friends} = useAppSelector((state) => state.app);
   const [friend, setFriend] = useState<User[]>([]);
   const [filteredUser, setFilteredUser] = useState<
     {
@@ -122,9 +125,13 @@ function FriendList() {
     setIsBlocked(true);
     // setBlockedUsers([...blockedUsers, id_user]);
   };
+  const [NotFriends, setNotFriends] = useState< User[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await axios.get("http://localhost:3000/auth/friends", { withCredentials: true });
+      const dataUser  = await axios.get("http://localhost:3000/profile/NotFriends", { withCredentials: true });
+      setNotFriends(dataUser.data);
+      console.log("dataNotFriends", dataUser.data);
       console.log("data");
       setFriend(data);
     };
@@ -135,9 +142,10 @@ function FriendList() {
   }, []);
 
   function AddMember(id_user: number) {
-    axios.post("http://localhost:3000/auth/add-friends", { id_user }, { withCredentials: true });
+    console.log("id_user---------->", id_user);
+    socket.emit("add-friend", { id_user });
+    // axios.post("http://localhost:3000/auth/add-friends", { id_user }, { withCredentials: true });
     // setFriend(friend.filter((user) => user.id_user !== id_user));
-    console.log("id_user", id_user);
     Modal.confirm({
       title: 'Are you sure, you want to add this friend?',
       okText: 'Yes',
@@ -150,7 +158,10 @@ function FriendList() {
     })
 
   }
-
+  // const handleProfileClick = (friend: number) => {
+  //   // Update selectedFriend with the clicked friend's information
+  //   navigate(`/profileFriend/${friend}`);
+  // };
   return (
     <motion.div
       // variants={fadeIn("down", 0.2)}
@@ -240,20 +251,19 @@ function FriendList() {
                   <Popover.Panel className="absolute right-0 z-10  w-80 -ml-40 text-white">
                   <div 
                   className=" flex flex-col  rounded-[30px] mt-3 bg-[#35324db2] hover:scale-100 ">
-                      {topData.map((data) => {
+                      {NotFriends.map((data) => {
                         return (
                           <ul
-                            key={data.id} 
+                            key={data?.id_user} 
                           role="list" className="p-6 divide-y divide-slate-200">
                             <li className="flex py-4 first:pt-0 last:pb-0">
-                              <img className="h-10 w-10 rounded-full" src={data.src} alt="" />
+                              <img className="h-10 w-10 rounded-full" src={data?.avatar} alt="" />
                               <div className="ml-3 overflow-hidden">
-                                <p className="text-sm font-medium text-white">{data.name} </p>
-                                <p className="text-sm text-slate-500 truncate">{data.email}</p>
+                                <p className="text-sm font-medium text-white">{data?.name} </p>
+                                {/* <p className="text-sm text-slate-500 truncate">{data.email}</p> */}
                                 <div className="text-xs text-blue-200 dark:text-blue-200">a few moments ago</div>
                               </div>
-                              
-                              <button className="ml-auto  bg-indigo-400 hover:bg-indigo-500 text-white font-bold  px-7 rounded-[20px]" onClick={() => AddMember(data.id)}>
+                              <button className="ml-auto  bg-indigo-400 hover:bg-indigo-500 text-white font-bold  px-7 rounded-[20px]" onClick={() => AddMember(data.id_user)}>
                                 Add
                               </button>
                             </li>
@@ -328,8 +338,10 @@ function FriendList() {
                   const animationDelay = index * 0.5;
 
                   const handleProfileClick = (friend: any) => {
+                    console.log("friend : ")
+                    console.log(friend.id_user);
                     // Update selectedFriend with the clicked friend's information
-                    navigate(`/profileFriend/${friend.id}`);
+                    navigate(`/profileFriend/${friend.id_user}`);
                   };
                   return (
                     // <div
@@ -342,7 +354,7 @@ function FriendList() {
                         whileInView={"show"}
                         viewport={{ once: false, amount: 0.7 }}
                         transition={{ duration: 2.3, delay: animationDelay }}
-                        className="flex bg-black/30 space-x-32 rounded-[27px] w-[70rem] my-2 p-4 justify-evenly items-center"
+                        className="flex bg-black/30 space-x-32 rounded-[27px] w-[70rem] my-2 p-4 ml-32 justify-evenly items-center"
                         
                       >
                         <td className={`${classes} flex`}>

@@ -22,6 +22,8 @@ import Table from "../../img/tableping.png";
 // import Friends from "./friends";
 import Friends from "./Friends";
 import { Key } from "@phosphor-icons/react";
+import {socket, socketuser} from '../../socket'
+
 type User = {
   id_user: number;
   name: string;
@@ -46,6 +48,9 @@ function Maincontent() {
   };
   const [user, setUser] = useState<User[]>([]);
   useEffect(() => {
+    if (socket == undefined){
+      socketuser();
+    }
     const fetchData = async () => {
       const { data } = await axios.get("http://localhost:3000/auth/get-user", {
         withCredentials: true,
@@ -57,7 +62,7 @@ function Maincontent() {
   
   return (
     <main className="overflow-scroll resultContainer flex flex-col w-full  overflow-x-hidden overflow-y-auto mb-14">
-      <div className="flex w-full mx-auto pr-6  ">
+      <div className="flex w-full mx-auto pr-6">
         <div className="flex flex-col w-full h-full text-gray-900 text-xl lg-laptop:mr-20">
           <div className="flex w-full h-full text-gray-900 text-xl space-x-0 lg-laptop:space-x-32 laptop:ml-3 flex-col lg-laptop:flex-row mt-0 2xl:mt-20">
             <motion.div
@@ -96,7 +101,7 @@ function Maincontent() {
               className="flex w-full lg-laptop:-mr-20 justify-between lg-laptop:h-[30rem] tablet:h-96 mobile:h-full p-12 mt-10 rounded-[46px] mx-auto bg-gradient-to-tr from-[#3F3B5B] via-[#2A2742] to-[#302c4bc7] shadow-2xl"
             >
               <div className="flex flex-col text-white">
-                <h1 className=" text-2xl tablet:text-[40px] mb-5 -ml-7 tablet:ml-1 laptop:-ml-0">
+                <h1 className=" text-2xl tablet:text-[45px] mb-5 -ml-7  font-bold tablet:ml-1 laptop:ml-10">
                   Top Streamer
                 </h1>
                 <div className="flex flex-row ">
@@ -155,12 +160,12 @@ function Maincontent() {
               </div>
               <div className=" bg-gradient-to-tr from-[#3F3B5B] via-[#2A2742] to-[#2A2742] lg:h-60 tablet:w-96 mobile:w-44 lg-laptop:w-[30rem]  h-56 lg-laptop:h-72 duration-500 group-hover:blur-sm hover:!blur-none group-hover:scale-[0.85] hover:!scale-100 cursor-pointer p-8 rounded-[46px] group-hover:mix-blend-luminosity hover:!mix-blend-normal shadow-2xl">
                 <img
-                  className="mx-auto lg-laptop:-mt-14 tablet:-mt-5 mobile:mb-8 tablet:mb-0 lg-laptop:mb-5"
+                  className="mx-auto lg-laptop:-mt-14 tablet:-mt-5 mobile:mb-8 tablet:mb-0 lg-laptop:mb-16"
                   src={Rakets}
                   alt=""
                 />
                 <h4 className="uppercase text-lg tablet:text-2xl font-bold mobile:text-center tablet:text-start text-white">
-                  Random palyer
+                  Random player
                 </h4>
               </div>
             </div>
@@ -192,7 +197,6 @@ function Maincontent() {
                     {"Use Google's location service?"}
                   </DialogTitle> */}
                 <DialogContent>
-                  <DialogContentText>
                     <div className="flex justify-center gap-5 ">
                       {user.map((data) => {
                         return (
@@ -269,16 +273,7 @@ function Maincontent() {
                       <button  className="bg-[#D75D3A] px-10 rounded-[35px] text-white text-[4rem]" onClick={handleClose} autoFocus>Play</button>
                       </DialogActions>
                     </div>
-                  </DialogContentText>
                 </DialogContent>
-                {/* <DialogActions>
-                  <Button autoFocus onClick={handleClose}>
-                    Disagree
-                  </Button>
-                  <Button onClick={handleClose} autoFocus>
-                    Agree
-                  </Button>
-                </DialogActions> */}
               </div>
             </Dialog>
           </motion.div>

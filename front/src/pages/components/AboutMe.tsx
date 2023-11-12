@@ -10,7 +10,15 @@ import { set } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { showSnackbar } from "../../redux/slices/contact";
 
-
+type User = {
+    id_user: number;
+    name: string;
+    avatar: string;
+    TwoFactor: boolean;
+    secretKey: string | null;
+    About:string;
+    status_user: string;
+  };
 function AboutMe() {
     const [inputText, setInputText] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -18,6 +26,11 @@ function AboutMe() {
     const emojiPickerRef = useRef<HTMLElement | null>(null);
     const dispatch = useAppDispatch();
     const handleSubmit = async (e: React.FormEvent) => {
+        axios.post("http://localhost:3000/profile/About", { About: inputText }, { withCredentials: true }).then((res) => {
+            console.log("res", res.data);
+            // setUser(res.data);
+        }
+        );
         e.preventDefault();
         try {
             dispatch(showSnackbar({ message: "Your post has been published", type: "success" }));
@@ -30,24 +43,37 @@ function AboutMe() {
             console.error('Error saving data:', error);
         }
     };
-
+    const [user, setUser] = useState<User[]>([]);
+    const [About, setAbout] = useState<HTMLTextAreaElement | null>(null);
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputText(e.target.value);
     };
 
     const inputRef = useRef<HTMLTextAreaElement | null>(null);
     const [value, setValue] = useState<string>('');
-
+    
     function handleEmojiClick(emoji: any) {
         const input = inputRef.current;
         console.log("emoji", emoji);
         setInputText(inputText + emoji.native);
         console.log("input", input);
-
+       
+        setAbout(input);
         // console.log("emoji", emoji);
         // setSelectedEmoji(emoji.native);
         // setShowEmojiPicker(false);
     }
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //       const backURL = "http://localhost:3000/profile/About";
+    //       console.log("About", About);
+    //       axios.post(backURL, About,{ withCredentials: true }).then((res) => {
+    //         console.log("res", res.data);
+    //         setUser(res.data);
+    //       }
+    //         );
+    //     }
+    //   }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -108,6 +134,7 @@ function AboutMe() {
                 </div>
                 <div className="px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
                     <label htmlFor="editor" className="sr-only">Publish post</label>
+                    {/* I love playing pong game! Always up for a challenging match. */}
                     <textarea
                         id="editor"
                         rows={8}
@@ -119,6 +146,7 @@ function AboutMe() {
                     ></textarea>
                 </div>
             </div>
+            
             <button type="submit" className="inline-flex m items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-gradient-to-br from-[#fe764dd3] to-[#ce502ad3] rounded-2xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800" onClick={handleSubmit}>
                 Publish post
             </button>

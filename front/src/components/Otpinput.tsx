@@ -5,8 +5,9 @@ import OtpInput from 'react-otp-input';
 import { constants } from "buffer";
 import { CgSpinner } from "react-icons/cg"
 import axios from "axios";
-
-
+import { Alert } from "@material-tailwind/react";
+import { useAppDispatch, useAppSelector } from "../redux/store/store";
+import { showSnackbar } from "../redux/slices/contact";
 // type Props ={
 //   value: string;
 //   valueLength: number;
@@ -114,7 +115,8 @@ const Otpinput: FC<Props> = (props): JSX.Element => {
   useEffect(() => {
     inputRef.current?.focus();
   }, [activeOTPIndex])
-  
+  // const [showAlert, setShowAlert] = useState(false);
+  const dispatch = useAppDispatch();
   function onVerify() {
     const backendURL = 'http://localhost:3000/auth/verify-qrcode';
     const data = { inputValue };
@@ -135,7 +137,15 @@ const Otpinput: FC<Props> = (props): JSX.Element => {
         }else{
           // message error with html code
           console.log("error");
-          alert("otp is not correct");
+          dispatch(
+            showSnackbar({
+              severity: "error",
+              message: "OTP is not correct",
+            })
+          );
+          // alert("otp is not correct");
+          // setShowAlert()
+          // <Alert className=" bg-[#ce502a]">otp is not correct.</Alert>
 
         }      
 

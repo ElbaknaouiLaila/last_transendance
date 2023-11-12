@@ -59,15 +59,32 @@ let AuthController = class AuthController {
     }
     async Insert_Friends(body, req) {
         const decoded = this.jwt.verify(req.cookies['cookie']);
+        console.log(body.id_user);
         const user = await this.prisma.user.update({
-            where: { id_user: 90240 },
+            where: { id_user: decoded.id },
             data: {
                 freind: {
                     create: {
                         name: body.name,
-                        id_freind: 98853,
+                        id_freind: body.id_user,
                     },
                 },
+            },
+        });
+        await this.prisma.user.update({
+            where: { id_user: body.id_user },
+            data: {
+                freind: {
+                    create: {
+                        name: body.name,
+                        id_freind: decoded.id,
+                    },
+                },
+            },
+        });
+        await this.prisma.notification.deleteMany({
+            where: {
+                AND: [{ userId: decoded.id }, { id_user: body.id_user }]
             },
         });
     }
@@ -81,6 +98,14 @@ let AuthController = class AuthController {
                     { id_freind: Body.id_user },
                 ]
             },
+        });
+        await this.prisma.freind.deleteMany({
+            where: {
+                AND: [
+                    { userId: Body.id_user },
+                    { id_freind: decoded.id },
+                ]
+            }
         });
     }
     async Block_friends(Body, req) {
@@ -150,6 +175,9 @@ let AuthController = class AuthController {
         const user = await this.prisma.user.findUnique({ where: { id_user: decoded.id }, });
         obj.push(user);
         return obj;
+    }
+    async Get_All_Users(req) {
+        const users = await this.prisma.user.findMany({});
     }
     async TwofactorAuth(body, req) {
         const decoded = this.jwt.verify(req.cookies['cookie']);
@@ -247,6 +275,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "Get_User", null);
+__decorate([
+    (0, common_1.Get)('get-all-users'),
+    (0, common_1.UseGuards)(JwtGuard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "Get_All_Users", null);
 __decorate([
     (0, common_1.Post)('TwoFactorAuth'),
     __param(0, (0, common_1.Body)()),

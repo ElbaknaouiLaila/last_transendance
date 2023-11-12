@@ -37,7 +37,7 @@ let ProfileService = class ProfileService {
     }
     async ModifyPhoto(photo, req, res) {
         const verifyToken = this.jwt.verify(req.cookies['cookie']);
-        const filePath = '/Volumes/TOSHIBA EXT/last_transcendence/front-end/public/uploads/' + photo.originalname;
+        const filePath = '/goinfre/moel-asr/last_transendance/front/public/uploads/' + photo.originalname;
         const rightPath = 'public/uploads/' + photo.originalname;
         console.log(photo.originalname);
         fs.writeFileSync(filePath, photo.buffer);
@@ -52,6 +52,13 @@ let ProfileService = class ProfileService {
         catch (error) {
             console.log(error);
         }
+    }
+    async About_me(req, res) {
+        const payload = this.jwt.verify(req.cookies['cookie']);
+        const user = await this.prisma.user.findUnique({
+            where: { id_user: payload.id },
+        });
+        return (user);
     }
 };
 exports.ProfileService = ProfileService;

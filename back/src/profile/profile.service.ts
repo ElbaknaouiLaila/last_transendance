@@ -34,7 +34,7 @@ export class ProfileService {
     async ModifyPhoto(photo:any, req:any, res:any) {
 
         const verifyToken = this.jwt.verify(req.cookies['cookie']);
-        const filePath = '/Volumes/TOSHIBA EXT/last_transcendence/front-end/public/uploads/' + photo.originalname; // Use the original name or generate a unique name
+        const filePath = '/goinfre/moel-asr/last_transendance/front/public/uploads/' + photo.originalname; // Use the original name or generate a unique name
         const rightPath = 'public/uploads/' + photo.originalname;//path to store in db
         // console.log("filePath");
         console.log(photo.originalname);
@@ -55,6 +55,13 @@ export class ProfileService {
             // if (error.code == 'P2002')
                 // res.status(400).json({error: 'name already exists'});
         }
+    }
+    async About_me(req, res) {
+        const payload = this.jwt.verify(req.cookies['cookie']);
+        const user = await this.prisma.user.findUnique({
+            where: { id_user: payload.id },
+        });
+        return (user);
     }
 }
 

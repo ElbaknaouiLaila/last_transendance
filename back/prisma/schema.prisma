@@ -16,10 +16,13 @@ model User{
   avatar String?
   TwoFactor Boolean?
   IsFirstTime Boolean?
+  InGame Boolean?
   secretKey String?
+  About String?
   status_user String?
   stat Stat?
   history History[]
+  notification Notification[]
   wins Int?
   losses Int?
   games_played Int?
@@ -27,6 +30,19 @@ model User{
   freind Freind[]
   dms Dm[]
   channels MemberChannel[]
+}
+
+model Notification {
+  id Int @id @default(autoincrement())
+  userId Int
+  AcceptFriend Boolean?
+  GameInvitation Boolean?
+  id_user Int?
+  email String?
+  avatar String?
+  name String?
+  createdAt DateTime @default(now())
+  user User @relation (fields: [userId], references: [id_user])
 }
 
 model Stat {

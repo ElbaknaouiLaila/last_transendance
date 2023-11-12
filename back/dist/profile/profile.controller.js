@@ -34,16 +34,38 @@ let ProfileController = class ProfileController {
         this.Profile.ModifyPhoto(photo, req, res);
         console.log(photo);
     }
+    async About_me(data, req, res) {
+        console.log('about well setted');
+        console.log(data);
+        const payload = this.jwt.verify(req.cookies['cookie']);
+        const ab = data.About;
+        await this.prisma.user.update({
+            where: { id_user: payload.id },
+            data: {
+                About: ab,
+            },
+        });
+    }
+    async Get_About(req, res) {
+        const user = await this.Profile.About_me(req, res);
+        console.log(user.About);
+        return (user.About);
+    }
     async VsBoot(req, body) {
         console.log(body);
         const decoded = this.jwt.verify(req.cookies['cookie']);
         const user = await this.prisma.user.findUnique({ where: { id_user: decoded.id } });
+        let gameP = user.games_played + 1;
+        let gameW = user.wins;
+        let gameL = user.losses;
+        console.log('game_played: ' + user.games_played);
         if (body.won) {
+            gameW++;
             await this.prisma.user.update({
                 where: { id_user: decoded.id },
                 data: {
-                    wins: user.wins++,
-                    games_played: user.games_played++,
+                    wins: gameW,
+                    games_played: gameP,
                     history: {
                         create: {
                             winner: true,
@@ -56,11 +78,12 @@ let ProfileController = class ProfileController {
             });
         }
         else {
+            gameL++;
             await this.prisma.user.update({
                 where: { id_user: decoded.id },
                 data: {
-                    losses: user.losses++,
-                    games_played: user.games_played++,
+                    losses: gameL,
+                    games_played: gameP,
                     history: {
                         create: {
                             winner: false,
@@ -72,6 +95,50 @@ let ProfileController = class ProfileController {
                 },
             });
         }
+    }
+    async NotFriendsUsers(req) {
+        const decoded = this.jwt.verify(req.cookies['cookie']);
+        const users = this.prisma.user.findMany({
+            where: {
+                NOT: {
+                    freind: {
+                        some: {
+                            id_freind: decoded.id,
+                        },
+                    },
+                },
+            },
+        });
+        const FinalUsers = (await users).filter((scope => { if (scope.id_user != decoded.id) {
+            return (scope);
+        } }));
+        return (FinalUsers);
+    }
+    async GetNotifications(req) {
+        const decoded = this.jwt.verify(req.cookies['cookie']);
+        const user = await this.prisma.user.findUnique({
+            where: { id_user: decoded.id },
+            include: {
+                notification: true,
+            },
+        });
+        return (user.notification);
+    }
+    async GetAvatar(req) {
+        const decoded = this.jwt.verify(req.cookies['cookie']);
+        const user = await this.prisma.user.findUnique({
+            where: { id_user: decoded.id },
+        });
+        return (user.avatar);
+    }
+    async Gamestatus(req, body) {
+        const decoded = this.jwt.verify(req.cookies['cookie']);
+        await this.prisma.user.update({
+            where: { id_user: decoded.id },
+            data: {
+                InGame: body.status,
+            },
+        });
     }
 };
 exports.ProfileController = ProfileController;
@@ -96,6 +163,23 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProfileController.prototype, "Photo__Modification", null);
 __decorate([
+    (0, common_1.Post)('About'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "About_me", null);
+__decorate([
+    (0, common_1.Get)('About'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "Get_About", null);
+__decorate([
     (0, common_1.Post)('Bot-Pong'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
@@ -103,6 +187,35 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "VsBoot", null);
+__decorate([
+    (0, common_1.Get)('NotFriends'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "NotFriendsUsers", null);
+__decorate([
+    (0, common_1.Get)('Notifications'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "GetNotifications", null);
+__decorate([
+    (0, common_1.Get)('avatar'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "GetAvatar", null);
+__decorate([
+    (0, common_1.Post)('Gamestatus'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "Gamestatus", null);
 exports.ProfileController = ProfileController = __decorate([
     (0, common_1.Controller)('profile'),
     __metadata("design:paramtypes", [profile_service_1.ProfileService, prisma_service_1.PrismaService, jwtservice_service_1.JwtService])

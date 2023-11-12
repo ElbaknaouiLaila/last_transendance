@@ -18,6 +18,9 @@ class MyMultiplayerGame {
 	drawGame!: DrawGame;
 	onlineBtn!: HTMLButtonElement;
 	socket!: Socket;
+	right!: boolean;
+	avatars!: HTMLElement;
+	exitBtn!: HTMLButtonElement;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -30,10 +33,13 @@ class MyMultiplayerGame {
 		this.playerNumber = 0;
 		this.roomID = "";
 		this.countdown = 3;
+		this.right = false;
 		this.message = document.getElementById("message") as HTMLElement;
 		this.buttons = document.querySelectorAll<HTMLButtonElement>(".btn");
 		this.drawGame = new DrawGame(this.canvas, this.ctx);
 		this.onlineBtn = document.getElementById("online-game") as HTMLButtonElement;
+		this.avatars = document.getElementById("avatars") as HTMLElement;
+		this.exitBtn = document.getElementById("exit-btn") as HTMLButtonElement;
 
 		this.onlineBtn.addEventListener("click", () => {
 			this.socket = io("http://localhost:3000", {
@@ -59,6 +65,7 @@ class MyMultiplayerGame {
 		for (const button of this.buttons) {
 			button.style.display = "none";
 		}
+		this.exitBtn.style.display = "block";
 
 		const interval = setInterval(() => {
 			if (this.socket.connected) {
@@ -80,6 +87,7 @@ class MyMultiplayerGame {
 	render(room: Room): void {
 		this.checkLocation();
 		if (room.winner) {
+			this.avatars.style.display = "none";
 			this.drawGame.drawRect(0, 0, this.canvasWidth, this.canvasHeight, "#B2C6E4");
 	
 			if (room.winner === this.playerNumber) {
@@ -94,6 +102,7 @@ class MyMultiplayerGame {
 			this.buttons[0].style.display = "block";
 			this.buttons[0].innerHTML = "Play Again";
 			this.buttons[1].style.display = "block";
+			this.buttons[2].style.display = "block";
 			this.onlineBtn.addEventListener("click", () => {
 				this.gameStarted = false;
 				this.playerNumber = 0;
@@ -117,9 +126,14 @@ class MyMultiplayerGame {
 		this.socket.on("player-number", (num: number) => {
 			console.log(`You are player : ${num}`);
 			this.playerNumber = num;
+			if (this.playerNumber == 2) {
+				this.right = true;
+			}
 		});
-		
+
 		this.socket.on("start-game", () => {
+			this.exitBtn.style.display = "none";
+			this.avatars.style.display = "flex";
 			console.log("Starting game.");
 			this.gameStarted = true;
 			setTimeout(() => {
