@@ -14,7 +14,11 @@ import {
   SpeakerSimpleSlash,
   UserMinus,
 } from "@phosphor-icons/react";
-import { mutedContact, selectConversation, updatedContactInfo } from "../redux/slices/contact";
+import {
+  mutedContact,
+  selectConversation,
+  updatedContactInfo,
+} from "../redux/slices/contact";
 import {
   emptyConverstation,
   setCurrentConverstation,
@@ -76,10 +80,12 @@ const ContactElements = (cont: any) => {
 
   useEffect(() => {
     const handleHistoryDms = (data: any) => {
+      // console.log(profile._id, contact.room_id);
+      console.log("history data", data);
       if (data === null) {
         dispatch(emptyConverstation([]));
       } else {
-        dispatch(setCurrentConverstation(data));
+        dispatch(setCurrentConverstation({ data, user_id: profile._id }));
       }
     };
 

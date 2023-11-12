@@ -60,13 +60,14 @@ export class ChannelsController {
   @Post('join')
   async join(@Req() req, @Body() data: any) {
 
+    // data that I need is name of channel and id user , and if its protected I need password.
     console.log("------ Starting Joining a Channel ");
-    console.log(data.name);
+    console.log(data);
     //to decode the req and get the id.
     const decode = this.jwt.verify(req.cookies['cookie']);
-    console.log(decode);
-    console.log(`id is ${decode.id}`);
-    console.log("*****************");
+    // console.log(decode);
+    // console.log(`id is ${decode.id}`);
+    // console.log("*****************");
     const user = await this.UsersService.findById(decode.id);
     const name = "Assila";
     const memberChannel = await this.channelsService.joinChannel(
@@ -168,6 +169,7 @@ export class ChannelsController {
   {
     return this.channelsService.getPublicChannels();
   }
+
   @Get('allProtected')
   async getProtectedChannels()
   {
@@ -178,7 +180,7 @@ export class ChannelsController {
 
 
 
-
+// all channels , that a user inside them .
   @Get('allChannels')
   // async getAllChannels(@Req() req, @Body() data: any)
 
@@ -186,7 +188,7 @@ export class ChannelsController {
   {
     console.log("all channels");
     const decode = this.jwt.verify(req.cookies['cookie']);
-    console.log("Reshe");
+    // console.log("Reshe");
     const user = await this.UsersService.findById(decode.id);
     // const user = await this.UsersService.findById(id);
 
@@ -194,10 +196,9 @@ export class ChannelsController {
     // console.log("Reshe   222");
 
     const myAllChannels = await this.channelsService.getAllChannels(user.id_user);
-    console.log("START LOOPING ");
+    // console.log("START LOOPING ");
     let message = "";
     let sent: Date | null = null;
-
     if(myAllChannels)
     {
         const arrayOfChannels = [];
@@ -227,14 +228,15 @@ export class ChannelsController {
             members: memebers,
             last_messages: message,
             time: sent,
-            unread: 0,
+            unread: true,
             channel_type: channels.channel.visibility,
           };
           arrayOfChannels.push(newCh);
         }
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        console.log(arrayOfChannels);
-        console.log("ENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNND");
+
+        // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        // console.log(arrayOfChannels);
+        // console.log("ENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNND");
         return arrayOfChannels;
     }
 }

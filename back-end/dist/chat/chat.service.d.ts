@@ -6,6 +6,7 @@ export declare class ChatService {
     findChannel(idch: number): Promise<{
         id_channel: number;
         name: string;
+        img: string;
         visibility: string;
         password: string;
     }>;
@@ -27,8 +28,8 @@ export declare class ChatService {
         id: number;
         text: string;
         dateSent: Date;
-        outgoing: boolean;
-        incoming: boolean;
+        outgoing: number;
+        incoming: number;
         type: string;
         idDm: number;
     }>;
@@ -50,8 +51,8 @@ export declare class ChatService {
         id: number;
         text: string;
         dateSent: Date;
-        outgoing: boolean;
-        incoming: boolean;
+        outgoing: number;
+        incoming: number;
         type: string;
         idDm: number;
     }[]>;
@@ -73,8 +74,8 @@ export declare class ChatService {
         id: number;
         text: string;
         dateSent: Date;
-        outgoing: boolean;
-        incoming: boolean;
+        outgoing: number;
+        incoming: number;
         type: string;
         idDm: number;
     }>;

@@ -98,20 +98,23 @@ export const ConverstationSlice = createSlice({
     setCurrentConverstation(state, action) {
       // ~ set current converstation
       console.log(action.payload);
+      const user_id = action.payload.user_id;
       state.direct_chat.current_conversation = action.payload;
-      const messages: any = action.payload;
+      const messages: any = action.payload.data;
       const formatted_messages = messages.map((el: any) => ({
         id: el.id,
         type: "msg",
         subtype: el.type,
         message: el.text,
-        incoming: el.incoming, // ! get user id from profile
-        outgoing: el.outgoing,
+        incoming: el.incoming === user_id, // ! get user id from profile
+        outgoing: el.outgoing === user_id, // ! get user id from profile
       }));
+      console.log(formatted_messages);
       state.direct_chat.current_messages = formatted_messages;
     },
     fetchCurrentMessages(state, action) {
       // ~ get all messages of current converstation
+      console.log(action.payload);
       const messages: any = action.payload;
       state.direct_chat.current_messages.push(messages);
     },

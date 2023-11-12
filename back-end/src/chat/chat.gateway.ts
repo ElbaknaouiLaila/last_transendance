@@ -146,6 +146,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       );
       console.log(`FROM gatways value of Dm is ${dm}`);
       // console.log(dm);
+      console.log(`^^^  SENDER IS ${senderId} REciver is ${receiverId}`);
       const insertDm = await this.ChatService.createMsg(
         senderId,
         receiverId,
@@ -160,6 +161,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         send: senderId, 
         recieve:receiverId
       };
+      console.log(`¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤`);
       this.server.to(room).emit('chatToDm', data);
       console.log("after sending");
       // process o database .

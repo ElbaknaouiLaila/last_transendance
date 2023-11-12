@@ -30,7 +30,7 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
       // Prevent the default behavior of "Enter" key in a textarea
       event.preventDefault();
       // console.log(linkify(value));
-      console.log(contact);
+      console.log(contact.room_id);
       console.log(profile._id);
       if (!value) return;
       socket.emit(
@@ -39,7 +39,6 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
           : "channel_message",
         {
           message: linkify(value),
-          subtype: "text",
           from: profile._id,
           to: contact.room_id,
         }

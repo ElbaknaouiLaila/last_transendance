@@ -27,25 +27,24 @@ const Converstation = () => {
       console.log(data);
       // Check if the received message is from the currently selected conversation
       // if (conversation.direct_chat.current_conversation.id === data.id) {.
-      console.log(contact.room_id, profile._id);
-      if (data.recieve === contact.room_id && data.send === profile._id) {
-        dispatch(
-          fetchCurrentMessages({
-            id: data.id,
-            type: "msg",
-            subtype: data.subtype,
-            message: data.message,
-            outgoing: data.send === profile._id,
-            incoming: data.recieve === profile._id,
-          })
-        );
-      }
+      console.log(contact.room_id);
+      // if (data.recieve === contact.room_id && data.send === profile._id) {
+      dispatch(
+        fetchCurrentMessages({
+          id: data.id,
+          type: "msg",
+          message: data.message,
+          outgoing: data.send === profile._id,
+          incoming: data.recieve === profile._id,
+        })
+      );
+      // }
       // }
     };
-    socket.once("chatToDm", handleChatToDm);
-    // return () => {
-    //   socket.off("chatToDm", handleChatToDm);
-    // };
+    socket.on("chatToDm", handleChatToDm);
+    return () => {
+      socket.off("chatToDm", handleChatToDm);
+    };
   }, [dispatch, profile._id, contact.room_id]);
 
   return (

@@ -17,8 +17,8 @@ export declare class ChatController {
         id: number;
         text: string;
         dateSent: Date;
-        outgoing: boolean;
-        incoming: boolean;
+        outgoing: number;
+        incoming: number;
         type: string;
         idDm: number;
     }[]>;
