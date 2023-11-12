@@ -19,5 +19,8 @@ export declare class ProfileService {
         wins: number;
         losses: number;
         games_played: number;
+        homies: boolean;
+        invited: boolean;
+        homie_id: number;
     }>;
 }

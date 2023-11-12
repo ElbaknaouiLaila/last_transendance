@@ -3,6 +3,7 @@ import { Room } from "./interfaces";
 import DrawGame from "./drawGame";
 import io, { Socket } from "socket.io-client";
 import { pathn } from "../../front/src/pages/Home";
+import axios from "axios";
 
 class MyMultiplayerGame {
     canvas: HTMLCanvasElement;
@@ -60,8 +61,11 @@ class MyMultiplayerGame {
 		}
 	};
 
-	startMultiplayerGame(): void {
+	async startMultiplayerGame(): Promise<void> {
 		let flag = false;
+		const data = await axios.get('http://localhost:3000/profile/returngameinfos',  { withCredentials: true });
+		console.log("dataaaaaaa");
+		console.log(data);
 		for (const button of this.buttons) {
 			button.style.display = "none";
 		}
@@ -75,7 +79,12 @@ class MyMultiplayerGame {
 				this.checkLocation();
 				this.message.innerHTML = "Waiting for opponent to join...";
 				if (flag === false) {
-					this.socket.emit("join-room");
+					if (data.data.homies) {
+						this.buttons[0].innerHTML = "Play With Your Homie";
+						this.socket.emit("join-friends-room", data.data.invited, data.data.homie_id);
+					} else {
+						this.socket.emit("join-room");
+					}
 					flag = true;
 				}
 			} else {

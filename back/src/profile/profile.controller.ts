@@ -169,4 +169,25 @@ export class ProfileController {
 
   }
 
+  @Post('gameinfos')
+  async gameinfos(@Req() req, @Body() body){
+	const decoded = this.jwt.verify(req.cookies['cookie']);
+	await this.prisma.user.update({
+		where:{id_user: decoded.id},
+		data:{
+			homies: body.homies,
+			invited: body.invited,
+			homie_id: body.homie_id,
+		},
+	});
+  }
+
+  @Get('returngameinfos')
+  async Returngameinfos(@Req() req){
+	const decoded = this.jwt.verify(req.cookies['cookie']);
+	const user = await this.prisma.user.findUnique({where:{id_user:decoded.id}});
+	const obj = {homies:user.homies, invited:user.invited, homie_id:user.homie_id};
+	return (obj); 
+  }
+
 }

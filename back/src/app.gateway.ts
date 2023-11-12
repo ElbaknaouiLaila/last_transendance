@@ -88,91 +88,91 @@ export class AppGateway
 		// console.log(this.users);
     }
 
-	// @SubscribeMessage("join-friends-room")
-    // async handleJoinFriendsRoom(client: Socket, friendId: number, invited: boolean) {
-    //     const userId: number = this.decodeCookie(client).id;
-	// 	if (!this.users.has(userId)) {
-	// 		this.users.set(userId, client.id);
-	// 		const decoded = this.decodeCookie(client);
-	// 		await this.prisma.user.update({
-	// 			where:{id_user:decoded.id},
-	// 			data:{
-	// 				InGame: true,
-	// 			}
-	// 		})
-	// 	}
-    //     let room: Room = null;
+	@SubscribeMessage("join-friends-room")
+    async handleJoinFriendsRoom(client: Socket, invited: boolean, friendId: number) {
+        const userId: number = this.decodeCookie(client).id;
+		if (!this.users.has(userId)) {
+			this.users.set(userId, client.id);
+			const decoded = this.decodeCookie(client);
+			await this.prisma.user.update({
+				where:{id_user:decoded.id},
+				data:{
+					InGame: true,
+				}
+			})
+		}
+        let room: Room = null;
 
-	// 	if (invited) {
-	// 		for (let singleRoom of this.rooms) {
-	// 			for (let player of singleRoom.roomPlayers) {
-	// 				let friend = this.decodeCookie(player.socket).id;
-	// 				if (friend === friendId) {
-	// 					room = singleRoom;
-	// 				}
-	// 			}
-	// 		}
-	// 	}
+		if (invited) {
+			for (let singleRoom of this.rooms) {
+				for (let player of singleRoom.roomPlayers) {
+					let friend = this.decodeCookie(player.socket).id;
+					if (friend === friendId) {
+						room = singleRoom;
+					}
+				}
+			}
+		}
 
-    //     if (room) {
-	// 		if (userId === friendId) {
-	// 			this.player01 = userId;
-	// 			client.join(room.id);
-	// 			client.emit("player-number", 2);
-	// 			room.roomPlayers.push({
-	// 				won: false,
-	// 				socket: client,
-	// 				socketId: client.id,
-	// 				playerNumber: 2,
-	// 				x: 1088 - 20,
-	// 				y: 644 / 2 - 100 / 2,
-	// 				h: 100,
-	// 				w: 6,
-	// 				score: 0,
-	// 			});
+        if (room) {
+			if (userId === friendId) {
+				this.player01 = userId;
+				client.join(room.id);
+				client.emit("player-number", 2);
+				room.roomPlayers.push({
+					won: false,
+					socket: client,
+					socketId: client.id,
+					playerNumber: 2,
+					x: 1088 - 20,
+					y: 644 / 2 - 100 / 2,
+					h: 100,
+					w: 6,
+					score: 0,
+				});
 	
-	// 			this.server.to(room.id).emit("start-game");
+				this.server.to(room.id).emit("start-game");
 	
-	// 			setTimeout(() => {
-	// 				this.server.to(room.id).emit("game-started", room);
-	// 				this.pauseGame(500);
-	// 				this.startRoomGame(room);
-	// 			}, 3100);
-	// 		}
-    //     } else {
-    //         this.player02 = userId;
-    //         room = {
-    //             gameAbondoned: false,
-    //             stopRendering: false,
-    //             winner: 0,
-    //             id: (this.rooms.length + 1).toString(),
-    //             roomPlayers: [
-    //                 {
-    //                     won: false,
-	// 					socket: client,
-    //                     socketId: client.id,
-    //                     playerNumber: 1,
-    //                     x: 10,
-    //                     y: 644 / 2 - 100 / 2,
-    //                     h: 100,
-    //                     w: 6,
-    //                     score: 0,
-    //                 },
-    //             ],
-    //             roomBall: {
-    //                 x: 1088 / 2,
-    //                 y: 644 / 2,
-    //                 r: 10,
-    //                 speed: 7,
-    //                 velocityX: 7,
-    //                 velocityY: 7,
-    //             },
-    //         };
-    //         this.rooms.push(room);
-    //         client.join(room.id);
-    //         client.emit("player-number", 1);
-    //     }
-    // }
+				setTimeout(() => {
+					this.server.to(room.id).emit("game-started", room);
+					this.pauseGame(500);
+					this.startRoomGame(room);
+				}, 3100);
+			}
+        } else {
+            this.player02 = userId;
+            room = {
+                gameAbondoned: false,
+                stopRendering: false,
+                winner: 0,
+                id: (this.rooms.length + 1).toString(),
+                roomPlayers: [
+                    {
+                        won: false,
+						socket: client,
+                        socketId: client.id,
+                        playerNumber: 1,
+                        x: 10,
+                        y: 644 / 2 - 100 / 2,
+                        h: 100,
+                        w: 6,
+                        score: 0,
+                    },
+                ],
+                roomBall: {
+                    x: 1088 / 2,
+                    y: 644 / 2,
+                    r: 10,
+                    speed: 7,
+                    velocityX: 7,
+                    velocityY: 7,
+                },
+            };
+            this.rooms.push(room);
+            client.join(room.id);
+            client.emit("player-number", 1);
+        }
+    }
 
     @SubscribeMessage("join-room")
     async handleJoinRoom(client: Socket) {

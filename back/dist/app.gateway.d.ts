@@ -19,6 +19,7 @@ export declare class AppGateway implements OnGatewayInit, OnGatewayConnection, O
     afterInit(server: Server): void;
     handleConnection(client: Socket, ...args: any[]): Promise<void>;
     handleDisconnect(client: Socket): Promise<void>;
+    handleJoinFriendsRoom(client: Socket, invited: boolean, friendId: number): Promise<void>;
     handleJoinRoom(client: Socket): Promise<void>;
     handleUpdatePlayer(client: Socket, data: Data): void;
     handleLeave(client: Socket, roomID: string): Promise<void>;

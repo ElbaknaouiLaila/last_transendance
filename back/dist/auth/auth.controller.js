@@ -159,6 +159,8 @@ let AuthController = class AuthController {
             }
         });
         const obj = friends.freind;
+        if (obj == null)
+            return ([]);
         const idFriends = obj.map((scope => scope.id_freind));
         let array = [];
         for (const num of idFriends) {

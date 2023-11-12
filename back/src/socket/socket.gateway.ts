@@ -89,6 +89,30 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   }
 
 
+  	@SubscribeMessage('invite-game')
+  	async invite_game(@ConnectedSocket() client: Socket ,@MessageBody() body){
+		const decoded = this.decodeCookie(client);
+
+		const data = await this.prisma.user.findUnique({where:{id_user:decoded.id}});
+		if (data.InGame == false){
+			const user = await this.prisma.user.update({
+				where:{id_user:body.id_user},
+				data:{
+					notification:{
+						create:{
+							AcceptFriend: false,
+							GameInvitation: true,
+							id_user: decoded.id,
+							avatar: data.avatar,
+							name: data.name,
+						}
+					}
+				}
+			});
+		}
+	}
+
+
   @SubscribeMessage('add-friend')
   async add_friend(@ConnectedSocket() client: Socket ,@MessageBody() body){
     const decoded = this.decodeCookie(client);

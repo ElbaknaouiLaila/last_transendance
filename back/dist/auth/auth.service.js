@@ -44,6 +44,14 @@ let AuthService = class AuthService {
                     status_user: "online",
                     IsFirstTime: true,
                     InGame: false,
+                    secretKey: null,
+                    About: null,
+                    wins: 0,
+                    losses: 0,
+                    games_played: 0,
+                    homies: false,
+                    invited: false,
+                    homie_id: 0,
                 },
             });
             return obj;

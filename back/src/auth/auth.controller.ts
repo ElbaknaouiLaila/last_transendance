@@ -111,7 +111,6 @@ export class AuthController {
           },
         },
       );
-
       await this.prisma.notification.deleteMany({
         where:{
           AND:[{userId: decoded.id}, {id_user: body.id_user}]},
@@ -231,6 +230,8 @@ export class AuthController {
         }
       });
       const obj = friends.freind;
+	  if (obj == null)
+	  	return ([]);
       const idFriends = obj.map((scope => scope.id_freind));
 
       let array: any[] = [];

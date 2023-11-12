@@ -17,8 +17,8 @@ type User = {
   avatar: string;
   TwoFactor: boolean;
   secretKey: string | null;
-  About:string;
   status_user: string;
+  About:string;
 };
 function MaincontentProfile() {
   const [toggle, setToggle] = useState(false);

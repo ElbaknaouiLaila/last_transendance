@@ -27,7 +27,24 @@ function Searchbar() {
   //     if(e)
   // }
   //function accepte friend
+  const [AcceptFrienf , setAcceptFrienf] = useState<boolean>()
+
   const accepteFriend = (friend: any) => {
+	//friend.id_user
+	//AcceptFrienf = true
+	console.log("friend id");
+	console.log(friend);
+	console.log("status ");
+	console.log(true);
+	console.log(true);
+	// axios.post("http://localhost:3000/profile/gameinfos"	, {
+	//   homies: true,
+	//   invited: true,
+	//   homie_id: friend.id_user,
+	// }, {
+	//   withCredentials: true,
+	// })
+	// window.location.href = "http://localhost:5173/game";
     // Update selectedFriend with the clicked friend's information
     console.log(friend);
     axios.post("http://localhost:3000/auth/add-friends", {
@@ -149,7 +166,7 @@ function Searchbar() {
                                 <div className="text-xs text-blue-200 dark:text-blue-200">a few moments ago</div>
                               </div>
                               {/* Accepte button */}
-                              <button className="ml-auto bg-[#FE754D] hover:bg-[#ce502a] text-white font-bold  px-4 rounded-[20px]" onClick={() => accepteFriend(data)}>
+                              <button className="ml-auto bg-[#FE754D] hover:bg-[#ce502a] text-white font-bold  px-4 rounded-[20px]" onClick={() => accepteFriend(user)}>
                                 Accept
                               </button>
                             </li>

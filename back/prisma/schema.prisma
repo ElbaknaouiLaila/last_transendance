@@ -26,6 +26,9 @@ model User{
   wins Int?
   losses Int?
   games_played Int?
+  homies Boolean?
+  invited Boolean?
+  homie_id Int?
   blockedUser BlockedUser[]
   freind Freind[]
   dms Dm[]

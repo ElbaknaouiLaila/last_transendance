@@ -27,6 +27,9 @@ export declare class ProfileController {
         wins: number;
         losses: number;
         games_played: number;
+        homies: boolean;
+        invited: boolean;
+        homie_id: number;
     }[]>;
     GetNotifications(req: any): Promise<{
         id: number;
@@ -41,4 +44,10 @@ export declare class ProfileController {
     }[]>;
     GetAvatar(req: any): Promise<string>;
     Gamestatus(req: any, body: any): Promise<void>;
+    gameinfos(req: any, body: any): Promise<void>;
+    Returngameinfos(req: any): Promise<{
+        homies: boolean;
+        invited: boolean;
+        homie_id: number;
+    }>;
 }

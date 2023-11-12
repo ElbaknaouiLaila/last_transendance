@@ -15,6 +15,7 @@ import FriendCard from "./FriendCard";
 import DefaultCard from "./DefaultCard";
 import { Card } from "antd";
 import { useAppSelector } from "../../redux/store/store";
+import { fa } from "@faker-js/faker";
 type User = {
   id_user: number;
   name: string;
@@ -22,14 +23,38 @@ type User = {
   TwoFactor: boolean;
   secretKey: string | null;
   status_user: string;
+  About:string;
 };
-function Friends() {
+type AccountOwnerProps = {
+	user: User[];
+  };
+function Friends({user}:AccountOwnerProps) {
+
   const {friends} = useAppSelector((state) => state.app);
   console.log("friends");
   console.log(friends);
   // const [friends, setFriends] = useState<User[]>([]);
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
-  const InviteToPlaye = (friend: User) => {
+  const [accountOwner , setaccountOwner] = useState<boolean>();
+  const InviteToPlaye =  (friend: User) => {
+	  //friend.id_user
+	  //accountOwner = false
+	  //get returngameinfos from backend
+	   axios.post("http://localhost:3000/profile/gameinfos", {
+		homies: true,
+		invited: false,
+		homie_id: user[0].id_user,
+	  }, {
+		withCredentials: true,
+	  })
+	  window.location.href = "http://localhost:5173/game";
+	  setaccountOwner(false);
+	console.log("accountOwner id");
+	console.log(user[0].id_user);
+	console.log("status ");
+	console.log(false);
+	console.log(true);
+
     // Update selectedFriend with the clicked friend's information
     setSelectedFriend(friend);
     console.log(friend);
@@ -129,7 +154,7 @@ function Friends() {
 
                       <button
                         className="ml-auto  bg-[#868686] hover:bg-[#616060] text-white font-bold  px-7 rounded-[15px]"
-                        onClick={() => InviteToPlaye(data)}
+                        onClick={() => InviteToPlaye(data , user)}
                       >
                         invite to playe
                       </button>

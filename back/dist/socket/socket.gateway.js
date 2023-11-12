@@ -71,6 +71,26 @@ let SocketGateway = class SocketGateway {
         console.log(body);
         return 'Hello world!';
     }
+    async invite_game(client, body) {
+        const decoded = this.decodeCookie(client);
+        const data = await this.prisma.user.findUnique({ where: { id_user: decoded.id } });
+        if (data.InGame == false) {
+            const user = await this.prisma.user.update({
+                where: { id_user: body.id_user },
+                data: {
+                    notification: {
+                        create: {
+                            AcceptFriend: false,
+                            GameInvitation: true,
+                            id_user: decoded.id,
+                            avatar: data.avatar,
+                            name: data.name,
+                        }
+                    }
+                }
+            });
+        }
+    }
     async add_friend(client, body) {
         const decoded = this.decodeCookie(client);
         const data = await this.prisma.user.findUnique({ where: { id_user: decoded.id } });
@@ -128,6 +148,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", String)
 ], SocketGateway.prototype, "handleMessage", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('invite-game'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", Promise)
+], SocketGateway.prototype, "invite_game", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('add-friend'),
     __param(0, (0, websockets_1.ConnectedSocket)()),
