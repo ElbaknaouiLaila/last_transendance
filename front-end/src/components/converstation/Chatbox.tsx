@@ -30,8 +30,8 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
       // Prevent the default behavior of "Enter" key in a textarea
       event.preventDefault();
       // console.log(linkify(value));
-      console.log(contact.room_id);
-      console.log(profile._id);
+      // console.log(contact.room_id);
+      // console.log(profile._id);
       if (!value) return;
       socket.emit(
         contact.type_chat === "individual"
@@ -78,11 +78,11 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
                   size={32}
                   color="#C7BBD1"
                   onClick={() => {
-                    console.log(contact.room_id);
-                    console.log(profile._id);
+                    // console.log(contact.room_id);
+                    // console.log(profile._id);
                     if (!linkify(value)) return;
                     const _id = parseInt(contact.room_id.toString());
-                    console.log(contact.type_chat);
+                    // console.log(contact.type_chat);
                     socket.emit(
                       contact.type_chat === "individual"
                         ? "direct_message"

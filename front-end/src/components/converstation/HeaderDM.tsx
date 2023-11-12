@@ -21,7 +21,6 @@ import {
     const handleCloseInvite = () => {
       setOpenInvite(false);
     };
-    console.log(contact);
     return (
       <Box
         sx={{
@@ -50,8 +49,7 @@ import {
                 <IconButton>
                   <Avatar
                     onClick={() => {
-                      console.log(contact);
-                      // console.log('this where it should show contact infos');
+                      // console.log(contact);
                       dispatch(toggleDialog());
                     }}
                     alt={contact.name}

@@ -1,6 +1,6 @@
-import { Box, Button, ButtonProps, Divider, Stack } from "@mui/material";
+import { Box, Button, ButtonProps, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ArchiveBox, MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import ChatElements from "../../components/ChatElements";
 import {
@@ -77,36 +77,6 @@ const Privates = () => {
         </Stack>
 
         <Stack padding={"10px 35px 20px"} spacing={2}>
-          <Stack
-            direction={"row"}
-            alignContent={"center"}
-            spacing={3}
-            color="#709CE6"
-            margin={"auto"}
-            display={"block"}
-          >
-            <ColorButton
-              startIcon={<ArchiveBox size={26} />}
-              sx={{
-                // margin: " 0 20px",
-                width: "100%",
-                fontSize: "18px", // Adjust the font size as needed
-                padding: "8px 53px", // Adjust the padding as needed
-                // neeed to make it center
-                backgroundColor: "#806EA9", // Change the background color to purple
-                color: "#3D2E5F", // Change the text color to white
-                borderRadius: "21px",
-                "&:hover": {
-                  backgroundColor: "#684C83", // Change the background color on hover
-                  color: "#C7BBD1",
-                },
-              }}
-              variant="contained"
-            >
-              Archive
-            </ColorButton>
-          </Stack>
-          <Divider sx={{ paddingTop: "2px", background: "#684C83a2" }} />
         </Stack>
 
         <Stack
@@ -118,10 +88,12 @@ const Privates = () => {
               width: "0.4em",
             },
             height: "100%",
+            // backgroundColor: "#5E4F80",
+            borderRadius: "23px",
           }}
         >
           {/* <SimpleBarStyle timeout={500} clickOnTrack={false}> */}
-          <Stack>
+          <Stack >
             {conversations
               .filter((el: any) => !el.pinned)
               .map((el, index) => {

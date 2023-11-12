@@ -4,7 +4,6 @@ import HeaderDM from "./HeaderDM";
 
 const Header = () => {
   const { contact } = useAppSelector(state => state);
-  console.log(contact);
 
   return (
     <>

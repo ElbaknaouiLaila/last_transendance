@@ -80,8 +80,6 @@ const ContactElements = (cont: any) => {
 
   useEffect(() => {
     const handleHistoryDms = (data: any) => {
-      // console.log(profile._id, contact.room_id);
-      console.log("history data", data);
       if (data === null) {
         dispatch(emptyConverstation([]));
       } else {
@@ -90,11 +88,7 @@ const ContactElements = (cont: any) => {
     };
 
     if (!contact.room_id) return;
-    // console.log(conversations);
-    console.log(contact.room_id);
-    console.log(profile._id);
 
-    // if (contact.room_id === )
     socket.emit("allMessagesDm", {
       room_id: contact.room_id, // selected conversation
       user_id: profile._id, // current user

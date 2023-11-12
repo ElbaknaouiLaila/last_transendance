@@ -1,9 +1,12 @@
-import { useEffect } from "react";
-import { styled } from "@mui/system";
 import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
-import { selectConversation } from "../redux/slices/contact";
+import { styled } from "@mui/system";
+import { useEffect } from "react";
+import {
+  selectConversation, updatedContactInfo
+} from "../redux/slices/contact";
 import { setCurrentConverstation } from "../redux/slices/converstation";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
+import { socket } from "../socket";
 import StyledBadge from "./StyledBadge";
 
 interface IdType {
@@ -27,7 +30,6 @@ const ChatElements = (id: IdType) => {
   const { contact, profile } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
   const selected_id = id.id;
-  console.log("selected_id", selected_id);
 
   const selectedChatId = contact.room_id;
   let isSelected = +selectedChatId === id.id;
@@ -38,16 +40,20 @@ const ChatElements = (id: IdType) => {
 
   useEffect(() => {
     const handleHistoryDms = (data: any) => {
-      console.log("history data", data);
-      dispatch(setCurrentConverstation(data));
+      dispatch(setCurrentConverstation({ data, user_id: profile._id }));
     };
-  }, [selected_id]);
+    if (!contact.room_id) return;
+    socket.emit("allMessagesDm", {
+      room_id: contact.room_id, // selected conversation
+      user_id: profile._id, // current user
+    });
+    socket.once("historyDms", handleHistoryDms);
+  }, [contact.room_id, profile._id, dispatch]);
 
   return (
     <StyledChatBox
       onClick={() => {
-        // console.log("click", id.id);
-        // dispatch(updatedContactInfo("CONTACT"));
+        dispatch(updatedContactInfo("CONTACT"));
         dispatch(
           selectConversation({
             room_id: selected_id,
