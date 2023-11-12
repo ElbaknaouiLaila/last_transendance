@@ -74,11 +74,11 @@ const JoinProtectedForm = ({ handleClose }: any) => {
   const onSubmit = async (data: JoinProtectedFormData) => {
     try {
       console.log("DATA", data);
-      // axios.post(
-      //   "http://localhost:3000/channels/join",
-      //   { data },
-      //   { withCredentials: true }
-      // );
+      axios.post(
+        "http://localhost:3000/channels/join",
+        { data },
+        { withCredentials: true }
+      );
       dispatch(
         showSnackbar({
           severity: "success",
