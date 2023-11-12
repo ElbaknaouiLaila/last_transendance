@@ -5,7 +5,7 @@ import {
   setCurrentChannel,
   updateChannelsMessages,
 } from "../redux/slices/channels";
-import { selectConversation } from "../redux/slices/contact";
+import { selectConversation, updatedContactInfo } from "../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import { socket } from "../socket";
 
@@ -78,6 +78,7 @@ const ChannelElements = (id: IdType) => {
     <StyledChatBox
       onClick={() => {
         console.log("id", selected_id);
+        dispatch(updatedContactInfo("CHANNEL"));
         dispatch(
           selectConversation({
             room_id: selected_id,

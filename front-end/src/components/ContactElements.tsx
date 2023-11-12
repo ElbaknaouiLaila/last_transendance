@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -13,20 +14,14 @@ import {
   SpeakerSimpleSlash,
   UserMinus,
 } from "@phosphor-icons/react";
-import React, { useEffect } from "react";
+import { mutedContact, selectConversation, updatedContactInfo } from "../redux/slices/contact";
 import {
-  mutedContact,
-  selectChat,
-  selectConversation,
-} from "../redux/slices/contact";
-import { useAppDispatch, useAppSelector } from "../redux/store/store";
-import StyledBadge from "./StyledBadge";
-import { socket } from "../socket";
-import {
-  addNewConversation,
   emptyConverstation,
   setCurrentConverstation,
 } from "../redux/slices/converstation";
+import { useAppDispatch, useAppSelector } from "../redux/store/store";
+import { socket } from "../socket";
+import StyledBadge from "./StyledBadge";
 
 interface State {
   amount: string;
@@ -81,10 +76,7 @@ const ContactElements = (cont: any) => {
 
   useEffect(() => {
     const handleHistoryDms = (data: any) => {
-      // console.log("history data", data);
-      // console.log(data.length);
       if (data === null) {
-        console.log("null");
         dispatch(emptyConverstation([]));
       } else {
         dispatch(setCurrentConverstation(data));
@@ -144,7 +136,8 @@ const ContactElements = (cont: any) => {
           <IconButton
             onClick={() => {
               // ! emit "start_converstation" event
-              console.log("start_converstation", id);
+              // console.log("start_converstation", id);
+              dispatch(updatedContactInfo("CONTACT"));
               dispatch(
                 selectConversation({
                   room_id: id,

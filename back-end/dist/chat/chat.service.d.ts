@@ -39,6 +39,13 @@ export declare class ChatService {
         unread: number;
         pinned: boolean;
     }[]>;
+    getDm(idSend: number, idRecv: number): Promise<{
+        id_dm: number;
+        senderId: number;
+        receiverId: number;
+        unread: number;
+        pinned: boolean;
+    }>;
     getAllMessages(id: number): Promise<{
         id: number;
         text: string;
@@ -70,5 +77,12 @@ export declare class ChatService {
         incoming: boolean;
         type: string;
         idDm: number;
+    }>;
+    getLeavingRoom(idUs: number, idch: number): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
     }>;
 }

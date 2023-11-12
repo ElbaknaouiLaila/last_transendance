@@ -8,6 +8,7 @@ import NoChat from "../../sections/NoChat";
 import ChatTabs from "./ChatTabs";
 import { useEffect } from "react";
 import axios from "axios";
+import InfosChannel from "../../components/contactTypes/infosChannel";
 
 const ChatGeneral: React.FC = () => {
   const { contact, profile } = useAppSelector(state => state);
@@ -44,6 +45,8 @@ const ChatGeneral: React.FC = () => {
           return <StarredMsgs />;
         case "SHARED":
           return <SharedMsgs />;
+        case "CHANNEL":
+          return <InfosChannel />;
         default:
           return null;
       }

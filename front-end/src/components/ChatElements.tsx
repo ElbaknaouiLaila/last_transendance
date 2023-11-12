@@ -1,17 +1,10 @@
-import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
-import StyledBadge from "./StyledBadge";
-import { styled } from "@mui/system";
-import { useAppDispatch, useAppSelector } from "../redux/store/store";
-import { selectConversation } from "../redux/slices/contact";
-import { socket } from "../socket";
-import {
-  fetchCurrentMessages,
-  setCurrentConverstation,
-} from "../redux/slices/converstation";
 import { useEffect } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { SelectConversation } from "../redux/slices/App";
-// import { SelectConversation } from "../redux/slices/app";
+import { styled } from "@mui/system";
+import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
+import { selectConversation } from "../redux/slices/contact";
+import { setCurrentConverstation } from "../redux/slices/converstation";
+import { useAppDispatch, useAppSelector } from "../redux/store/store";
+import StyledBadge from "./StyledBadge";
 
 interface IdType {
   id: number;
@@ -47,33 +40,13 @@ const ChatElements = (id: IdType) => {
       console.log("history data", data);
       dispatch(setCurrentConverstation(data));
     };
-
-    // const handleChatToDm = (data: any) => {
-    //   console.log("chat data", data);
-    //   dispatch(
-    //     fetchCurrentMessages({
-    //       id: data.id,
-    //       type: "msg",
-    //       subtype: data.subtype,
-    //       message: data.message,
-    //       outgoing: data.send === profile._id, //incoming
-    //       incoming: data.recieve === profile._id, //outgoing
-    //     })
-    //   );
-    // };
-    // // console.log("selected_id", selected_id);
-    // // console.log("contact", contact.room_id);
-    // // if (selected_id === contact.room_id) {
-    // // socket.emit("allMessagesDm", { room_id: selected_id });
-    // // socket.once("historyDms", handleHistoryDms);
-    // socket.on("chatToDm", handleChatToDm);
-    // }
   }, [selected_id]);
 
   return (
     <StyledChatBox
       onClick={() => {
-        console.log("click", id.id);
+        // console.log("click", id.id);
+        // dispatch(updatedContactInfo("CONTACT"));
         dispatch(
           selectConversation({
             room_id: selected_id,
@@ -82,10 +55,6 @@ const ChatElements = (id: IdType) => {
             avatar: id.img,
           })
         );
-        // socket.emit("allMessagesDm", { room_id: selected_id });
-        // socket.on("historyDms", (data: any) => {
-        //   dispatch(setCurrentConverstation(data));
-        // });
       }}
       sx={{
         width: "100%",
@@ -130,7 +99,6 @@ const ChatElements = (id: IdType) => {
             variant="caption"
           >
             {id.time}
-            {/* 10:45 PM */}
           </Typography>
           <Badge
             color="primary"

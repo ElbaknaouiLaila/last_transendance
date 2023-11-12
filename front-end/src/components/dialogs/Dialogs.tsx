@@ -34,6 +34,8 @@ const MuteDialog = ({ open, handleClose }:any) => (
       style: {
         backgroundColor: "#AE9BCD",
         boxShadow: "none",
+        borderRadius: "35px",
+        padding: "32px 0px",
       },
     }}
   >
@@ -46,7 +48,7 @@ const MuteDialog = ({ open, handleClose }:any) => (
         fontWeight: 800,
       }}
     >
-      Block this contact
+      Mute this contact
     </DialogTitle>
     <DialogContent style={{ padding: 0 }}>
       <DialogContentText
@@ -60,7 +62,7 @@ const MuteDialog = ({ open, handleClose }:any) => (
           color: "#563F73",
         }}
       >
-        Are you sure you want to block this Contact?
+        Are you sure you want to mute this Contact?
       </DialogContentText>
     </DialogContent>
     <DialogActions style={{ margin: "0", justifyContent: "space-evenly" }}>

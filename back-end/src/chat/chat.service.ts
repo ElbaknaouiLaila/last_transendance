@@ -121,6 +121,46 @@ export class ChatService {
           }
         }
 
+
+        // get All Conversations of currently User Dm :
+        // getDm based on idReciever and idSEnder .
+        async getDm(idSend:number, idRecv: number)
+        {
+          try{
+            const dm1 = await this.prisma.dm.findUnique({
+              where: {
+                senderId_receiverId: {
+                  senderId: idSend,
+                  receiverId: idRecv,
+                },
+              },
+            });
+            if (dm1)
+            {
+                console.log(`get Dm1 |${dm1}|`);
+                return dm1;
+            }
+        
+            const dm2 = await this.prisma.dm.findUnique({
+              where: {
+                senderId_receiverId: {
+                  senderId: idRecv,
+                  receiverId: idSend,
+                },
+              },
+            });
+            if (dm2)
+            {
+                console.log(`get dm2 |${dm2}|`);
+                return dm2;
+            }
+            }
+            catch (error) {
+                  console.error('we have no dm for those users', error);
+            }
+        }
+
+
         // get All Conversations of currently User Dm :
         async getAllMessages(id:number)
         {
@@ -171,7 +211,7 @@ export class ChatService {
             return messages;
             }
             catch (error) {
-                  console.error('we have no public channels', error);
+                  console.error('we have no messages in this  channel', error);
             }
         }
 
@@ -192,6 +232,40 @@ export class ChatService {
             catch (error) {
                   console.error('we have no public channels', error);
             }
+        }
+
+
+        async getLeavingRoom(idUs:number, idch:number)
+        {
+          try{
+          
+            const record = await this.prisma.memberChannel.findUnique({
+              where : {
+        
+                userId_channelId: {
+                  userId: idUs, 
+                  channelId: idch,
+                },
+                },
+            });
+            if (record)
+            {
+              const result = await this.prisma.memberChannel.delete({
+                where : {
+          
+                  userId_channelId: {
+                    userId: idUs, 
+                    channelId: idch,
+                  },
+                  },
+              });
+              return result;
+            }
+            }
+            catch (error) {
+                  console.error('you are not in this channel', error);
+            }
+
         }
 
 }

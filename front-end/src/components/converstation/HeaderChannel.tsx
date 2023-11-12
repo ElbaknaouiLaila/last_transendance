@@ -17,11 +17,14 @@ const HeaderChannels = () => {
   const dispatch = useAppDispatch();
   const [openInvite, setOpenInvite] = React.useState(false);
   const { contact } = useAppSelector(state => state);
+  const { channels } = useAppSelector(state => state.channels);
+  console.log(contact.room_id);
+  console.log(channels);
 
   const handleCloseInvite = () => {
     setOpenInvite(false);
   };
-  console.log(contact);
+  //   console.log(contact);
   return (
     <Box
       sx={{
@@ -44,7 +47,7 @@ const HeaderChannels = () => {
             <IconButton>
               <Avatar
                 onClick={() => {
-                  console.log(contact);
+                  //   console.log(contact);
                   // console.log('this where it should show contact infos');
                   dispatch(toggleDialog());
                 }}
@@ -63,6 +66,15 @@ const HeaderChannels = () => {
             >
               {contact.name}
             </Typography>
+            <Stack direction={"row"} alignItems={"center"} spacing={1}>
+              <Typography
+                variant="caption"
+                color={"#322554"}
+                sx={{ padding: 0, fontWeight: 400, fontSize: "14px" }}
+              >
+                {}
+              </Typography>
+            </Stack>
           </Stack>
         </Stack>
         <Stack direction={"row"} alignItems={"center"} spacing={3}>
