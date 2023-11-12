@@ -1,7 +1,11 @@
 import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import { setCurrentChannel } from "../redux/slices/channels";
-import { selectConversation } from "../redux/slices/contact";
+import { useEffect } from "react";
+import {
+  setCurrentChannel,
+  updateChannelsMessages,
+} from "../redux/slices/channels";
+import { selectConversation, updatedContactInfo } from "../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import { socket } from "../socket";
 
@@ -28,10 +32,11 @@ const SmallAvatar = styled(Avatar)(() => ({
 }));
 
 const ChannelElements = (id: IdType) => {
-  console.log("id", id);
+  // console.log("id", id);
   const { contact, profile } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
   const selected_id = id.channel_id;
+  // console.log("selected_id", selected_id);
   const selectedChatId = contact.room_id;
   let isSelected = +selectedChatId === parseInt(selected_id);
 
@@ -39,11 +44,41 @@ const ChannelElements = (id: IdType) => {
     isSelected = false;
   }
 
+  useEffect(() => {
+    const handleHistoryChannel = (data: any) => {
+      console.log("history data", data);
+      dispatch(setCurrentChannel({ messages: data, user_id: profile._id }));
+    };
+
+    const handleChatToGroup = (data: any) => {
+      console.log("chat data", data);
+      dispatch(
+        updateChannelsMessages({ messages: data, user_id: profile._id })
+      );
+    };
+
+    if (parseInt(selected_id) === contact.room_id) {
+      socket.emit("allMessagesRoom", { id: selected_id, user_id: profile._id });
+
+      // Subscribe to hostoryChannel only once when the component mounts
+      socket.once("hostoryChannel", handleHistoryChannel);
+
+      // Subscribe to chatToGroup every time a new message is added
+      socket.on("chatToGroup", handleChatToGroup);
+    }
+
+    return () => {
+      // Unsubscribe from the events when the component unmounts
+      socket.off("hostoryChannel", handleHistoryChannel);
+      socket.off("chatToGroup", handleChatToGroup);
+    };
+  }, [selected_id, socket, contact.room_id, dispatch, profile._id]);
+
   return (
     <StyledChatBox
       onClick={() => {
         console.log("id", selected_id);
-        socket.emit("allMessagesRoom", { room_id: selected_id });
+        dispatch(updatedContactInfo("CHANNEL"));
         dispatch(
           selectConversation({
             room_id: selected_id,
@@ -52,11 +87,6 @@ const ChannelElements = (id: IdType) => {
             avatar: id.image,
           })
         );
-        socket.on("Response_messages_Channel", (data: any) => {
-          console.log("data", data);
-          dispatch(setCurrentChannel(data));
-
-        });
       }}
       sx={{
         width: "100%",

@@ -13,7 +13,7 @@ import Privates from "../../sections/Private";
 import { socket } from "../../socket";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { fetchConverstations } from "../../redux/slices/converstation";
-import { FetchChannels } from "../../redux/slices/channels";
+import { FetchChannels, setCurrentChannel } from "../../redux/slices/channels";
 
 const resolveSlotProps = (fn: unknown, args: unknown) =>
   typeof fn === "function" ? fn(args) : fn;
@@ -60,33 +60,19 @@ const ChatTabs = () => {
   const dispatch = useAppDispatch();
 
   // !!! fetch all conversations with user_is
-  const { _id } = useAppSelector(state => state.profile);
+  const { profile, contact } = useAppSelector(state => state);
   React.useEffect(() => {
     // console.log(socket?.connected);
     if (socket) {
-      socket.emit("allConversationsDm", { _id }); 
+      socket.emit("allConversationsDm", { _id: profile._id });
       socket.on("response", (data: any) => {
-        console.log(data);
-        dispatch(fetchConverstations({ conversations: data, user_id: _id }));
+        // console.log(data);
+        dispatch(
+          fetchConverstations({ conversations: data, user_id: profile._id })
+        );
       });
-      socket.emit("allMessagesRoom", {_id});
-      socket.on("Response_messages_Channel", (data:any) => {
-        console.log(data);
-      })
     }
-    // socket.emit("get_direct_conversations", { _id }, (data:any) => {
-    //   console.log(data); // this data is the list of conversations
-    //   // dispatch action
-
-    //   // dispatch(fetchConverstations({ conversations: data }));
-    // });
-    // socket.emit("get_channels_conversations", { _id }, (data) => {
-    //     console.log(data); // this data is the list of conversations
-    //     // dispatch action
-
-    //     dispatch(FetchChannelConversations({ conversations: data }));
-    //   });
-  }, [_id, dispatch]);
+  }, [profile._id]);
   // !! fetch all conversations with user_id
 
   return (
@@ -100,9 +86,6 @@ const ChatTabs = () => {
           <Tab value={2}>Private</Tab>
           <Tab value={3}>Channels</Tab>
         </TabsList>
-        {/*
-         * this is for friends
-         */}
         <TabPanel value={0}>
           <Friends />
         </TabPanel>

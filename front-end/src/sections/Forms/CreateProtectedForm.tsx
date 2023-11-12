@@ -1,6 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, IconButton, InputAdornment, Stack } from "@mui/material";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
+import axios from "axios";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
@@ -8,7 +9,6 @@ import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-
 
 const CreateProtectedForm = ({ handleClose }: any) => {
   const { friends } = useAppSelector(state => state.app);
@@ -18,7 +18,7 @@ const CreateProtectedForm = ({ handleClose }: any) => {
 
   const ProtectedSchema = Yup.object().shape({
     title: Yup.string().required("Title is Required!!"),
-    members: Yup.array().min(3, "Must have at least 3 Members"),
+    members: Yup.array().min(2, "Must have at least 2 Members"),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
       .required("Password is required"),
@@ -49,14 +49,17 @@ const CreateProtectedForm = ({ handleClose }: any) => {
 
   const onSubmit = async (data: any) => {
     try {
+      await axios.post("http://localhost:3000/channels/create", data, {
+        withCredentials: true,
+      });
       dispatch(
         showSnackbar({
           severity: "success",
           message: "New Protected Channel has Created",
         })
       );
-      // submit data to backend
-      console.log("DATA", data);
+      handleClose();
+      reset();
     } catch (error) {
       console.error(error);
       reset();
@@ -66,6 +69,7 @@ const CreateProtectedForm = ({ handleClose }: any) => {
           message: "Create Protected Channel Failed",
         })
       );
+      handleClose();
     }
   };
 

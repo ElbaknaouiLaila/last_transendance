@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { stat } from 'fs';
 import { useDispatch } from 'react-redux';
 
 export interface Channel {
@@ -26,7 +27,10 @@ interface ConversationChannel {
   unread: number;
 }
 export interface ChannelState {
+
   channels: Channel[];
+  publicChannels: [];
+  protectedChannels: [];
   channels_conversation: ConversationChannel[];
   current_channel: Channel | null;
   current_messages: [];
@@ -34,6 +38,8 @@ export interface ChannelState {
 
 const initialState: ChannelState = {
   channels: [],
+  publicChannels: [],
+  protectedChannels: [],
   channels_conversation: [],
   current_channel: null,
   current_messages: [],
@@ -44,9 +50,19 @@ export const ChannelsSlice = createSlice({
   initialState,
 
   reducers: {
+    fetchPublicChannels(state, action) {
+      //~ get all public channels
+      // console.log(action.payload);
+      state.publicChannels = action.payload;
+    },
+    fetchProtectedChannels(state, action) {
+      //~ get all protected channels
+      // console.log(action.payload);
+      state.protectedChannels = action.payload;
+    },
     fetchChannels(state, action) {
       //! get all channels conversation
-      console.log(action.payload);
+      // console.log(action.payload);
       // state.channels = action.payload;
       state.channels = action.payload.map((el: any) => ({
         channel_id: el.channel_id,
@@ -69,28 +85,43 @@ export const ChannelsSlice = createSlice({
       //! add new channel
       state.channels.push(action.payload);
     },
-    setCurrentChannel(state, action: PayloadAction<Channel>) {
+    setCurrentChannel(state, action) {
       //! set current channel
-      console.log(action.payload);
+      // console.log(action.payload);
       state.current_channel = action.payload;
-      const messages: any = action.payload;
+      const user_id = action.payload.user_id;
+      const messages: any = action.payload.messages;
       const formatted_messages = messages.map((el: any) => ({
         id: el.id,
         type: "msg",
-        subtype: el.type,
-        message: el.text,
-        incoming: el.incoming, // ! get user id from profile
-        outgoing: el.outgoing,
+        subtype: el.subtype,
+        message: el.message,
+        incoming: el.id === user_id,
+        outgoing: el.id === user_id,
       }));
       state.current_messages = formatted_messages;
     },
     fetchCurrentMessages(state, action: PayloadAction<[]>) {
       //! get all messages of current channel
       state.current_messages = action.payload;
-      
     },
-    updateChannelsMessages(state, action: PayloadAction<[]>) {
-      state.current_messages.push(action.payload);
+    updateChannelsMessages(state, action) {
+      // console.log(action.payload)
+      const message: any = action.payload.messages; // Assuming 'messages' is a single message object
+      const user_id: any = action.payload.user_id;
+      // console.log(message);
+      // console.log(user_id);
+      const formatted_message = {
+        id: message.id,
+        type: message.type,
+        subtype: message.subtype,
+        message: message.message,
+        incoming: message.id === user_id,
+        outgoing: message.id === user_id,
+      };
+      // console.log(formatted_message);
+
+      state.current_messages.push(formatted_message);
     },
   },
 });
@@ -102,18 +133,56 @@ export function FetchChannels() {
   const dispatch = useDispatch();
   return async () => {
     await axios
-      .get("http://localhost:3000/channels/allChannels", { withCredentials: true, headers: {
-        "Content-Type": "application/json",
-    }, })
+      .get("http://localhost:3000/channels/allChannels", {
+        withCredentials: true, headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         dispatch(fetchChannels(res.data));
       })
       .catch((err) => console.log(err));
   };
 }
 
+export function FetchPublicChannels() {
+  const dispatch = useDispatch();
+  return async () => {
+    await axios
+      .get("http://localhost:3000/channels/allPublic", {
+        withCredentials: true, headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        dispatch(fetchPublicChannels(res.data));
+      })
+      .catch((err) => console.log(err));
+  };
+}
+
+export function FetchProtectedChannels() {
+  const dispatch = useDispatch();
+  return async () => {
+    await axios
+      .get("http://localhost:3000/channels/allProtected", {
+        withCredentials: true, headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        dispatch(fetchProtectedChannels(res.data));
+      })
+      .catch((err) => console.log(err));
+  };
+}
+
 export const {
+  fetchProtectedChannels,
+  fetchPublicChannels,
   fetchChannels,
   updatedChannels,
   addNewChannel,

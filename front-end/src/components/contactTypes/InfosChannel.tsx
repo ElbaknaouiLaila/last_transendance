@@ -34,7 +34,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const InfosContact = () => {
+const InfosChannel = () => {
   const dispatch = useAppDispatch();
   const { contact } = useAppSelector(store => store);
   console.log(contact);
@@ -53,10 +53,6 @@ const InfosContact = () => {
 
   const handleCloseMute = () => {
     setOpenMute(false);
-  };
-
-  const handleFileUpload = () => {
-    // handle click
   };
 
   return (
@@ -96,10 +92,7 @@ const InfosContact = () => {
           height: "100%",
           position: "relative",
           flexGrow: 1,
-          overflowY: "auto",
-          "&::-webkit-scrollbar": {
-            width: "0.4em",
-          },
+          overflowY: "scroll",
         }}
         p={3}
         spacing={3}
@@ -107,18 +100,81 @@ const InfosContact = () => {
         {/* adding image in and username */}
         <Stack alignItems={"center"} direction={"column"} spacing={2}>
           <Avatar
-            alt={contact.name}
-            src={contact.avatar}
+            alt={faker.person.firstName()}
+            src={faker.image.avatar()}
             sx={{ width: 200, height: 200 }}
           />
           {/* name */}
           <Stack direction={"column"} alignItems={"center"}>
             <Typography variant="h3" color={"#322554"} sx={{ padding: 0 }}>
-              {contact.name}
+              {faker.person.firstName()}
             </Typography>
           </Stack>
         </Stack>
+        {/* media */}
+        <Stack alignItems={"center"} direction={"column"} spacing={1}>
+          <Box
+            sx={{
+              width: 580,
+              height: "100%",
+              padding: "25px",
+              margin: 0,
+              borderRadius: "35px",
+              backgroundColor: "#EADDFF",
+            }}
+          >
+            <Stack
+              alignItems={"center"}
+              direction={"row"}
+              justifyContent={"space-between"}
+            >
+              <Typography variant="subtitle1">Media</Typography>
+              <Button
+                onClick={() => {
+                  dispatch(updatedContactInfo("SHARED"));
+                }}
+                endIcon={<CaretRight />}
+              >
+                {/* {console.log(contact)} */}
+                401
+              </Button>
+            </Stack>
+            <Stack alignItems={"center"} direction={"row"} spacing={2}>
+              {[1, 2, 3].map(() => (
+                <Box
+                  sx={{
+                    borderRadius: "5px",
+                  }}
+                >
+                  <img
+                    src={faker.image.url()}
+                    alt={faker.person.fullName()}
+                    style={{ borderRadius: "15px" }}
+                  />
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        </Stack>
         <Divider />
+        {/* Starred messages */}
+        <Stack
+          alignItems={"center"}
+          direction={"row"}
+          justifyContent={"space-between"}
+        >
+          <Stack alignItems={"center"} direction={"row"} spacing={2}>
+            <Star />
+            <Typography variant="subtitle1">Starred Messages</Typography>
+          </Stack>
+          <IconButton
+            onClick={() => {
+              dispatch(updatedContactInfo("STARRED"));
+            }}
+          >
+            <CaretRight />
+          </IconButton>
+        </Stack>
         {/* statics */}
         <Stack direction={"row"} alignItems={"center"}>
           <Box
@@ -222,4 +278,4 @@ const InfosContact = () => {
   );
 };
 
-export default InfosContact;
+export default InfosChannel;

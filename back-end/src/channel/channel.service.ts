@@ -163,7 +163,7 @@ export class ChannelsService {
     console.log(data);
     let join = 0;
     // console.log(data.data.id_channel);
-    const ch = await this.getChannelByName(data.data.name);
+    const ch = await this.getChannelByName(data.sendData.name);
     console.log("//////////////////////");
     console.log(ch);
     // console.log("channel is " +ch.name);
@@ -192,10 +192,12 @@ export class ChannelsService {
       {
       //  console.log("inside if ");
         // if (this.verifyPassword(data.password, ch.password))
-        if (this.verifyPassword(data.data.password, ch.password))
-
+        console.log(`Protected channel ${ch.name}`);
+        let test = await this.verifyPassword(data.sendData.password, ch.password);
+        console.log(`Test is ${test}`);
+        if (test)
         {
-         // console.log("inside if of pass ");
+         console.log(`cheaking password  ${data.sendData.password}  ${ch.password} `);
           join = 1;
         }
         //must the user has the password.

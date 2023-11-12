@@ -1,19 +1,19 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Stack } from "@mui/material";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import axios from "axios";
 
 const CreatePublicForm = ({ handleClose }: any) => {
   const { friends } = useAppSelector(state => state.app);
   const dispatch = useAppDispatch();
   const PublicSchema = Yup.object().shape({
     title: Yup.string().required("Title is Required!!"),
-    members: Yup.array().min(3, "Must have at least 3 Members"),
+    members: Yup.array().min(2, "Must have at least 2 Members"),
   });
 
   const defaultValues = {
@@ -47,6 +47,8 @@ const CreatePublicForm = ({ handleClose }: any) => {
           message: "New Public Channel has Created",
         })
       );
+      reset();
+      handleClose();
       // call api
     } catch (error) {
       dispatch(
@@ -57,6 +59,7 @@ const CreatePublicForm = ({ handleClose }: any) => {
       );
       console.log("error", error);
       reset();
+      handleClose();
     }
   };
   return (

@@ -29,9 +29,9 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
     if (event.key === "Enter") {
       // Prevent the default behavior of "Enter" key in a textarea
       event.preventDefault();
-      console.log(linkify(value));
-      // console.log(value);
-      // console.log("contact", contact);
+      // console.log(linkify(value));
+      // console.log(contact.room_id);
+      // console.log(profile._id);
       if (!value) return;
       socket.emit(
         contact.type_chat === "individual"
@@ -39,7 +39,6 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
           : "channel_message",
         {
           message: linkify(value),
-          subtype: "text",
           from: profile._id,
           to: contact.room_id,
         }
@@ -62,12 +61,6 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
         disableUnderline: true,
         endAdornment: (
           <InputAdornment position="end">
-            <Tooltip title="Photo/Video">
-              <IconButton>
-                {" "}
-                <ImageSquare size={32} color="#C7BBD1" />{" "}
-              </IconButton>
-            </Tooltip>
             <Tooltip title="Emojis">
               <IconButton
                 onClick={() => {
@@ -85,12 +78,11 @@ const ChatInput = ({ setOpenEmojis, setValue, value, inputRef }: any) => {
                   size={32}
                   color="#C7BBD1"
                   onClick={() => {
-                    // console.log(linkify(value));
-                    // console.log('==>', typeof(profile._id));
-                    // console.log('=>', typeof(contact.room_id));
+                    // console.log(contact.room_id);
+                    // console.log(profile._id);
                     if (!linkify(value)) return;
                     const _id = parseInt(contact.room_id.toString());
-                    console.log(contact.type_chat);
+                    // console.log(contact.type_chat);
                     socket.emit(
                       contact.type_chat === "individual"
                         ? "direct_message"

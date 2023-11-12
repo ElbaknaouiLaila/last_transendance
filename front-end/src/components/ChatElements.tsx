@@ -1,16 +1,13 @@
 import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
-import StyledBadge from "./StyledBadge";
 import { styled } from "@mui/system";
-import { useAppDispatch, useAppSelector } from "../redux/store/store";
-import { selectConversation } from "../redux/slices/contact";
-import { socket } from "../socket";
+import { useEffect } from "react";
 import {
-  fetchCurrentMessages,
-  setCurrentConverstation,
-} from "../redux/slices/converstation";
-// import { useDispatch, useSelector } from "react-redux";
-// import { SelectConversation } from "../redux/slices/App";
-// import { SelectConversation } from "../redux/slices/app";
+  selectConversation, updatedContactInfo
+} from "../redux/slices/contact";
+import { setCurrentConverstation } from "../redux/slices/converstation";
+import { useAppDispatch, useAppSelector } from "../redux/store/store";
+import { socket } from "../socket";
+import StyledBadge from "./StyledBadge";
 
 interface IdType {
   id: number;
@@ -32,9 +29,8 @@ const StyledChatBox = styled(Box)(() => ({
 const ChatElements = (id: IdType) => {
   const { contact, profile } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
-  const selected_id = id.room_id;
-  console.log('--->', id);
-  console.log('--->', id);
+  const selected_id = id.id;
+
   const selectedChatId = contact.room_id;
   let isSelected = +selectedChatId === id.id;
 
@@ -42,21 +38,30 @@ const ChatElements = (id: IdType) => {
     isSelected = false;
   }
 
+  useEffect(() => {
+    const handleHistoryDms = (data: any) => {
+      dispatch(setCurrentConverstation({ data, user_id: profile._id }));
+    };
+    if (!contact.room_id) return;
+    socket.emit("allMessagesDm", {
+      room_id: contact.room_id, // selected conversation
+      user_id: profile._id, // current user
+    });
+    socket.once("historyDms", handleHistoryDms);
+  }, [contact.room_id, profile._id, dispatch]);
+
   return (
     <StyledChatBox
       onClick={() => {
-        socket.emit("allMessagesDm", { room_id: selected_id });
-        socket.on("historyDms", (data: any) => {
-          dispatch(setCurrentConverstation(data));
-          dispatch(
-            selectConversation({
-              room_id: selected_id,
-              name: id.name,
-              type_chat: "individual",
-              avatar: id.img,
-            })
-          );
-        });
+        dispatch(updatedContactInfo("CONTACT"));
+        dispatch(
+          selectConversation({
+            room_id: selected_id,
+            name: id.name,
+            type_chat: "individual",
+            avatar: id.img,
+          })
+        );
       }}
       sx={{
         width: "100%",
@@ -101,7 +106,6 @@ const ChatElements = (id: IdType) => {
             variant="caption"
           >
             {id.time}
-            {/* 10:45 PM */}
           </Typography>
           <Badge
             color="primary"

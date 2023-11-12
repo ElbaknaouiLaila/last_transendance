@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -13,12 +14,18 @@ import {
   SpeakerSimpleSlash,
   UserMinus,
 } from "@phosphor-icons/react";
-import React from "react";
-import { mutedContact, selectConversation } from "../redux/slices/contact";
+import {
+  mutedContact,
+  selectConversation,
+  updatedContactInfo,
+} from "../redux/slices/contact";
+import {
+  emptyConverstation,
+  setCurrentConverstation,
+} from "../redux/slices/converstation";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
-import StyledBadge from "./StyledBadge";
 import { socket } from "../socket";
-import { setCurrentConverstation } from "../redux/slices/converstation";
+import StyledBadge from "./StyledBadge";
 
 interface State {
   amount: string;
@@ -36,18 +43,16 @@ interface Props {
 }
 
 const ContactElements = (cont: any) => {
+  const { conversations } = useAppSelector(
+    state => state.converstation.direct_chat
+  );
   // console.log(cont);
-  // const { contact } = useAppSelector((state) => state);
+  const { contact, profile } = useAppSelector(state => state);
+  // console.log(contact);
   const dispatch = useAppDispatch();
   const id = cont.id_user;
-  // const selectedChatId = contact.room_id;
-  // const isSelected = +selectedChatId === cont.id;
 
-  // if (!selectedChatId) {
-  //   isSelected = false;
-  // }
-  // console.log(contact.room_id, contact.type_chat);
-
+  // console.log(id);
   const [values, setValues] = React.useState<State>({
     amount: "",
     password: "",
@@ -73,6 +78,27 @@ const ContactElements = (cont: any) => {
     });
   };
 
+  useEffect(() => {
+    const handleHistoryDms = (data: any) => {
+      if (data === null) {
+        dispatch(emptyConverstation([]));
+      } else {
+        dispatch(setCurrentConverstation({ data, user_id: profile._id }));
+      }
+    };
+
+    if (!contact.room_id) return;
+
+    socket.emit("allMessagesDm", {
+      room_id: contact.room_id, // selected conversation
+      user_id: profile._id, // current user
+    });
+    socket.once("historyDms", handleHistoryDms);
+
+    return () => {
+      socket.off("historyDms", handleHistoryDms);
+    };
+  }, [contact.room_id, profile._id, dispatch]);
   return (
     <Box
       sx={{
@@ -109,20 +135,17 @@ const ContactElements = (cont: any) => {
         <Stack direction={"row"} spacing={1}>
           <IconButton
             onClick={() => {
-              console.log("Start Converstation");
               // ! emit "start_converstation" event
-              socket.emit("allMessagesDm", { room_id: id });
-              socket.on("historyDms", (data: any) => {
-                dispatch(setCurrentConverstation(data));
-                dispatch(
-                  selectConversation({
-                    room_id: id,
-                    name: cont.name,
-                    avatar: cont.avatar,
-                    type_chat: "individual",
-                  })
-                );
-              });
+              // console.log("start_converstation", id);
+              dispatch(updatedContactInfo("CONTACT"));
+              dispatch(
+                selectConversation({
+                  room_id: id,
+                  name: cont.name,
+                  avatar: cont.avatar,
+                  type_chat: "individual",
+                })
+              );
             }}
           >
             <Chat />

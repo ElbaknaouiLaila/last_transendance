@@ -3,41 +3,49 @@ import { Box, Stack } from "@mui/material";
 import Chatbox from "../../components/converstation/Chatbox";
 import Header from "../../components/converstation/Header";
 import Messages from "../../components/converstation/Messages";
-import { useAppSelector } from "../../redux/store/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import axios from "axios";
+import { socket } from "../../socket";
+import { fetchCurrentMessages } from "../../redux/slices/converstation";
+import { da } from "@faker-js/faker";
 
 const Converstation = () => {
-  const messageListRef = useRef<HTMLDivElement | null>(null);
-  const { current_messages } = useAppSelector(
+  const dispatch = useAppDispatch();
+  const messageListRef = useRef(null);
+  const { current_messages, current_conversations } = useAppSelector(
     state => state.converstation.direct_chat
   );
+  const { profile, contact } = useAppSelector(state => state);
 
   useEffect(() => {
     // Scroll to the bottom of the message list when new messages are added
     if (messageListRef.current) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+      messageListRef.current.scrollTop = 0;
     }
 
-    function axiosTest() {
-      // create a promise for the axios request
-      const promise = axios.get('http://localhost:3000/chatData/AllConversationsDm', {
-        withCredentials: true,
-      })
-  
-      // using .then, create a new promise which extracts the data
-      const dataPromise = promise.then((response) => response.data)
-  
-      // return it
-      return dataPromise
-  }
-
-  axiosTest()
-    .then(data => {
-      console.log(data)
-        Response.json({ message: 'Request received!', data })
-    })
-    .catch(err => console.log(err))
-  }, [current_messages]);
+    const handleChatToDm = (data: any) => {
+      console.log(data);
+      // Check if the received message is from the currently selected conversation
+      // if (conversation.direct_chat.current_conversation.id === data.id) {.
+      console.log(contact.room_id);
+      // if (data.recieve === contact.room_id && data.send === profile._id) {
+      dispatch(
+        fetchCurrentMessages({
+          id: data.id,
+          type: "msg",
+          message: data.message,
+          outgoing: data.send === profile._id,
+          incoming: data.recieve === profile._id,
+        })
+      );
+      // }
+      // }
+    };
+    socket.on("chatToDm", handleChatToDm);
+    return () => {
+      socket.off("chatToDm", handleChatToDm);
+    };
+  }, [dispatch, profile._id, contact.room_id]);
 
   return (
     <Stack

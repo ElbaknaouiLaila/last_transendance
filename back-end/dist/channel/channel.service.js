@@ -121,7 +121,7 @@ let ChannelsService = class ChannelsService {
         console.log("join channel from service");
         console.log(data);
         let join = 0;
-        const ch = await this.getChannelByName(data.data.name);
+        const ch = await this.getChannelByName(data.sendData.name);
         console.log("//////////////////////");
         console.log(ch);
         const cheak = await this.prisma.channelBan.findUnique({
@@ -140,7 +140,11 @@ let ChannelsService = class ChannelsService {
         if (ch) {
             console.log("heeeeeeeeeeeeeeeeey join channel");
             if (ch.visibility === "protected") {
-                if (this.verifyPassword(data.data.password, ch.password)) {
+                console.log(`Protected channel ${ch.name}`);
+                let test = await this.verifyPassword(data.sendData.password, ch.password);
+                console.log(`Test is ${test}`);
+                if (test) {
+                    console.log(`cheaking password  ${data.sendData.password}  ${ch.password} `);
                     join = 1;
                 }
             }

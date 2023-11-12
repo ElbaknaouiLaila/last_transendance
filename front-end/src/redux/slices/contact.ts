@@ -9,6 +9,7 @@ export interface Contact {
   avatar: string;
   type_chat: string;
   room_id: number;
+  chat_id: number;
   muted: boolean;
   blocked: boolean;
   snackbar: {
@@ -27,6 +28,7 @@ const initialState: Contact = {
   avatar: "",
   type_chat: "",
   room_id: 0,
+  chat_id: 0,
   muted: false,
   blocked: false,
   snackbar: {
@@ -53,6 +55,10 @@ export const ContactSlice = createSlice({
       state.name = action.payload.name;
       state.avatar = action.payload.avatar;
     },
+    selectChat(state, action) {
+      console.log(action.payload);
+      state.chat_id = action.payload.room_id;
+    },
     mutedContact(state, action) {
       state.room_id = action.payload.room_id;
       state.muted = !state.muted;
@@ -77,23 +83,24 @@ export const ContactSlice = createSlice({
 
 export const showSnackbar =
   ({ severity, message }: any) =>
-  async (dispatch: any) => {
-    dispatch(
-      ContactSlice.actions.openSnackBar({
-        message,
-        severity,
-      })
-    );
+    async (dispatch: any) => {
+      dispatch(
+        ContactSlice.actions.openSnackBar({
+          message,
+          severity,
+        })
+      );
 
-    setTimeout(() => {
-      dispatch(ContactSlice.actions.closeSnackBar());
-    }, 4000);
-  };
+      setTimeout(() => {
+        dispatch(ContactSlice.actions.closeSnackBar());
+      }, 4000);
+    };
 export const {
   toggleDialog,
   updatedContactInfo,
   selectConversation,
   mutedContact,
   closeSnackBar,
+  selectChat,
 } = ContactSlice.actions;
 export default ContactSlice.reducer;
