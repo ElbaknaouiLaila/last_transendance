@@ -50,6 +50,8 @@ let ChannelsController = class ChannelsController {
         const user = await this.UsersService.findById(decode.id);
         const name = "Assila";
         const memberChannel = await this.channelsService.joinChannel(data, user.id_user);
+        console.log("AFTER CREATEION        ");
+        console.log(memberChannel);
         return memberChannel;
     }
     async updatePass(req, data) {

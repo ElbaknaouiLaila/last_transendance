@@ -291,6 +291,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let namerecv;
     let avatarrecv;
     let statusrecv;
+    let msg = "";
+    let sent: Date | null = null;
+    // let unread = 0;
+    // let pinned = false;
     if(dms)
     {
         const arrayOfDms = [];
@@ -300,8 +304,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         const getSendUser = await this.UsersService.findById(dmm.senderId);
         const lastMsg  = await this.ChatService.getTheLastMessage(dmm.id_dm);
         // console.log(`Last message is ${lastMsg.text}`);
-        console.log(dmm.id_dm);
-
+        // console.log(dmm.id_dm);
+        console.log(lastMsg);
         recv  = dmm.receiverId;
         send = dmm.senderId;
         namerecv =  getRecvUser.name;
@@ -317,17 +321,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           statusrecv = getSendUser.status_user;
 
         }
+        if (lastMsg)
+        {
+          msg = lastMsg.text;
+          sent = lastMsg.dateSent;
+        }
         const newDm = {
           id_room:dmm.id_dm,
-
           id: recv,
           user_id: send,
           name: namerecv,
           online: statusrecv,
           img: avatarrecv,
-
-          msg: lastMsg.text,
-          time: lastMsg.dateSent,
+          msg: msg,
+          time: sent,
           unread: dmm.unread,
           pinned: dmm.pinned,
         };

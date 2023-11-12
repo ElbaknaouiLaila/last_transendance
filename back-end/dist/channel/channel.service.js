@@ -119,11 +119,11 @@ let ChannelsService = class ChannelsService {
     }
     async joinChannel(data, usid) {
         console.log("join channel from service");
+        console.log(data);
         let join = 0;
-        let pass = "lola123";
-        const ch = await this.getChannelByName(data.name);
-        console.log("channel is " + ch.name);
-        console.log("channel is " + ch.visibility);
+        const ch = await this.getChannelByName(data.data.name);
+        console.log("//////////////////////");
+        console.log(ch);
         const cheak = await this.prisma.channelBan.findUnique({
             where: {
                 bannedUserId_channelId: {
@@ -132,16 +132,21 @@ let ChannelsService = class ChannelsService {
                 },
             },
         });
-        if (!cheak)
+        console.log(cheak);
+        if (cheak) {
+            console.log("22222222222222222222222222");
             throw new common_1.NotFoundException(`your not allowed to join this channel ${ch.name} cuz  you are banned`);
+        }
         if (ch) {
+            console.log("heeeeeeeeeeeeeeeeey join channel");
             if (ch.visibility === "protected") {
-                if (this.verifyPassword(data.password, ch.password)) {
+                if (this.verifyPassword(data.data.password, ch.password)) {
                     join = 1;
                 }
             }
             if (join == 1 || ch.visibility === "public") {
                 try {
+                    console.log("inside try joing channel");
                     const memberchannel = await this.prisma.memberChannel.create({
                         data: {
                             userId: usid,
@@ -149,7 +154,7 @@ let ChannelsService = class ChannelsService {
                             status_UserInChannel: 'member',
                         },
                     });
-                    return true;
+                    return memberchannel;
                 }
                 catch (error) {
                     console.error('duplicate records in memeberchannels:', error);

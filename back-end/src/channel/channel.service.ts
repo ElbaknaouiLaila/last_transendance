@@ -160,13 +160,14 @@ export class ChannelsService {
   async joinChannel(data : any, usid : number)
   {
     console.log("join channel from service");
+    console.log(data);
     let join = 0;
-    let pass ="lola123";
-    
-    
-    const ch = await this.getChannelByName(data.name);
-    console.log("channel is " +ch.name);
-    console.log("channel is " +ch.visibility);
+    // console.log(data.data.id_channel);
+    const ch = await this.getChannelByName(data.data.name);
+    console.log("//////////////////////");
+    console.log(ch);
+    // console.log("channel is " +ch.name);
+    // console.log("channel is " +ch.visibility);
     // must cheak is this user has already banned from this channel or not, if yes must prevent him.
     const cheak = await this.prisma.channelBan.findUnique({
       where : {
@@ -177,16 +178,21 @@ export class ChannelsService {
         },
         },
     });
-    if (!cheak)
+    console.log(cheak);
+    if (cheak)
+    {
+      console.log("22222222222222222222222222");
       throw new NotFoundException(`your not allowed to join this channel ${ch.name} cuz  you are banned`);
+    }
 
     if (ch)
     {
+      console.log("heeeeeeeeeeeeeeeeey join channel");
       if (ch.visibility === "protected")
       {
       //  console.log("inside if ");
         // if (this.verifyPassword(data.password, ch.password))
-        if (this.verifyPassword(data.password, ch.password))
+        if (this.verifyPassword(data.data.password, ch.password))
 
         {
          // console.log("inside if of pass ");
@@ -198,7 +204,7 @@ export class ChannelsService {
         {
           //INSERT NEW RECORD AFTER CHECKING IS THE PASSWORD WAS MATCHED OR THE VISIBILITY IS PUBLIC.
           try{
-            
+            console.log("inside try joing channel");
             const memberchannel = await this.prisma.memberChannel.create({
               data: {
                   userId:usid,
@@ -206,7 +212,7 @@ export class ChannelsService {
                   status_UserInChannel:'member',
                   },
               });
-              return true;
+              return memberchannel;
           }
           catch(error)
           {

@@ -74,7 +74,8 @@ export class ChannelsController {
       data,
       user.id_user,
     );
-
+    console.log("AFTER CREATEION        ");
+      console.log(memberChannel);
     return memberChannel;
   }
 // must add DTO UPDATED.

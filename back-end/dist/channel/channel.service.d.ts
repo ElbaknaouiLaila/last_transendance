@@ -64,7 +64,13 @@ export declare class ChannelsService {
         visibility: string;
         password: string;
     }>;
-    joinChannel(data: any, usid: number): Promise<boolean>;
+    joinChannel(data: any, usid: number): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    }>;
     updatePass(data: any, usid: number): Promise<void>;
     removePass(data: any, usid: number): Promise<void>;
     setPass(data: any, usid: number): Promise<void>;

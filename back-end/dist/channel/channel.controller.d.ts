@@ -7,7 +7,13 @@ export declare class ChannelsController {
     private readonly UsersService;
     constructor(jwt: JwtService, channelsService: ChannelsService, UsersService: UsersService);
     create(req: any, data: any): Promise<boolean>;
-    join(req: any, data: any): Promise<boolean>;
+    join(req: any, data: any): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    }>;
     updatePass(req: any, data: any): Promise<void>;
     removePass(req: any, data: any): Promise<void>;
     setPass(req: any, data: any): Promise<void>;

@@ -149,13 +149,15 @@ let ChatGateway = class ChatGateway {
         let namerecv;
         let avatarrecv;
         let statusrecv;
+        let msg = "";
+        let sent = null;
         if (dms) {
             const arrayOfDms = [];
             for (const dmm of dms) {
                 const getRecvUser = await this.UsersService.findById(dmm.receiverId);
                 const getSendUser = await this.UsersService.findById(dmm.senderId);
                 const lastMsg = await this.ChatService.getTheLastMessage(dmm.id_dm);
-                console.log(dmm.id_dm);
+                console.log(lastMsg);
                 recv = dmm.receiverId;
                 send = dmm.senderId;
                 namerecv = getRecvUser.name;
@@ -168,6 +170,10 @@ let ChatGateway = class ChatGateway {
                     avatarrecv = getSendUser.avatar;
                     statusrecv = getSendUser.status_user;
                 }
+                if (lastMsg) {
+                    msg = lastMsg.text;
+                    sent = lastMsg.dateSent;
+                }
                 const newDm = {
                     id_room: dmm.id_dm,
                     id: recv,
@@ -175,8 +181,8 @@ let ChatGateway = class ChatGateway {
                     name: namerecv,
                     online: statusrecv,
                     img: avatarrecv,
-                    msg: lastMsg.text,
-                    time: lastMsg.dateSent,
+                    msg: msg,
+                    time: sent,
                     unread: dmm.unread,
                     pinned: dmm.pinned,
                 };
