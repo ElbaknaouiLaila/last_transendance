@@ -16,6 +16,7 @@ import {
   UserPlus,
 } from "@phosphor-icons/react";
 import { useAppSelector } from "../../redux/store/store";
+import { socket } from "../../socket";
 
 const MembersSettings = (el: any) => {
   const { _id } = useAppSelector(state => state.profile);
@@ -55,8 +56,10 @@ const MembersSettings = (el: any) => {
 
     if (muted === true) {
       console.log("unmute");
+      socket.emit("unmuteUserFromChannel", { to: _id, from: user.userId, channel_id: el.el.channelId });
     } else {
       console.log("mute");
+      socket.emit("muteUserFromChannel", { to: _id, from: user.userId, channel_id: el.el.channelId });
     }
     setMuted(() => !muted);
   };
@@ -156,6 +159,7 @@ const MembersSettings = (el: any) => {
                     onClick={() => {
                       console.log("kick Contact");
                       // ! emit "kick_contact" event
+                      socket.emit("kickUserFromChannel", { to: el.el.userId, from: _id, channel_id: el.el.channelId });
                       // socket.emit("delete_contact", { to: el.el.userId, from: _id });
                     }}
                   >
@@ -178,6 +182,7 @@ const MembersSettings = (el: any) => {
                   <IconButton
                     onClick={() => {
                       console.log("Ban User");
+                      socket.emit("banUserFRomChannel", { to: el.el.userId, from: _id, channel_id: el.el.channelId });
                       // ! emit "ban_contact" event
                       // socket.emit("block_contact", { to: el.el.userId, from: _id });
                     }}

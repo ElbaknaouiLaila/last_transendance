@@ -86,4 +86,12 @@ export declare class ChatService {
         muted: boolean;
         period: Date;
     }>;
+    cheakBlockedUser(idSend: number, idRecv: number): Promise<boolean>;
+    checkmuted(idSend: number, idch: number): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    }>;
 }

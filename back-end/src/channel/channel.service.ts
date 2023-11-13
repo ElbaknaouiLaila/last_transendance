@@ -103,6 +103,7 @@ export class ChannelsService {
         userId:userId,
         channelId:channel.id_channel,
         status_UserInChannel:'owner',
+        muted:false,
       },
     });
 
@@ -115,6 +116,7 @@ export class ChannelsService {
               userId:idMbr.id_user,
               channelId:channel.id_channel,
               status_UserInChannel:'member',
+              muted:false,
             },
           });
         }catch (error) {
@@ -212,6 +214,7 @@ export class ChannelsService {
                   userId:usid,
                   channelId:ch.id_channel,
                   status_UserInChannel:'member',
+                  muted:false,
                   },
               });
               return memberchannel;
@@ -514,6 +517,7 @@ export class ChannelsService {
                 status_User:'kicked',
               },
             });
+            return updateChannel;
         
         }
         else
@@ -586,7 +590,7 @@ export class ChannelsService {
               status_User:'banned',
             },
           });
-
+          return updateChannel;
             // const updateChannel = await this.prisma.memberChannel.update({
             //   where: {
             //     userId_channelId: {
@@ -672,6 +676,7 @@ export class ChannelsService {
                     period:data.duration,
                   },
               })
+              return updateChannel;
           }
           else
           {

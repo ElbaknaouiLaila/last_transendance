@@ -89,7 +89,8 @@ export class ChannelsController {
     await this.channelsService.updatePass(data, user.id_user);
 
   }
-
+  // ~ **********************************************
+  // ! here I must hafid check
   @Patch('removePass')
   async removePass(@Req() req, @Body() data: any)
   {
@@ -126,30 +127,30 @@ export class ChannelsController {
 
   }
 
-  @Delete('kickUser')
-  async kickUser(@Req() req, @Body() data: any){
-    console.log("kickUser");
-     // data I expect, iduser, secondiduser, namechannel.
-    const decode = this.jwt.verify(req.cookies['cookie']);
-    const user = await this.UsersService.findById(decode.id);
+  // @Delete('kickUser')
+  // async kickUser(@Req() req, @Body() data: any){
+  //   console.log("kickUser");
+  //    // data I expect, iduser, secondiduser, namechannel.
+  //   const decode = this.jwt.verify(req.cookies['cookie']);
+  //   const user = await this.UsersService.findById(decode.id);
     
-    const decode2 = this.jwt.verify(data.updated_user);
-    const updatedUser = await this.UsersService.findById(decode2.id);
-    await this.channelsService.kickUser(data, user.id_user, updatedUser.id_user);
-  }
+  //   const decode2 = this.jwt.verify(data.updated_user);
+  //   const updatedUser = await this.UsersService.findById(decode2.id);
+  //   await this.channelsService.kickUser(data, user.id_user, updatedUser.id_user);
+  // }
 
-  @Patch('banUser')
-  async banUser(@Req() req, @Body() data: any){
+  // @Patch('banUser')
+  // async banUser(@Req() req, @Body() data: any){
 
-    console.log("bannedUser");
-    // data I expect, iduser, secondiduser, namechannel.
-    const decode = this.jwt.verify(req.cookies['cookie']);
-    const user = await this.UsersService.findById(decode.id);
+  //   console.log("bannedUser");
+  //   // data I expect, iduser, secondiduser, namechannel.
+  //   const decode = this.jwt.verify(req.cookies['cookie']);
+  //   const user = await this.UsersService.findById(decode.id);
     
-    const decode2 = this.jwt.verify(data.updated_user);
-    const updatedUser = await this.UsersService.findById(decode2.id);
-    await this.channelsService.banUser(data, user.id_user, updatedUser.id_user);
-  }
+  //   const decode2 = this.jwt.verify(data.updated_user);
+  //   const updatedUser = await this.UsersService.findById(decode2.id);
+  //   await this.channelsService.banUser(data, user.id_user, updatedUser.id_user);
+  // }
   
   @Patch('muteUser')
   async muteUser(@Req() req, @Body() data: any){

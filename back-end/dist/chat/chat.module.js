@@ -14,12 +14,13 @@ const chat_controller_1 = require("./chat.controller");
 const prisma_service_1 = require("../prisma.service");
 const jwtservice_service_1 = require("../jwt/jwtservice.service");
 const users_service_1 = require("../users/users.service");
+const channel_service_1 = require("../channel/channel.service");
 let ChatModule = class ChatModule {
 };
 exports.ChatModule = ChatModule;
 exports.ChatModule = ChatModule = __decorate([
     (0, common_1.Module)({
-        providers: [chat_gateway_1.ChatGateway, chat_service_1.ChatService, prisma_service_1.PrismaService, jwtservice_service_1.JwtService, users_service_1.UsersService],
+        providers: [chat_gateway_1.ChatGateway, chat_service_1.ChatService, prisma_service_1.PrismaService, jwtservice_service_1.JwtService, users_service_1.UsersService, channel_service_1.ChannelsService],
         controllers: [chat_controller_1.ChatController]
     })
 ], ChatModule);
