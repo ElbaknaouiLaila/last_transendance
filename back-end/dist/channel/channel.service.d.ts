@@ -75,9 +75,27 @@ export declare class ChannelsService {
     removePass(data: any, usid: number): Promise<void>;
     setPass(data: any, usid: number): Promise<void>;
     setAdmin(data: any, usid: number, upus: number): Promise<void>;
-    kickUser(data: any, idus: number, kickcus: number): Promise<void>;
-    banUser(data: any, idus: number, user_banned: number): Promise<void>;
-    muteUser(data: any, idus: number, user_muted: number): Promise<void>;
+    kickUser(data: any, idus: number, kickcus: number): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    }>;
+    banUser(data: any, idus: number, user_banned: number): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    }>;
+    muteUser(data: any, idus: number, user_muted: number): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    }>;
     getAllChannels(idUser: number): Promise<({
         channel: {
             id_channel: number;

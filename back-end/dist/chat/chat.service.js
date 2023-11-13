@@ -28,6 +28,7 @@ let ChatService = class ChatService {
         const users = await this.prisma.memberChannel.findMany({
             where: {
                 channelId: idch,
+                muted: false
             },
         });
         return (users);
@@ -212,6 +213,29 @@ let ChatService = class ChatService {
         catch (error) {
             console.error('you are not in this channel', error);
         }
+    }
+    async cheakBlockedUser(idSend, idRecv) {
+        const block = await this.prisma.blockedUser.findMany({
+            where: {
+                userId: idRecv,
+                id_blocked_user: idSend,
+            },
+        });
+        if (block.length > 0) {
+            return true;
+        }
+        return false;
+    }
+    async checkmuted(idSend, idch) {
+        const record = await this.prisma.memberChannel.findUnique({
+            where: {
+                userId_channelId: {
+                    userId: idSend,
+                    channelId: idch,
+                },
+            }
+        });
+        return record;
     }
 };
 exports.ChatService = ChatService;

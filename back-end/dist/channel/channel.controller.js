@@ -77,22 +77,6 @@ let ChannelsController = class ChannelsController {
         const updatedUser = await this.UsersService.findById(decode2.id);
         await this.channelsService.setAdmin(data, user.id_user, updatedUser.id_user);
     }
-    async kickUser(req, data) {
-        console.log("kickUser");
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        const decode2 = this.jwt.verify(data.updated_user);
-        const updatedUser = await this.UsersService.findById(decode2.id);
-        await this.channelsService.kickUser(data, user.id_user, updatedUser.id_user);
-    }
-    async banUser(req, data) {
-        console.log("bannedUser");
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        const decode2 = this.jwt.verify(data.updated_user);
-        const updatedUser = await this.UsersService.findById(decode2.id);
-        await this.channelsService.banUser(data, user.id_user, updatedUser.id_user);
-    }
     async muteUser(req, data) {
         console.log("mutedUser");
         const decode = this.jwt.verify(req.cookies['cookie']);
@@ -199,22 +183,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "setAdmin", null);
-__decorate([
-    (0, common_1.Delete)('kickUser'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], ChannelsController.prototype, "kickUser", null);
-__decorate([
-    (0, common_1.Patch)('banUser'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], ChannelsController.prototype, "banUser", null);
 __decorate([
     (0, common_1.Patch)('muteUser'),
     __param(0, (0, common_1.Req)()),

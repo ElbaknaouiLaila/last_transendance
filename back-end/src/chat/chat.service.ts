@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma.service';
 // import { CreateDmDto } from '../channel/dto/create-channel.dto';
 // import { dm } from '../prisma.service';
 import { Dm } from '@prisma/client';
+import { receiveMessageOnPort } from 'worker_threads';
 
 
 @Injectable()
@@ -20,11 +21,12 @@ export class ChatService {
         return (channel);
     }
     // get all users in a specific channel :
-    async getUsersInChannel( idch : number )
+    async  getUsersInChannel( idch : number )
     {
         const users = await this.prisma.memberChannel.findMany({
             where: {
                 channelId: idch,
+                muted:false
             },
           })
 
@@ -276,5 +278,35 @@ export class ChatService {
 
         }
 
+        async cheakBlockedUser(idSend:number, idRecv:number)
+        {
+
+          const block = await this.prisma.blockedUser.findMany({
+          where: {
+              userId: idRecv,
+              id_blocked_user: idSend,
+            },
+          });
+          if (block.length > 0)
+          {
+            return true;
+          } 
+          return false;
+        }
+
+        async checkmuted(idSend:number, idch: number)
+        {
+
+          const record = await this.prisma.memberChannel.findUnique({
+            where : {
+              userId_channelId: {
+                userId: idSend, 
+                channelId: idch,
+              },
+            }
+          });
+
+          return record;
+        }
 }
 

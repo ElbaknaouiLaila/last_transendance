@@ -85,6 +85,7 @@ let ChannelsService = class ChannelsService {
                     userId: userId,
                     channelId: channel.id_channel,
                     status_UserInChannel: 'owner',
+                    muted: false,
                 },
             });
             for (let i = 0; i < data.members.length; i++) {
@@ -95,6 +96,7 @@ let ChannelsService = class ChannelsService {
                             userId: idMbr.id_user,
                             channelId: channel.id_channel,
                             status_UserInChannel: 'member',
+                            muted: false,
                         },
                     });
                 }
@@ -156,6 +158,7 @@ let ChannelsService = class ChannelsService {
                             userId: usid,
                             channelId: ch.id_channel,
                             status_UserInChannel: 'member',
+                            muted: false,
                         },
                     });
                     return memberchannel;
@@ -361,6 +364,7 @@ let ChannelsService = class ChannelsService {
                                 status_User: 'kicked',
                             },
                         });
+                        return updateChannel;
                     }
                     else {
                         throw new common_1.NotFoundException(`you can't kicked an owner or an admin`);
@@ -415,6 +419,7 @@ let ChannelsService = class ChannelsService {
                                 status_User: 'banned',
                             },
                         });
+                        return updateChannel;
                     }
                     else {
                         throw new common_1.NotFoundException(`you can't banned an owner or an admin`);
@@ -466,6 +471,7 @@ let ChannelsService = class ChannelsService {
                                 period: data.duration,
                             },
                         });
+                        return updateChannel;
                     }
                     else {
                         throw new common_1.NotFoundException(`you can't muted an owner or an admin`);
