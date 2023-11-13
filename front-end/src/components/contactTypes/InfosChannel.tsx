@@ -1,4 +1,3 @@
-import { faker } from "@faker-js/faker";
 import {
   Avatar,
   Box,
@@ -13,20 +12,25 @@ import {
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import {
-  CaretRight,
+  Gear,
   PencilSimple,
   Prohibit,
+  SignOut,
   SpeakerSimpleX,
-  Star,
-  Trash,
   X,
 } from "@phosphor-icons/react";
-import React, { useRef, useState } from "react";
-import { toggleDialog, updatedContactInfo } from "../../redux/slices/contact";
+import React, { useEffect, useRef, useState } from "react";
+import { toggleDialog } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-
-import { BlockDialog, DeleteDialog, MuteDialog } from "../dialogs/Dialogs";
+import {
+  BlockDialog,
+  DeleteDialog,
+  LeaveDialog,
+  MuteDialog,
+  RemoveDialog,
+} from "../dialogs/Dialogs";
 import MembersSettings from "./MembersSettings";
+import CreateChannel from "../channels/CreateChannel";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -41,13 +45,14 @@ const InfosChannel = () => {
   const currentInfos = useRef<any>(null);
   const dispatch = useAppDispatch();
   const { contact, channels } = useAppSelector(store => store);
-  console.log(contact);
 
-  console.log(channels.publicChannels);
+  // console.log(contact);
+
+  // console.log(channels.publicChannels);
   if (contact.type_chat === "public") {
     console.log("public");
     const channel = channels.publicChannels.find(
-      channel => channel?.id_channel === contact.room_id
+      (channel: any) => channel?.id_channel === contact.room_id
     );
     console.log(channel);
     currentInfos.current = channel;
@@ -55,7 +60,7 @@ const InfosChannel = () => {
   } else if (contact.type_chat === "protected") {
     console.log("protected");
     const channel = channels.protectedChannels.find(
-      channel => channel?.id_channel === contact.room_id
+      (channel: any) => channel?.id_channel === contact.room_id
     );
     currentInfos.current = channel;
 
@@ -63,37 +68,32 @@ const InfosChannel = () => {
   } else if (contact.type_chat === "private") {
     console.log("private");
     const channel = channels.privateChannels.find(
-      channel => channel?.id_channel === contact.room_id
+      (channel: any) => channel?.id_channel === contact.room_id
     );
     currentInfos.current = channel;
 
     // contact.name = channel?.name;
   }
+
   const [openBlock, setOpenBlock] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
+  const [openLeave, setOpenLeave] = useState(false);
   const [openMute, setOpenMute] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
 
   const handleCloseBlock = () => {
     setOpenBlock(false);
   };
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
+  const handleCloseLeave = () => {
+    setOpenLeave(false);
   };
 
   const handleCloseMute = () => {
     setOpenMute(false);
   };
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleClickSettings = () => {
+    setOpenSettings(false);
   };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
 
   return (
     <Dialog
@@ -126,6 +126,20 @@ const InfosChannel = () => {
       >
         <X />
       </IconButton>
+      <IconButton
+        aria-label="close"
+        onClick={() => {
+          setOpenSettings(true);
+        }}
+        sx={{
+          position: "absolute",
+          left: "21em",
+          top: 10,
+          color: theme => theme.palette.grey[800],
+        }}
+      >
+        <Gear />
+      </IconButton>
       {/* <DialogContent> */}
       <Stack
         sx={{
@@ -146,27 +160,7 @@ const InfosChannel = () => {
               alt={contact.name}
               src={currentInfos.current?.image}
               sx={{ width: 200, height: 200 }}
-              onMouseEnter={handlePopoverOpen}
-              onMouseLeave={handlePopoverClose}
             />
-            <Popover
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handlePopoverClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-            >
-              <IconButton onClick={() => console.log("Edit clicked")}>
-                <PencilSimple size={32} weight="bold" />
-              </IconButton>
-              <Typography>Edit Avatar</Typography>
-            </Popover>
           </Stack>
           {/* name */}
           <Stack direction={"column"} alignItems={"center"}>
@@ -228,10 +222,10 @@ const InfosChannel = () => {
           </Button>
           <Button
             onClick={() => {
-              setOpenDelete(true);
+              setOpenLeave(true);
             }}
             variant="contained"
-            endIcon={<Trash size={30} />}
+            endIcon={<SignOut size={30} />}
             sx={{
               borderRadius: "15px",
               fontSize: "20px",
@@ -243,7 +237,7 @@ const InfosChannel = () => {
               },
             }}
           >
-            Delete
+            Leave
           </Button>
           <Button
             onClick={() => {
@@ -262,16 +256,19 @@ const InfosChannel = () => {
               },
             }}
           >
-            Block
+            Remove
           </Button>
         </Stack>
       </Stack>
       {openMute && <MuteDialog open={openMute} handleClose={handleCloseMute} />}
-      {openDelete && (
-        <DeleteDialog open={openDelete} handleClose={handleCloseDelete} />
+      {openLeave && (
+        <LeaveDialog open={openLeave} handleClose={handleCloseLeave} />
       )}
       {openBlock && (
-        <BlockDialog open={openBlock} handleClose={handleCloseBlock} />
+        <RemoveDialog open={openBlock} handleClose={handleCloseBlock} />
+      )}
+      {openSettings && (
+        <CreateChannel open={openSettings} handleClose={handleClickSettings} />
       )}
     </Dialog>
   );

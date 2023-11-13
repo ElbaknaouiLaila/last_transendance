@@ -11,7 +11,7 @@ import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
 const CreatePrivateForm = ({ handleClose }: any) => {
-  const [file, setFile] = React.useState();
+  const [file, setFile] = React.useState<any>();
   const dispatch = useAppDispatch();
   const PrivateSchema = Yup.object().shape({
     title: Yup.string().required("Title is Required!!"),
@@ -44,11 +44,11 @@ const CreatePrivateForm = ({ handleClose }: any) => {
   const { friends } = useAppSelector(state => state.app);
   const onSubmit = async (data: any) => {
     try {
+      data.avatar = file?.preview;
       await axios.post("http://localhost:3000/channels/create", data, {
         withCredentials: true,
       });
-      console.log("DATA", data);
-      console.log("FILE", file);
+
       dispatch(
         showSnackbar({
           severity: "success",

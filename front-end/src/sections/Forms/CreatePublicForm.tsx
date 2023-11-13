@@ -11,7 +11,7 @@ import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
 const CreatePublicForm = ({ handleClose }: any) => {
-  const [file, setFile] = useState();
+  const [file, setFile] = useState<any>();
   const { friends } = useAppSelector(state => state.app);
   const dispatch = useAppDispatch();
   const PublicSchema = Yup.object().shape({
@@ -44,8 +44,7 @@ const CreatePublicForm = ({ handleClose }: any) => {
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("DATA", data);
-      console.log("FILE", file);
+      data.avatar = file?.preview;
       await axios.post("http://localhost:3000/channels/create", data, {
         withCredentials: true,
       });
