@@ -82,7 +82,14 @@ export declare class ChannelsService {
         muted: boolean;
         period: Date;
     }>;
-    banUser(data: any, idus: number, user_banned: number): Promise<{
+    getChannelById(nameVar: number): Promise<{
+        id_channel: number;
+        name: string;
+        img: string;
+        visibility: string;
+        password: string;
+    }>;
+    banUser(idch: number, idus: number, user_banned: number): Promise<{
         userId: number;
         channelId: number;
         status_UserInChannel: string;

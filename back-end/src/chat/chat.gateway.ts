@@ -458,27 +458,31 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 @SubscribeMessage('banUserFRomChannel')
 async bannedUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
 {
+  // { to: 90351, from: 90652, channel_id: 19 }
   console.log("bannedUser");
   console.log(data);
   // matching the client with iduser :
 
-  const user1 = await this.UsersService.findById(data.user_id);
-  const user2 = await this.UsersService.findById(data.bannedUs);
+  const user1 = await this.UsersService.findById(data.from);
+  const user2 = await this.UsersService.findById(data.to);
   if (client)
   {
     const id: number = Number(client.handshake.query.user_id);
+    console.log(`checking id of clients and user are ${id} --- ${data.from}`);
     if (user1)
     {
-      if (user1.id_user == id)
+      if (user1.id_user == data.from)
       {
         if (user1 && user2)
         {
           // data.id is id of channel.
-          const bannedUser =   await this.ChannelsService.banUser(data.id, data.user.id_user, data.bannedUs);
+          const bannedUser =   await this.ChannelsService.banUser(data.channel_id, data.from, data.to);
           if (bannedUser)
           {
            const result =  "User with ${data.bannedUs} is banned from room with id ${data.id} by the ${data.user_id}";
-            client.emit('ResponseBannedUser', result);
+           console.log(`banned user is ================== `);
+           console.log(bannedUser);
+            // client.emit('ResponseBannedUser', result);
           }
         }
       }
@@ -486,6 +490,7 @@ async bannedUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
   }
   else
     console.log("ERRROR ");
+
   // if (user1 && user2)
   // {
   //   // data.id is id of channel.

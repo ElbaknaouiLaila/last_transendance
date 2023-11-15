@@ -382,8 +382,17 @@ let ChannelsService = class ChannelsService {
             throw new common_1.NotFoundException(`this Channel with Name ${ch.name} not found`);
         }
     }
-    async banUser(data, idus, user_banned) {
-        const ch = await this.getChannelByName(data.name);
+    async getChannelById(nameVar) {
+        const channel = await this.prisma.channel.findUnique({
+            where: { id_channel: nameVar },
+        });
+        if (!channel) {
+            throw new common_1.NotFoundException(`User with  ${nameVar} not found`);
+        }
+        return channel;
+    }
+    async banUser(idch, idus, user_banned) {
+        const ch = await this.getChannelById(idch);
         if (ch) {
             const record = await this.prisma.memberChannel.findUnique({
                 where: {
@@ -404,6 +413,12 @@ let ChannelsService = class ChannelsService {
             if (record && record2) {
                 if (record.status_UserInChannel === "owner" || record.status_UserInChannel === "admin") {
                     if (record2.status_UserInChannel !== "owner" && record2.status_UserInChannel !== "admin") {
+                        const deleteMsg = await this.prisma.discussion.deleteMany({
+                            where: {
+                                userId: record2.userId,
+                                channelId: ch.id_channel,
+                            },
+                        });
                         const updateChannel = await this.prisma.memberChannel.delete({
                             where: {
                                 userId_channelId: {
@@ -412,7 +427,7 @@ let ChannelsService = class ChannelsService {
                                 },
                             },
                         });
-                        const memberchannel = await this.prisma.channelBan.create({
+                        const memberchannel = await this.prisma.saveBanned.create({
                             data: {
                                 bannedUserId: record2.userId,
                                 channelId: ch.id_channel,

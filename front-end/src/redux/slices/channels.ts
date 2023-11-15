@@ -31,6 +31,7 @@ export interface ChannelState {
   channels: Channel[];
   publicChannels: [];
   protectedChannels: [];
+  privateChannels: [];
   channels_conversation: ConversationChannel[];
   current_channel: Channel | null;
   current_messages: [];
@@ -40,6 +41,7 @@ const initialState: ChannelState = {
   channels: [],
   publicChannels: [],
   protectedChannels: [],
+  privateChannels: [],
   channels_conversation: [],
   current_channel: null,
   current_messages: [],
@@ -59,6 +61,11 @@ export const ChannelsSlice = createSlice({
       //~ get all protected channels
       // console.log(action.payload);
       state.protectedChannels = action.payload;
+    },
+    fetchPrivateChannels(state, action) {
+      //~ get all private channels
+      // console.log(action.payload);
+      state.privateChannels = action.payload;
     },
     fetchChannels(state, action) {
       //! get all channels conversation
@@ -87,17 +94,15 @@ export const ChannelsSlice = createSlice({
     },
     setCurrentChannel(state, action) {
       //! set current channel
-      // console.log(action.payload);
       state.current_channel = action.payload;
       const user_id = action.payload.user_id;
       const messages: any = action.payload.messages;
       const formatted_messages = messages.map((el: any) => ({
         id: el.id,
         type: "msg",
-        subtype: el.subtype,
         message: el.message,
-        incoming: el.id === user_id,
-        outgoing: el.id === user_id,
+        incoming: el.userId !== user_id,
+        outgoing: el.userId === user_id,
       }));
       state.current_messages = formatted_messages;
     },
@@ -106,18 +111,14 @@ export const ChannelsSlice = createSlice({
       state.current_messages = action.payload;
     },
     updateChannelsMessages(state, action) {
-      // console.log(action.payload)
       const message: any = action.payload.messages; // Assuming 'messages' is a single message object
       const user_id: any = action.payload.user_id;
-      // console.log(message);
-      // console.log(user_id);
       const formatted_message = {
         id: message.id,
         type: message.type,
-        subtype: message.subtype,
         message: message.message,
-        incoming: message.id === user_id,
-        outgoing: message.id === user_id,
+        incoming: message.sender_id !== user_id,
+        outgoing: message.sender_id === user_id,
       };
       // console.log(formatted_message);
 
@@ -139,7 +140,7 @@ export function FetchChannels() {
         },
       })
       .then((res) => {
-        // console.log(res.data);
+        console.log(res.data);
         dispatch(fetchChannels(res.data));
       })
       .catch((err) => console.log(err));
@@ -156,7 +157,7 @@ export function FetchPublicChannels() {
         },
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         dispatch(fetchPublicChannels(res.data));
       })
       .catch((err) => console.log(err));

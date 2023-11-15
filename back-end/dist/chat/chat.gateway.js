@@ -255,17 +255,19 @@ let ChatGateway = class ChatGateway {
     async bannedUser(client, data) {
         console.log("bannedUser");
         console.log(data);
-        const user1 = await this.UsersService.findById(data.user_id);
-        const user2 = await this.UsersService.findById(data.bannedUs);
+        const user1 = await this.UsersService.findById(data.from);
+        const user2 = await this.UsersService.findById(data.to);
         if (client) {
             const id = Number(client.handshake.query.user_id);
+            console.log(`checking id of clients and user are ${id} --- ${data.from}`);
             if (user1) {
-                if (user1.id_user == id) {
+                if (user1.id_user == data.from) {
                     if (user1 && user2) {
-                        const bannedUser = await this.ChannelsService.banUser(data.id, data.user.id_user, data.bannedUs);
+                        const bannedUser = await this.ChannelsService.banUser(data.channel_id, data.from, data.to);
                         if (bannedUser) {
                             const result = "User with ${data.bannedUs} is banned from room with id ${data.id} by the ${data.user_id}";
-                            client.emit('ResponseBannedUser', result);
+                            console.log(`banned user is ================== `);
+                            console.log(bannedUser);
                         }
                     }
                 }

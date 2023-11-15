@@ -139,6 +139,12 @@ model ChannelBan {
   @@id([bannedUserId, channelId])
 }
 
+model saveBanned { 
+  id  Int          @id @default(autoincrement())
+  bannedUserId        Int
+  channelId           Int
+  status_User String 
+}
 
 
 

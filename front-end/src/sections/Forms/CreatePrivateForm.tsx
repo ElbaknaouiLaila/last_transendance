@@ -1,24 +1,30 @@
+import React from "react";
+import axios from "axios";
+import * as Yup from "yup";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Stack } from "@mui/material";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-import * as Yup from "yup";
 import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
+import { RHFUploadAvatar } from "../../components/hook-form/RHFUploadAvatar";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
 const CreatePrivateForm = ({ handleClose }: any) => {
+  const [file, setFile] = React.useState<any>();
   const dispatch = useAppDispatch();
   const PrivateSchema = Yup.object().shape({
     title: Yup.string().required("Title is Required!!"),
     members: Yup.array().min(2, "Must have at least 2 Members"),
+    avatar: Yup.string().required("Avatar is required").nullable(true),
   });
 
   const defaultValues = {
     title: "",
     members: [],
     type: "private",
+    avatar:
+      "https://cdn6.aptoide.com/imgs/1/2/2/1221bc0bdd2354b42b293317ff2adbcf_icon.png",
   };
 
   const methods = useForm({
@@ -31,15 +37,18 @@ const CreatePrivateForm = ({ handleClose }: any) => {
     watch, // watch input value by passing the name of it
     setError, // setError by input name
     handleSubmit, // form submit function
+    setValue, // setValue by input name
     formState: { errors, isSubmitted, isSubmitSuccessful, isValid }, // errors and form state
   } = methods; // useful methods from useForm()
 
   const { friends } = useAppSelector(state => state.app);
   const onSubmit = async (data: any) => {
     try {
+      data.avatar = file?.preview;
       await axios.post("http://localhost:3000/channels/create", data, {
         withCredentials: true,
       });
+
       dispatch(
         showSnackbar({
           severity: "success",
@@ -47,7 +56,6 @@ const CreatePrivateForm = ({ handleClose }: any) => {
         })
       );
       handleClose();
-      console.log("DATA", data);
     } catch (error) {
       console.log("error", error);
       dispatch(
@@ -61,33 +69,65 @@ const CreatePrivateForm = ({ handleClose }: any) => {
     }
   };
 
+  const handleDrop = React.useCallback(
+    (acceptedFiles: any) => {
+      const file = acceptedFiles[0];
+
+      setFile(file);
+
+      const newFile = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+      const title = "avatar";
+
+      if (file) {
+        setValue(title, newFile, { shouldValidate: true });
+      }
+    },
+    [setValue]
+  );
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
+        <RHFUploadAvatar name="avatar" maxSize={3145728} onDrop={handleDrop} />
         <RHFTextField name="title" label="Title" />
         <RHFAutocomplete
           name="members"
           label="Members"
           multiple
           freeSolo
-          options={friends.map(friend => friend?.name)}
+          options={friends.map((friend: any) => friend?.name)}
           ChipProps={{ size: "medium" }}
         />
         <Stack
-          spacing={2}
           direction={"row"}
           alignContent={"center"}
-          justifyContent={"end"}
+          justifyContent={"space-evenly"}
         >
-          <Button onClick={handleClose}>Cancel</Button>
-          {/* <LoadingButton loading variant="outlined">
-  Submit
-</LoadingButton> */}
           <Button
             sx={{
               backgroundColor: "#806EA9", // Change the background color to purple
               color: "#C7BBD1", // Change the text color to white
-              borderRadius: "21px",
+              borderRadius: "12px",
+              width: "150px",
+              height: "50px",
+              "&:hover": {
+                backgroundColor: "#684C83", // Change the background color on hover
+                color: "#C7BBD1",
+              },
+            }}
+            variant="contained"
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            sx={{
+              backgroundColor: "#806EA9", // Change the background color to purple
+              color: "#C7BBD1", // Change the text color to white
+              borderRadius: "12px",
+              height: "50px",
               "&:hover": {
                 backgroundColor: "#684C83", // Change the background color on hover
                 color: "#C7BBD1",

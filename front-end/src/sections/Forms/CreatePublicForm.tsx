@@ -1,25 +1,31 @@
+import { useCallback, useState } from "react";
+import axios from "axios";
+import * as Yup from "yup";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Stack } from "@mui/material";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-import * as Yup from "yup";
 import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
+import { RHFUploadAvatar } from "../../components/hook-form/RHFUploadAvatar";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
 const CreatePublicForm = ({ handleClose }: any) => {
+  const [file, setFile] = useState<any>();
   const { friends } = useAppSelector(state => state.app);
   const dispatch = useAppDispatch();
   const PublicSchema = Yup.object().shape({
     title: Yup.string().required("Title is Required!!"),
     members: Yup.array().min(2, "Must have at least 2 Members"),
+    avatar: Yup.string().required("Avatar is required").nullable(true),
   });
 
   const defaultValues = {
     title: "",
     members: [],
     type: "public",
+    avatar:
+      "https://cdn6.aptoide.com/imgs/1/2/2/1221bc0bdd2354b42b293317ff2adbcf_icon.png",
   };
 
   const methods = useForm({
@@ -31,13 +37,14 @@ const CreatePublicForm = ({ handleClose }: any) => {
     reset, // reset the form
     watch, // watch input value by passing the name of it
     setError, // setError by input name
+    setValue, // setValue by input name
     handleSubmit, // form submit function
     formState: { errors }, // errors and form state
   } = methods; // useful methods from useForm()
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("DATA", data);
+      data.avatar = file?.preview;
       await axios.post("http://localhost:3000/channels/create", data, {
         withCredentials: true,
       });
@@ -62,39 +69,73 @@ const CreatePublicForm = ({ handleClose }: any) => {
       handleClose();
     }
   };
+  const handleDrop = useCallback(
+    (acceptedFiles: any) => {
+      const file = acceptedFiles[0];
+
+      setFile(file);
+
+      const newFile = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+      const title = "avatar";
+
+      if (file) {
+        setValue(title, newFile, { shouldValidate: true });
+      }
+    },
+    [setValue]
+  );
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
+        <RHFUploadAvatar name="avatar" maxSize={3145728} onDrop={handleDrop} />
         <RHFTextField name="title" label="Title" />
         <RHFAutocomplete
           name="members"
           label="Members"
           multiple
           freeSolo
-          options={friends.map(friend => friend?.name)}
+          options={friends.map((friend: any) => friend?.name)}
           ChipProps={{ size: "medium" }}
         />
         <Stack
-          spacing={2}
           direction={"row"}
           alignContent={"center"}
-          justifyContent={"end"}
+          justifyContent={"space-evenly"}
         >
-          <Button onClick={handleClose}>Cancel</Button>
           <Button
-            type="submit"
-            variant="contained"
             sx={{
               backgroundColor: "#806EA9", // Change the background color to purple
               color: "#C7BBD1", // Change the text color to white
-              borderRadius: "21px",
+              borderRadius: "12px",
+              width: "150px",
+              height: "50px",
               "&:hover": {
                 backgroundColor: "#684C83", // Change the background color on hover
                 color: "#C7BBD1",
               },
             }}
+            variant="contained"
+            onClick={handleClose}
           >
-            Create Chennel
+            Cancel
+          </Button>
+          <Button
+            sx={{
+              backgroundColor: "#806EA9", // Change the background color to purple
+              color: "#C7BBD1", // Change the text color to white
+              borderRadius: "12px",
+              height: "50px",
+              "&:hover": {
+                backgroundColor: "#684C83", // Change the background color on hover
+                color: "#C7BBD1",
+              },
+            }}
+            type="submit"
+            variant="contained"
+          >
+            Create Channel
           </Button>
         </Stack>
       </Stack>

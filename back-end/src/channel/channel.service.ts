@@ -544,9 +544,22 @@ export class ChannelsService {
 
 // END
 
-  async banUser(data:any, idus:number, user_banned:number)
+  async getChannelById(nameVar:number)
   {
-    const ch = await this.getChannelByName(data.name);
+    const channel = await this.prisma.channel.findUnique({
+      where: { id_channel: nameVar },
+    });
+
+    if (!channel) {
+      throw new NotFoundException(`User with  ${nameVar} not found`);
+    }
+
+    return channel;
+  }
+
+  async banUser(idch:number, idus:number, user_banned:number)
+  {
+    const ch = await this.getChannelById(idch);
     if (ch)
     {
     const record = await this.prisma.memberChannel.findUnique({
@@ -574,6 +587,14 @@ export class ChannelsService {
       {
         if (record2.status_UserInChannel !== "owner" && record2.status_UserInChannel !== "admin")
         {
+          // delete all messages of this user from channel first :
+          const deleteMsg = await this.prisma.discussion.deleteMany({
+            where: {
+              userId: record2.userId,
+              channelId: ch.id_channel,
+            },
+          });
+          // then delete this user from channel.
           const updateChannel = await this.prisma.memberChannel.delete({
             where: {
               userId_channelId: {
@@ -582,8 +603,28 @@ export class ChannelsService {
               },
             },
           })
+
+          // const updateChannel = await this.prisma.memberChannel.update({
+          //   where: {
+          //     userId_channelId: {
+          //       userId: record2.userId,
+          //       channelId: ch.id_channel,
+          //     },
+          //   },
+          //   data: {
+          //     status_UserInChannel: 'banned',
+          //   },
+          // })
           // should add this user in banneduser:
-          const memberchannel = await this.prisma.channelBan.create({
+          // const memberchannel = await this.prisma.channelBan.create({
+          //   data: {
+          //     bannedUserId:record2.userId,
+          //     channelId:ch.id_channel,
+          //     status_User:'banned',
+          //   },
+          // });
+          // save this banned user in saveBanned :
+          const memberchannel = await this.prisma.saveBanned.create({
             data: {
               bannedUserId:record2.userId,
               channelId:ch.id_channel,

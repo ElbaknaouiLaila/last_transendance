@@ -7,10 +7,12 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
+import { RHFUploadAvatar } from "../../components/hook-form/RHFUploadAvatar";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
 const CreateProtectedForm = ({ handleClose }: any) => {
+  const [file, setFile] = React.useState<any>();
   const { friends } = useAppSelector(state => state.app);
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = React.useState(false);
@@ -25,6 +27,7 @@ const CreateProtectedForm = ({ handleClose }: any) => {
     passwordConfirm: Yup.string()
       .required("Confirm password is required")
       .oneOf([Yup.ref("password"), null], "Passwords must match"),
+    avatar: Yup.string().required("Avatar is required").nullable(true),
   });
 
   const defaultValues = {
@@ -33,6 +36,8 @@ const CreateProtectedForm = ({ handleClose }: any) => {
     password: "",
     passwordConfirm: "",
     type: "protected",
+    avatar:
+      "https://cdn6.aptoide.com/imgs/1/2/2/1221bc0bdd2354b42b293317ff2adbcf_icon.png",
   };
 
   const methods = useForm({
@@ -43,12 +48,14 @@ const CreateProtectedForm = ({ handleClose }: any) => {
   const {
     reset,
     setError,
+    setValue, // setValue by input name
     handleSubmit,
     formState: { errors },
   } = methods;
 
   const onSubmit = async (data: any) => {
     try {
+      data.avatar = file?.preview;
       await axios.post("http://localhost:3000/channels/create", data, {
         withCredentials: true,
       });
@@ -73,9 +80,27 @@ const CreateProtectedForm = ({ handleClose }: any) => {
     }
   };
 
+  const handleDrop = React.useCallback(
+    (acceptedFiles: any) => {
+      const file = acceptedFiles[0];
+
+      setFile(file);
+
+      const newFile = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+      const title = "avatar";
+
+      if (file) {
+        setValue(title, newFile, { shouldValidate: true });
+      }
+    },
+    [setValue]
+  );
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} mb={4}>
+        <RHFUploadAvatar name="avatar" maxSize={3145728} onDrop={handleDrop} />
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <RHFTextField name="title" label="Title" />
         </Stack>
@@ -85,7 +110,7 @@ const CreateProtectedForm = ({ handleClose }: any) => {
           label="Members"
           multiple
           freeSolo
-          options={friends.map(friend => friend?.name)}
+          options={friends.map((friend: any) => friend?.name)}
           ChipProps={{ size: "medium" }}
         />
 
@@ -127,17 +152,33 @@ const CreateProtectedForm = ({ handleClose }: any) => {
       </Stack>
 
       <Stack
-        spacing={2}
         direction={"row"}
         alignContent={"center"}
-        justifyContent={"end"}
+        justifyContent={"space-evenly"}
       >
-        <Button onClick={handleClose}>Cancel</Button>
         <Button
           sx={{
             backgroundColor: "#806EA9", // Change the background color to purple
             color: "#C7BBD1", // Change the text color to white
-            borderRadius: "21px",
+            borderRadius: "12px",
+            width: "150px",
+            height: "50px",
+            "&:hover": {
+              backgroundColor: "#684C83", // Change the background color on hover
+              color: "#C7BBD1",
+            },
+          }}
+          variant="contained"
+          onClick={handleClose}
+        >
+          Cancel
+        </Button>
+        <Button
+          sx={{
+            backgroundColor: "#806EA9", // Change the background color to purple
+            color: "#C7BBD1", // Change the text color to white
+            borderRadius: "12px",
+            height: "50px",
             "&:hover": {
               backgroundColor: "#684C83", // Change the background color on hover
               color: "#C7BBD1",
@@ -146,7 +187,7 @@ const CreateProtectedForm = ({ handleClose }: any) => {
           type="submit"
           variant="contained"
         >
-          Create Chennel
+          Create Channel
         </Button>
       </Stack>
     </FormProvider>

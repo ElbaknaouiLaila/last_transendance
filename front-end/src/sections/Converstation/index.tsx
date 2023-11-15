@@ -11,7 +11,7 @@ import { da } from "@faker-js/faker";
 
 const Converstation = () => {
   const dispatch = useAppDispatch();
-  const messageListRef = useRef(null);
+  const messageListRef: any = useRef(null);
   const { current_messages, current_conversations } = useAppSelector(
     state => state.converstation.direct_chat
   );
@@ -19,9 +19,7 @@ const Converstation = () => {
 
   useEffect(() => {
     // Scroll to the bottom of the message list when new messages are added
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop = 0;
-    }
+    messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
 
     const handleChatToDm = (data: any) => {
       console.log(data);
@@ -45,7 +43,7 @@ const Converstation = () => {
     return () => {
       socket.off("chatToDm", handleChatToDm);
     };
-  }, [dispatch, profile._id, contact.room_id]);
+  }, [dispatch, profile._id, contact.room_id, current_messages]);
 
   return (
     <Stack

@@ -1,5 +1,4 @@
 import { Box, Stack } from "@mui/material";
-import { useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store.ts";
 import { MediaMsg, ReplyMsg, TextMsg, Timeline } from "./MsgTypes.tsx";
 
@@ -11,13 +10,16 @@ const Messages = () => {
   var messages: any = [];
   if (type_chat === "individual") {
     // console.log("individual");
-    const { current_messages } = useAppSelector(
+    const { current_messages, conversations } = useAppSelector(
       state => state.converstation.direct_chat
     );
-
+    // console.log(conversations);
+    // if ()
+    // console.log(room_id)
     messages = current_messages;
   } else {
     const { current_messages } = useAppSelector(state => state.channels);
+    // console.log(current_messages);
     messages = current_messages;
   }
 

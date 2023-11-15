@@ -34,7 +34,9 @@ interface JoinProtectedFormData {
 }
 
 const JoinProtectedForm = ({ handleClose }: any) => {
-  const { protectedChannels } = useAppSelector(state => state.channels);
+  const { protectedChannels, channels } = useAppSelector(
+    state => state.channels
+  );
 
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = React.useState(false);
@@ -139,23 +141,31 @@ const JoinProtectedForm = ({ handleClose }: any) => {
             fullWidth
             required
           >
-            {protectedChannels.map((option: any) => (
-              <MenuItem key={option.id_channel} value={option.name}>
-                <Stack
-                  direction={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-around"}
-                >
-                  <Avatar
-                    src={faker.image.avatar()}
-                    sx={{ width: 52, height: 52, marginRight: 2 }}
-                  />
-                  <Typography variant="subtitle2" color={"black"}>
-                    {option.name}
-                  </Typography>
-                </Stack>
-              </MenuItem>
-            ))}
+            {protectedChannels
+              .filter(
+                protectedChannel =>
+                  !channels.some(
+                    channel =>
+                      channel.channel_id === protectedChannel?.id_channel
+                  )
+              )
+              .map((option: any) => (
+                <MenuItem key={option.id_channel} value={option.name}>
+                  <Stack
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"space-around"}
+                  >
+                    <Avatar
+                      src={faker.image.avatar()}
+                      sx={{ width: 52, height: 52, marginRight: 2 }}
+                    />
+                    <Typography variant="subtitle2" color={"black"}>
+                      {option.name}
+                    </Typography>
+                  </Stack>
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
         <FormControl fullWidth>
