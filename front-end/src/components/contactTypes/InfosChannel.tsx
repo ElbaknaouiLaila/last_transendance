@@ -1,3 +1,5 @@
+import React, { useRef, useState } from "react";
+import { TransitionProps } from "@mui/material/transitions";
 import {
   Avatar,
   Box,
@@ -5,32 +7,22 @@ import {
   Dialog,
   Divider,
   IconButton,
-  Popover,
   Slide,
   Stack,
   Typography,
 } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
 import {
   Gear,
-  PencilSimple,
   Prohibit,
   SignOut,
   SpeakerSimpleX,
   X,
 } from "@phosphor-icons/react";
-import React, { useEffect, useRef, useState } from "react";
 import { toggleDialog } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import {
-  BlockDialog,
-  DeleteDialog,
-  LeaveDialog,
-  MuteDialog,
-  RemoveDialog,
-} from "../dialogs/Dialogs";
-import MembersSettings from "./MembersSettings";
 import CreateChannel from "../channels/CreateChannel";
+import { LeaveDialog, MuteDialog, RemoveDialog } from "../dialogs/Dialogs";
+import MembersSettings from "./MembersSettings";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -50,15 +42,15 @@ const InfosChannel = () => {
 
   // console.log(channels.publicChannels);
   if (contact.type_chat === "public") {
-    console.log("public");
+    // console.log("public");
     const channel = channels.publicChannels.find(
       (channel: any) => channel?.id_channel === contact.room_id
     );
-    console.log(channel);
+    // console.log(channel);
     currentInfos.current = channel;
     // contact.name = channel?.name;
   } else if (contact.type_chat === "protected") {
-    console.log("protected");
+    // console.log("protected");
     const channel = channels.protectedChannels.find(
       (channel: any) => channel?.id_channel === contact.room_id
     );
@@ -66,7 +58,7 @@ const InfosChannel = () => {
 
     // contact.name = channel?.name;
   } else if (contact.type_chat === "private") {
-    console.log("private");
+    // console.log("private");
     const channel = channels.privateChannels.find(
       (channel: any) => channel?.id_channel === contact.room_id
     );
@@ -268,7 +260,11 @@ const InfosChannel = () => {
         <RemoveDialog open={openBlock} handleClose={handleCloseBlock} />
       )}
       {openSettings && (
-        <CreateChannel open={openSettings} handleClose={handleClickSettings} />
+        <CreateChannel
+          open={openSettings}
+          handleClose={handleClickSettings}
+          el={currentInfos.current}
+        />
       )}
     </Dialog>
   );

@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { stat } from 'fs';
 import { useDispatch } from 'react-redux';
 
 export interface Channel {

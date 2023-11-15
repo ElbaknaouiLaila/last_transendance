@@ -1,17 +1,28 @@
-import { Box, Stack } from '@mui/material';
-import React, { useEffect } from 'react'
-import { Search, SearchIconWrapper, StyledInputBase } from '../../components/search';
-import { MagnifyingGlass } from '@phosphor-icons/react';
-import ChatElements from '../../components/ChatElements';
-import { ChatList } from '../../data';
-import { socket } from '../../socket'
+import { Box, Stack } from "@mui/material";
+import { MagnifyingGlass } from "@phosphor-icons/react";
+import { useEffect } from "react";
+import ChatElements from "../../components/ChatElements";
+import {
+  Search,
+  SearchIconWrapper,
+  StyledInputBase,
+} from "../../components/search";
+import { useAppSelector } from "../../redux/store/store";
 
 const All = () => {
+  const { conversations } = useAppSelector(
+    state => state.converstation.direct_chat
+  );
+  const { channels } = useAppSelector(state => state.channels);
 
-  useEffect(() => {
-    // emit socket
-  }, [])
-  
+  // add channels and conversations together
+  const ChatList = [...conversations, ...channels];
+  // console.log(conversations);
+  // console.log(channels);
+
+  // useEffect(() => {
+  //   console.log(ChatList);
+  // }, [channels, conversations]);
   return (
     <Box
       sx={{
@@ -38,21 +49,23 @@ const All = () => {
         <Stack
           direction={"column"}
           sx={{
-            flexGrow: 1, overflowY: "auto",
+            flexGrow: 1,
+            overflowY: "auto",
             "&::-webkit-scrollbar": {
               width: "0.4em",
-            }, height: "100%"
+            },
+            height: "100%",
           }}
         >
-          <Stack >
-            {ChatList.filter((el) => !el.pinned).map((el) => {
+          <Stack>
+            {ChatList.filter(el => !el.pinned).map(el => {
               return <ChatElements {...el} />;
             })}
           </Stack>
         </Stack>
       </Stack>
     </Box>
-  )
-}
+  );
+};
 
-export default All
+export default All;

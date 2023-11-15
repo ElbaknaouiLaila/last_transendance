@@ -18,6 +18,7 @@ interface IdType {
   msg: string;
   unread: number;
   online: boolean;
+  pinned: boolean;
 }
 
 const StyledChatBox = styled(Box)(() => ({

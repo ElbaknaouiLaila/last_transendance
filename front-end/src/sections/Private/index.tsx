@@ -76,8 +76,7 @@ const Privates = () => {
           </Search>
         </Stack>
 
-        <Stack padding={"10px 35px 20px"} spacing={2}>
-        </Stack>
+        <Stack padding={"10px 35px 20px"} spacing={2}></Stack>
 
         <Stack
           direction={"column"}
@@ -93,12 +92,10 @@ const Privates = () => {
           }}
         >
           {/* <SimpleBarStyle timeout={500} clickOnTrack={false}> */}
-          <Stack >
-            {conversations
-              .filter((el: any) => !el.pinned)
-              .map((el, index) => {
-                return <ChatElements key={index} {...el} />;
-              })}
+          <Stack>
+            {conversations.map((el, index) => {
+              return <ChatElements key={index} {...el} />;
+            })}
           </Stack>
           {/* </SimpleBarStyle> */}
         </Stack>
