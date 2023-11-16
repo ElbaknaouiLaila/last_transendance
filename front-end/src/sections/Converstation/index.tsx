@@ -6,6 +6,7 @@ import Messages from "../../components/converstation/Messages";
 import {
   addNewConversation,
   fetchCurrentMessages,
+  updateUnread,
   updatedConverstation,
 } from "../../redux/slices/converstation";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
@@ -53,8 +54,11 @@ const Converstation = () => {
       if (!existingConversation) {
         console.log(data);
         dispatch(addNewConversation(newDataConversation));
+        // dispatch(updateUnread(data));
       } else {
+        console.log(data);
         dispatch(updatedConverstation(newDataConversation));
+        // dispatch(updateUnread(data));
       }
     };
     socket.on("chatToDm", handleChatToDm);

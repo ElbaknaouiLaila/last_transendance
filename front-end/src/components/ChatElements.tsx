@@ -2,7 +2,8 @@ import { Avatar, Badge, Box, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { useEffect } from "react";
 import {
-  selectConversation, updatedContactInfo
+  selectConversation,
+  updatedContactInfo,
 } from "../redux/slices/contact";
 import { setCurrentConverstation } from "../redux/slices/converstation";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
@@ -31,6 +32,7 @@ const ChatElements = (id: IdType) => {
   const { contact, profile } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
   const selected_id = id.id;
+  console.log(id);
 
   const selectedChatId = contact.room_id;
   let isSelected = +selectedChatId === id.id;

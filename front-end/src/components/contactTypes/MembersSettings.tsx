@@ -45,16 +45,11 @@ const MembersSettings = (el: any) => {
   const makeAdmin = () => {
     console.log("make admin");
     // ! emit "make_admin" event
-    try {
-      axios.post("http://localhost:3000/api/channel/makeAdmin", {
-        to: el.el.userId,
-        from: _id,
-        channel_id: el.el.channelId,
-      });
-    }
-    catch (err) {
-      console.log(err);
-    }
+    axios.post("http://localhost:3000/api/channel/makeAdmin", {
+      to: el.el.userId,
+      from: _id,
+      channel_id: el.el.channelId,
+    });
 
     // socket.emit("make_admin", { to: el.el.userId, from: _id });
     // dispatch(updatedContactInfo({ admin: true }));

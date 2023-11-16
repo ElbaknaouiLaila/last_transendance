@@ -257,17 +257,27 @@ const InfosChannel = () => {
         <LeaveDialog
           open={openLeave}
           handleClose={handleCloseLeave}
-          el={{ user_id: profile._id, channel_id: currentInfos.current?.id_channel }}
+          el={{
+            user_id: profile._id,
+            channel_id: currentInfos.current?.id_channel,
+          }}
         />
       )}
       {openBlock && (
-        <RemoveDialog open={openBlock} handleClose={handleCloseBlock} />
+        <RemoveDialog
+          open={openBlock}
+          handleClose={handleCloseBlock}
+          el={{
+            user_id: profile._id,
+            channel_id: currentInfos.current?.id_channel,
+          }}
+        />
       )}
       {openSettings && (
         <ChangeChannels
           open={openSettings}
           handleClose={handleClickSettings}
-          el={{el: currentInfos.current, user_id: profile._id}}
+          el={{ el: currentInfos.current, user_id: profile._id }}
         />
       )}
     </Dialog>

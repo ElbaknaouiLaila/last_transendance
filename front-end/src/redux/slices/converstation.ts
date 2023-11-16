@@ -72,6 +72,7 @@ export const ConverstationSlice = createSlice({
               return inputDate.toLocaleDateString(undefined, options);
             }
           };
+          
 
           return {
             room_id: el?.id_room,
@@ -168,11 +169,25 @@ export const ConverstationSlice = createSlice({
     },
     setCurrentConverstation(state, action) {
       // ~ set current converstation
+      console.log(action.payload);
       const user_id = action.payload.user_id;
       state.direct_chat.current_conversation = action.payload;
       const messages: any = action.payload.data;
+      /**
+       *  data: Array(8) [
+      {
+        id: 60,
+        text: 'hello there',
+        dateSent: '2023-11-16T19:41:46.239Z',
+        outgoing: 90240,
+        incoming: 90351,
+        type: 'text',
+        idDm: 12
+      },
+       */
       const formatted_messages = messages.map((el: any) => ({
-        id: el.id,
+        id: el.idDm,
+        msg_id: el.id,
         type: "msg",
         subtype: el.type,
         message: el.text,
@@ -187,6 +202,23 @@ export const ConverstationSlice = createSlice({
       const messages: any = action.payload;
       state.direct_chat.current_messages.push(messages);
     },
+    updateUnread(state, action) {
+      // ~ update unread messages
+      const room_id = action.payload.id;
+      console.log(state.direct_chat.conversations);
+      state.direct_chat.conversations = state.direct_chat.conversations.map((el: any) => {
+        if (el?.room_id !== room_id) {
+          console.log(el);
+          return el;
+        } else {
+          console.log(el);
+          el.unread += 1;
+          return {
+            el
+          };
+        }
+      });
+    }
   },
 });
 
@@ -199,4 +231,5 @@ export const {
   setCurrentConverstation,
   fetchCurrentMessages,
   emptyConverstation,
+  updateUnread,
 } = ConverstationSlice.actions;
