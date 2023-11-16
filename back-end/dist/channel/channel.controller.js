@@ -55,36 +55,41 @@ let ChannelsController = class ChannelsController {
         return memberChannel;
     }
     async updatePass(req, data) {
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%% ===== UPDATEPASS");
+        console.log(data);
         const decode = this.jwt.verify(req.cookies['cookie']);
         const user = await this.UsersService.findById(decode.id);
         await this.channelsService.updatePass(data, user.id_user);
     }
     async removePass(req, data) {
-        console.log("removePass");
+        console.log("ÄÄÄÄÄÄÄÄÄÄÄ ======= removePass");
+        console.log(data);
         const decode = this.jwt.verify(req.cookies['cookie']);
         const user = await this.UsersService.findById(decode.id);
         await this.channelsService.removePass(data, user.id_user);
     }
     async setPass(req, data) {
+        console.log("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤ FROM SET PASSWORD ");
+        console.log(data);
+        console.log(data.passwordConfirm);
         const decode = this.jwt.verify(req.cookies['cookie']);
         const user = await this.UsersService.findById(decode.id);
         await this.channelsService.setPass(data, user.id_user);
     }
     async setAdmin(req, data) {
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        const decode2 = this.jwt.verify(data.updated_user);
-        const updatedUser = await this.UsersService.findById(decode2.id);
-        await this.channelsService.setAdmin(data, user.id_user, updatedUser.id_user);
+        console.log("SET ADMIN :::: !!!!!!!!!!!!!!!!!!!!!!!!1 FROM SET ADMIN \n");
+        console.log(data);
+        await this.channelsService.setAdmin(data);
     }
-    async muteUser(req, data) {
-        console.log("mutedUser");
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        const decode2 = this.jwt.verify(data.updated_user);
-        const updatedUser = await this.UsersService.findById(decode2.id);
-        const period = new Date();
-        await this.channelsService.muteUser(data, user.id_user, updatedUser.id_user);
+    async removeChannel(req, data) {
+        console.log("Remove Channel :::: !!!!!!!!!!!!!!!!!!!!!!!! \n");
+        console.log(data);
+        const user = await this.UsersService.findById(data.user_id);
+        if (user) {
+            const result = await this.channelsService.removeChannel(data, user.id_user);
+            if (!result)
+                console.log("ERROR \n");
+        }
     }
     async getPublicChannels() {
         return this.channelsService.getPublicChannels();
@@ -93,7 +98,7 @@ let ChannelsController = class ChannelsController {
         return this.channelsService.getProtectedChannels();
     }
     async getAllChannels(req, data) {
-        console.log("all channels");
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!! ALL CHANNELS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
         const decode = this.jwt.verify(req.cookies['cookie']);
         const user = await this.UsersService.findById(decode.id);
         const myAllChannels = await this.channelsService.getAllChannels(user.id_user);
@@ -107,6 +112,7 @@ let ChannelsController = class ChannelsController {
                     message = lastMsg.message;
                     sent = lastMsg.dateSent;
                 }
+                console.log("FROM GETALL CHANNELS \n", message);
                 const admins = await this.channelsService.getAllAdmins(channels.channelId);
                 console.log("ADMINS ARE : ");
                 console.log(admins);
@@ -118,7 +124,7 @@ let ChannelsController = class ChannelsController {
                 console.log(owners);
                 const newCh = {
                     channel_id: channels.channelId,
-                    image: channels.channelId,
+                    image: channels.channel.img,
                     name: channels.channel.name,
                     owner: owners,
                     admin: admins,
@@ -128,6 +134,8 @@ let ChannelsController = class ChannelsController {
                     unread: true,
                     channel_type: channels.channel.visibility,
                 };
+                console.log("%%%%%%%");
+                console.log(newCh);
                 arrayOfChannels.push(newCh);
             }
             return arrayOfChannels;
@@ -152,7 +160,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "join", null);
 __decorate([
-    (0, common_1.Patch)('updatePass'),
+    (0, common_1.Post)('updatePass'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -160,7 +168,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "updatePass", null);
 __decorate([
-    (0, common_1.Patch)('removePass'),
+    (0, common_1.Post)('removePass'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -168,7 +176,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "removePass", null);
 __decorate([
-    (0, common_1.Patch)('setPass'),
+    (0, common_1.Post)('setPass'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -176,7 +184,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "setPass", null);
 __decorate([
-    (0, common_1.Patch)('setAdmin'),
+    (0, common_1.Post)('setAdmin'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -184,13 +192,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "setAdmin", null);
 __decorate([
-    (0, common_1.Patch)('muteUser'),
+    (0, common_1.Post)('removeChannel'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], ChannelsController.prototype, "muteUser", null);
+], ChannelsController.prototype, "removeChannel", null);
 __decorate([
     (0, common_1.Get)('allPublic'),
     __metadata("design:type", Function),

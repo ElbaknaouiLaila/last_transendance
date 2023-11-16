@@ -79,90 +79,104 @@ export class ChannelsController {
     return memberChannel;
   }
 // must add DTO UPDATED.
-  @Patch('updatePass')
+// channels/updatePass
+  @Post('updatePass')
   async updatePass(@Req() req, @Body() data: any)
   {
     // data that I expect are iduser , namechannel and newpass.
+//     %%%%%%%%%%%%%%%%%%%%%%%%%%% ===== UPDATEPASS
+// {
+//   password: 'hhh123',
+//   passwordConfirm: 'hhh123',
+//   channel_id: 19,
+//   user_id: 90652
 
+    console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%% ===== UPDATEPASS");
+    console.log(data);
     const decode = this.jwt.verify(req.cookies['cookie']);
     const user = await this.UsersService.findById(decode.id);
     await this.channelsService.updatePass(data, user.id_user);
 
   }
-
-  @Patch('removePass')
+  // channels/removePass
+  @Post('removePass')
   async removePass(@Req() req, @Body() data: any)
   {
-    console.log("removePass");
+    console.log("ÄÄÄÄÄÄÄÄÄÄÄ ======= removePass");
     // data that I expect are iduser , namechannel and newpass.
-
+    // { id_channel: 19, user_id: 90652 }
+    console.log(data);
     const decode = this.jwt.verify(req.cookies['cookie']);
     const user = await this.UsersService.findById(decode.id);
     await this.channelsService.removePass(data, user.id_user);
 
   }
-  @Patch('setPass')
+  // channels/setPass
+  @Post('setPass')
   async setPass(@Req() req, @Body() data: any)
   {
-    // I expect the password , namechannel and iduser.
+    // {
+    //   password: 'ok1234',
+    //   passwordConfirm: 'ok1234',
+    //   channel_id: 19,
+    //   user_id: 90652
+    // }
+    // I expect the password , namechannel and iduser
+    console.log("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤ FROM SET PASSWORD ");
+    console.log(data);
+    console.log(data.passwordConfirm);
     const decode = this.jwt.verify(req.cookies['cookie']);
     const user = await this.UsersService.findById(decode.id);
 
     await this.channelsService.setPass(data, user.id_user);
 
   }
-
-  @Patch('setAdmin')
+  // channels/setAdmin
+  @Post('setAdmin')
   async setAdmin(@Req() req, @Body() data: any)
   {
     // data I expect, iduser, secondiduser, namechannel.
-    const decode = this.jwt.verify(req.cookies['cookie']);
-    const user = await this.UsersService.findById(decode.id);
-    
-    const decode2 = this.jwt.verify(data.updated_user);
-    const updatedUser = await this.UsersService.findById(decode2.id);
+//     SET ADMIN :::: !!!!!!!!!!!!!!!!!!!!!!!!1 FROM SET ADMIN 
 
-    await this.channelsService.setAdmin(data, user.id_user, updatedUser.id_user);
+// { to: 62669, from: 90652, channel_id: 19 }
+
+
+    console.log("SET ADMIN :::: !!!!!!!!!!!!!!!!!!!!!!!!1 FROM SET ADMIN \n");
+    console.log(data);
+    // const decode = this.jwt.verify(req.cookies['cookie']);
+    // const user = await this.UsersService.findById(decode.id);
+    
+    // const decode2 = this.jwt.verify(data.updated_user);
+    // const updatedUser = await this.UsersService.findById(decode2.id);
+
+    await this.channelsService.setAdmin(data);
 
   }
 
-  // @Delete('kickUser')
-  // async kickUser(@Req() req, @Body() data: any){
-  //   console.log("kickUser");
-  //    // data I expect, iduser, secondiduser, namechannel.
-  //   const decode = this.jwt.verify(req.cookies['cookie']);
-  //   const user = await this.UsersService.findById(decode.id);
-    
-  //   const decode2 = this.jwt.verify(data.updated_user);
-  //   const updatedUser = await this.UsersService.findById(decode2.id);
-  //   await this.channelsService.kickUser(data, user.id_user, updatedUser.id_user);
-  // }
+  // channels/setAdmin
+  @Post('removeChannel')
+  async removeChannel(@Req() req, @Body() data: any)
+  {
+    // data I expect, iduser, secondiduser, namechannel.
+//     SET ADMIN :::: !!!!!!!!!!!!!!!!!!!!!!!!1 FROM SET ADMIN 
 
-  // @Patch('banUser')
-  // async banUser(@Req() req, @Body() data: any){
+// { to: 62669, from: 90652, channel_id: 19 }
 
-  //   console.log("bannedUser");
-  //   // data I expect, iduser, secondiduser, namechannel.
-  //   const decode = this.jwt.verify(req.cookies['cookie']);
-  //   const user = await this.UsersService.findById(decode.id);
-    
-  //   const decode2 = this.jwt.verify(data.updated_user);
-  //   const updatedUser = await this.UsersService.findById(decode2.id);
-  //   await this.channelsService.banUser(data, user.id_user, updatedUser.id_user);
-  // }
-  
-  @Patch('muteUser')
-  async muteUser(@Req() req, @Body() data: any){
 
-    // data that I expect name channel , iduser secondiduser, duration of muting 
-    console.log("mutedUser");
-    const decode = this.jwt.verify(req.cookies['cookie']);
-    const user = await this.UsersService.findById(decode.id);
+    console.log("Remove Channel :::: !!!!!!!!!!!!!!!!!!!!!!!! \n");
+    console.log(data);
+    // const decode = this.jwt.verify(req.cookies['cookie']);
+    const user = await this.UsersService.findById(data.user_id);
     
-    const decode2 = this.jwt.verify(data.updated_user);
-    const updatedUser = await this.UsersService.findById(decode2.id);
-    const period : Date = new Date();
-    await this.channelsService.muteUser(data, user.id_user, updatedUser.id_user);
+    // const decode2 = this.jwt.verify(data.updated_user);
+    // const updatedUser = await this.UsersService.findById(decode2.id);
+    if (user)
+    {
+      const result = await this.channelsService.removeChannel(data, user.id_user);
+      if (!result)
+        console.log("ERROR \n");
+   }
+
   }
 
   @Get('allPublic')
@@ -187,7 +201,7 @@ export class ChannelsController {
 
   async getAllChannels(@Req() req, @Body() data: any)
   {
-    console.log("all channels");
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!! ALL CHANNELS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
     const decode = this.jwt.verify(req.cookies['cookie']);
     // console.log("Reshe");
     const user = await this.UsersService.findById(decode.id);
@@ -211,6 +225,7 @@ export class ChannelsController {
             message = lastMsg.message;
             sent = lastMsg.dateSent;
           }
+          console.log("FROM GETALL CHANNELS \n", message);
           const admins = await this.channelsService.getAllAdmins(channels.channelId);
           console.log("ADMINS ARE : ");
           console.log(admins);
@@ -222,7 +237,7 @@ export class ChannelsController {
           console.log(owners);
           const newCh = {
             channel_id:channels.channelId,
-            image: channels.channelId,
+            image: channels.channel.img,
             name: channels.channel.name,
             owner: owners,
             admin: admins,
@@ -231,7 +246,10 @@ export class ChannelsController {
             time: sent,
             unread: true,
             channel_type: channels.channel.visibility,
+    
           };
+          console.log("%%%%%%%");
+          console.log(newCh);
           arrayOfChannels.push(newCh);
         }
 

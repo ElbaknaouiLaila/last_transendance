@@ -32,4 +32,5 @@ export declare class ChatGateway implements OnGatewayInit, OnGatewayConnection, 
     bannedUser(client: Socket, data: any): Promise<void>;
     kickUser(client: Socket, data: any): Promise<void>;
     muteUser(client: Socket, data: any): Promise<void>;
+    unmuteUser(client: Socket, data: any): Promise<void>;
 }

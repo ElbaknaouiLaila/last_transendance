@@ -243,7 +243,7 @@ let ChatGateway = class ChatGateway {
         console.log(data);
         const user = await this.UsersService.findById(data.user_id);
         if (user) {
-            const leave = await this.ChatService.getLeavingRoom(data.id, data.user_id);
+            const leave = await this.ChatService.getLeavingRoom(data.user_id, data.channel_id);
             if (leave) {
                 console.log("User with ${data.user_id} is leaving room with id ${data.id}");
                 return true;
@@ -277,16 +277,17 @@ let ChatGateway = class ChatGateway {
             console.log("ERRROR ");
     }
     async kickUser(client, data) {
-        console.log("kickUser");
+        console.log("kickUser =======================");
         console.log(data);
-        const user1 = await this.UsersService.findById(data.user_id);
-        const user2 = await this.UsersService.findById(data.kickuser);
+        console.log("###############################################");
+        const user1 = await this.UsersService.findById(data.from);
+        const user2 = await this.UsersService.findById(data.to);
         if (client) {
             const id = Number(client.handshake.query.user_id);
             if (user1) {
                 if (user1.id_user == id) {
                     if (user1 && user2) {
-                        const kickUser = await this.ChannelsService.kickUser(data, user1.id_user, data.kickuser);
+                        const kickUser = await this.ChannelsService.kickUser(data, data.from, data.to);
                         if (kickUser) {
                             const result = "User with ${data.kickUser} is kickUser from room with id ${data.id} by the ${data.user_id}";
                             client.emit('ResponsekickUser', result);
@@ -299,18 +300,40 @@ let ChatGateway = class ChatGateway {
             console.log("error");
     }
     async muteUser(client, data) {
-        console.log("muteUser");
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ MUUTE USER @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         console.log(data);
-        const user1 = await this.UsersService.findById(data.user_id);
-        const user2 = await this.UsersService.findById(data.kickuser);
+        const user1 = await this.UsersService.findById(data.from);
+        const user2 = await this.UsersService.findById(data.to);
         if (client) {
             const id = Number(client.handshake.query.user_id);
             if (user1) {
                 if (user1.id_user == id) {
                     if (user1 && user2) {
-                        const muteUser = await this.ChannelsService.muteUser(data, user1.id_user, data.muteduser);
+                        const muteUser = await this.ChannelsService.muteUser(data, user1.id_user, data.to);
                         if (muteUser) {
-                            const result = "User with ${data.muteUser} is muted from room with id ${data.id} by the ${data.user_id}";
+                            const result = "User with ${data.to} is muted from room with id ${data.channel_id} by the ${data.from}";
+                            client.emit('ResponsekickUser', result);
+                        }
+                    }
+                }
+            }
+        }
+        else
+            console.log("error");
+    }
+    async unmuteUser(client, data) {
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ UNMUUTE USER @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        console.log(data);
+        const user1 = await this.UsersService.findById(data.from);
+        const user2 = await this.UsersService.findById(data.to);
+        if (client) {
+            const id = Number(client.handshake.query.user_id);
+            if (user1) {
+                if (user1.id_user == id) {
+                    if (user1 && user2) {
+                        const unmuteUser = await this.ChannelsService.unmuteUser(data, user1.id_user, data.to);
+                        if (unmuteUser) {
+                            const result = "User with ${data.to} is muted from room with id ${data.channel_id} by the ${data.from}";
                             client.emit('ResponsekickUser', result);
                         }
                     }
@@ -398,6 +421,14 @@ __decorate([
     __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
     __metadata("design:returntype", Promise)
 ], ChatGateway.prototype, "muteUser", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('unmuteUserFromChannel'),
+    __param(0, (0, websockets_2.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "unmuteUser", null);
 exports.ChatGateway = ChatGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({ cors: { origin: 'http://localhost:5173', methods: ['GET', 'POST'] } }),
     __metadata("design:paramtypes", [jwtservice_service_1.JwtService, chat_service_1.ChatService, users_service_1.UsersService, channel_service_1.ChannelsService])

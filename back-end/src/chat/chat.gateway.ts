@@ -432,19 +432,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     else
       console.log("Error user does not exist");
   }
-
+  
   @SubscribeMessage('leaveChannel')
   async leavingRoom(@ConnectedSocket() client: Socket,@MessageBody() data: any)
   {
     // I need the id of room (dm). and rhe user.
     console.log("********************** leaveChannel");
     // const userId: number = Number(client.handshake.query.user_id);
+    // { user_id: 62669, channel_id: 19 }
     console.log(data)
     const user = await this.UsersService.findById(data.user_id);
     if (user)
     {
       // data.id is id of channel.
-      const leave =  await this.ChatService.getLeavingRoom(data.id, data.user_id);
+      const leave =  await this.ChatService.getLeavingRoom(data.user_id, data.channel_id);
       if (leave)
       {
         console.log("User with ${data.user_id} is leaving room with id ${data.id}");
@@ -510,12 +511,15 @@ async bannedUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
 @SubscribeMessage('kickUserFromChannel')
 async kickUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
 {
-  console.log("kickUser");
+  console.log("kickUser =======================");
   console.log(data);
+  console.log("###############################################");
   // matching the client with iduser :
-
-  const user1 = await this.UsersService.findById(data.user_id);
-  const user2 = await this.UsersService.findById(data.kickuser);
+  // kickUser =======================
+// { to: 98853, from: 90652, channel_id: 19 }
+// must protect data .
+  const user1 = await this.UsersService.findById(data.from);
+  const user2 = await this.UsersService.findById(data.to);
   if (client)
   {
     const id: number = Number(client.handshake.query.user_id);
@@ -526,7 +530,7 @@ async kickUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
         if (user1 && user2)
         {
           // data.id is id of channel.
-          const kickUser =   await this.ChannelsService.kickUser(data, user1.id_user, data.kickuser);
+          const kickUser =   await this.ChannelsService.kickUser(data, data.from, data.to);
           if (kickUser)
           {
            const result =  "User with ${data.kickUser} is kickUser from room with id ${data.id} by the ${data.user_id}";
@@ -543,12 +547,13 @@ async kickUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
 @SubscribeMessage('muteUserFromChannel')
 async muteUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
 {
-  console.log("muteUser");
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ MUUTE USER @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+  // { to: 62669, from: 90652, channel_id: 19 }
   console.log(data);
   // matching the client with iduser :
 
-  const user1 = await this.UsersService.findById(data.user_id);
-  const user2 = await this.UsersService.findById(data.kickuser);
+  const user1 = await this.UsersService.findById(data.from);
+  const user2 = await this.UsersService.findById(data.to);
   if (client)
   {
     const id: number = Number(client.handshake.query.user_id);
@@ -559,10 +564,10 @@ async muteUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
         if (user1 && user2)
         {
           // data.id is id of channel.
-          const muteUser =   await this.ChannelsService.muteUser(data, user1.id_user, data.muteduser);
+          const muteUser =   await this.ChannelsService.muteUser(data, user1.id_user, data.to);
           if (muteUser)
           {
-           const result =  "User with ${data.muteUser} is muted from room with id ${data.id} by the ${data.user_id}";
+           const result =  "User with ${data.to} is muted from room with id ${data.channel_id} by the ${data.from}";
             client.emit('ResponsekickUser', result);
           }
         }
@@ -572,5 +577,41 @@ async muteUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
   else
     console.log("error");
 }
+
+
+@SubscribeMessage('unmuteUserFromChannel')
+async unmuteUser(@ConnectedSocket() client: Socket,@MessageBody() data: any)
+{
+  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ UNMUUTE USER @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+  // { to: 62669, from: 90652, channel_id: 19 }
+  console.log(data);
+  // matching the client with iduser :
+
+  const user1 = await this.UsersService.findById(data.from);
+  const user2 = await this.UsersService.findById(data.to);
+  if (client)
+  {
+    const id: number = Number(client.handshake.query.user_id);
+    if (user1)
+    {
+      if (user1.id_user == id)
+      {
+        if (user1 && user2)
+        {
+          // data.id is id of channel.
+          const unmuteUser =   await this.ChannelsService.unmuteUser(data, user1.id_user, data.to);
+          if (unmuteUser)
+          {
+           const result =  "User with ${data.to} is muted from room with id ${data.channel_id} by the ${data.from}";
+            client.emit('ResponsekickUser', result);
+          }
+        }
+      }
+    }
+  }
+  else
+    console.log("error");
+}
+
 
 }

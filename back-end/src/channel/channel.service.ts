@@ -94,7 +94,8 @@ export class ChannelsService {
         data: {
           name: data.title,
           visibility: data.type,
-          password:data.password
+          password:data.password,
+          img:data.avatar
         },
       });
     //adding a record to save the user who created this channel and set its status on this channel.
@@ -170,16 +171,25 @@ export class ChannelsService {
     console.log(ch);
     // console.log("channel is " +ch.name);
     // console.log("channel is " +ch.visibility);
-    // must cheak is this user has already banned from this channel or not, if yes must prevent him.
-    const cheak = await this.prisma.channelBan.findUnique({
-      where : {
+    // // must cheak is this user has already banned from this channel or not, if yes must prevent him.
+    // const cheak = await this.prisma.channelBan.findUnique({
+    //   where : {
 
-        bannedUserId_channelId: {
-          bannedUserId: usid, 
-          channelId: ch.id_channel,
-        },
-        },
+    //     bannedUserId_channelId: {
+    //       bannedUserId: usid, 
+    //       channelId: ch.id_channel,
+    //     },
+    //     },
+    // });
+
+    const cheak = await this.prisma.saveBanned.findFirst({
+      where: {
+        bannedUserId: usid,
+        channelId: ch.id_channel,
+        status_User: 'banned',
+      },
     });
+    
     console.log(cheak);
     if (cheak)
     {
@@ -256,7 +266,7 @@ export class ChannelsService {
 
   async updatePass(data : any, usid : number)
   {
-    const ch = await this.getChannelByName(data.name);
+    const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
       const record = await this.prisma.memberChannel.findUnique({
@@ -277,12 +287,14 @@ export class ChannelsService {
 
             if (ch.visibility == "protected")
             {
+              const hashedPassword = await this.hashPassword(data.password);
+
               const updateChannel = await this.prisma.channel.update({
                 where: {
                   id_channel: ch.id_channel,
                 },
                 data: {
-                  password: data.newpass,
+                  password: hashedPassword,
                 },
               })
             }
@@ -307,7 +319,7 @@ export class ChannelsService {
   // End !!
   async removePass(data : any, usid : number)
   {
-    const ch = await this.getChannelByName(data.name);
+    const ch = await this.getChannelById(data.id_channel);
     if (ch)
     {
       const record = await this.prisma.memberChannel.findUnique({
@@ -356,7 +368,7 @@ export class ChannelsService {
 // End
   async setPass(data : any, usid : number)
   {
-    const ch = await this.getChannelByName(data.name);
+    const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
     const record = await this.prisma.memberChannel.findUnique({
@@ -374,6 +386,7 @@ export class ChannelsService {
           console.log("Yes I am the owner");
           if (ch.visibility == "public" || ch.visibility == "privat")
           {
+            const hashedPassword = await this.hashPassword(data.password);
             console.log("inside visibility");
             const updateChannel = await this.prisma.channel.update({
               where: {
@@ -381,7 +394,7 @@ export class ChannelsService {
               },
               data: {
                 visibility:"protected",
-                password: data.newpass,
+                password: hashedPassword,
               },
             })
           }
@@ -408,9 +421,9 @@ export class ChannelsService {
 
 
   // END. belaan d muted kifesh andir lih hnea !!
-  async setAdmin(data : any, usid : number, upus:number)
+  async setAdmin(data : any)
   {
-    const ch = await this.getChannelByName(data.name);
+    const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
 
@@ -418,7 +431,7 @@ export class ChannelsService {
       where : {
 
         userId_channelId: {
-          userId: usid, 
+          userId: data.from, 
           channelId: ch.id_channel,
         },
         },
@@ -428,7 +441,7 @@ export class ChannelsService {
       where : {
 
         userId_channelId: {
-          userId: upus, 
+          userId: data.to, 
           channelId: ch.id_channel,
         },
         },
@@ -438,10 +451,11 @@ export class ChannelsService {
     {
         if (record.status_UserInChannel === "owner")
         {
+
           const updateChannel = await this.prisma.memberChannel.update({
             where: {
               userId_channelId: {
-                userId: upus, 
+                userId: data.to, 
                 channelId: ch.id_channel,
               },
             },
@@ -458,7 +472,7 @@ export class ChannelsService {
     else
     {
       // hena diri name instead of id !!!
-      throw new NotFoundException(`the user with ${usid} or ${upus} is not belong to this channel ${ch.name}`);
+      throw new NotFoundException(`the user with ${data.from} or ${data.to} is not belong to this channel ${ch.name}`);
     }
   }
   else
@@ -471,7 +485,7 @@ export class ChannelsService {
 
   async kickUser(data:any, idus:number, kickcus:number)
   {
-    const ch = await this.getChannelByName(data.name);
+    const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
       const record = await this.prisma.memberChannel.findUnique({
@@ -500,24 +514,49 @@ export class ChannelsService {
       {
         if (record2.status_UserInChannel !== "owner" && record2.status_UserInChannel !== "admin")
         {
-          
-            const updateChannel = await this.prisma.memberChannel.delete({
-              where: {
-                userId_channelId: {
-                  userId: kickcus, 
-                  channelId: ch.id_channel,
-                },
+          // delete all messages of this user from channel first :
+          const deleteMsg = await this.prisma.discussion.deleteMany({
+            where: {
+              userId: record2.userId,
+              channelId: ch.id_channel,
+            },
+          });
+          // then delete this user from channel.
+          const updateChannel = await this.prisma.memberChannel.delete({
+            where: {
+              userId_channelId: {
+                userId: record2.userId,
+                channelId: ch.id_channel,
               },
-            })
-            // should add this user in banneduser:
-            const memberchannel = await this.prisma.channelBan.create({
-              data: {
-                bannedUserId:kickcus,
-                channelId:ch.id_channel,
-                status_User:'kicked',
-              },
-            });
-            return updateChannel;
+            },
+          })
+
+          // save this banned user in saveBanned :
+          const memberchannel = await this.prisma.saveBanned.create({
+            data: {
+              bannedUserId:record2.userId,
+              channelId:ch.id_channel,
+              status_User:'kicked',
+            },
+          });
+          return updateChannel;
+            // const updateChannel = await this.prisma.memberChannel.delete({
+            //   where: {
+            //     userId_channelId: {
+            //       userId: kickcus, 
+            //       channelId: ch.id_channel,
+            //     },
+            //   },
+            // })
+            // // should add this user in banneduser:
+            // const memberchannel = await this.prisma.channelBan.create({
+            //   data: {
+            //     bannedUserId:kickcus,
+            //     channelId:ch.id_channel,
+            //     status_User:'kicked',
+            //   },
+            // });
+            // return updateChannel;
         
         }
         else
@@ -603,26 +642,6 @@ export class ChannelsService {
               },
             },
           })
-
-          // const updateChannel = await this.prisma.memberChannel.update({
-          //   where: {
-          //     userId_channelId: {
-          //       userId: record2.userId,
-          //       channelId: ch.id_channel,
-          //     },
-          //   },
-          //   data: {
-          //     status_UserInChannel: 'banned',
-          //   },
-          // })
-          // should add this user in banneduser:
-          // const memberchannel = await this.prisma.channelBan.create({
-          //   data: {
-          //     bannedUserId:record2.userId,
-          //     channelId:ch.id_channel,
-          //     status_User:'banned',
-          //   },
-          // });
           // save this banned user in saveBanned :
           const memberchannel = await this.prisma.saveBanned.create({
             data: {
@@ -632,26 +651,6 @@ export class ChannelsService {
             },
           });
           return updateChannel;
-            // const updateChannel = await this.prisma.memberChannel.update({
-            //   where: {
-            //     userId_channelId: {
-            //       userId: record2.userId, 
-            //       channelId: record2.channelId,
-            //     },
-            //   },
-            //       data: {
-            //         status_UserInChannel:"banned",
-            //       },
-            // })
-            // console.log("trying to execute banned User");
-            // const channel_Ban = await this.prisma.channelBan.create({
-            //   data: {
-            //     bannedUserId:record2.userId,
-            //     channelId:record2.channelId,
-            //   },
-            // });
-            // console.log("after executing banned User");
-
         }
         else
         {
@@ -677,7 +676,7 @@ export class ChannelsService {
 // END
   async muteUser(data:any, idus:number, user_muted:number)
   {
-    const ch = await this.getChannelByName(data.name);
+    const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
       const record = await this.prisma.memberChannel.findUnique({
@@ -702,7 +701,7 @@ export class ChannelsService {
       {
         if (record.status_UserInChannel === "owner" || record.status_UserInChannel === "admin")
         {
-          if (record2.status_UserInChannel !== "owner" && record2.status_UserInChannel !== "admin")
+          if (record2.status_UserInChannel !== "owner")
           {
             
               const updateChannel = await this.prisma.memberChannel.update({
@@ -714,7 +713,6 @@ export class ChannelsService {
                 },
                   data: {
                     muted:true,
-                    period:data.duration,
                   },
               })
               return updateChannel;
@@ -870,4 +868,125 @@ export class ChannelsService {
                   console.error('we have no messages on this channel', error);
             }
         }
+
+        // END
+  async unmuteUser(data:any, idus:number, user_muted:number)
+  {
+    const ch = await this.getChannelById(data.channel_id);
+    if (ch)
+    {
+      const record = await this.prisma.memberChannel.findUnique({
+        where : {
+
+          userId_channelId: {
+            userId: idus, 
+            channelId: ch.id_channel,
+          },
+          },
+      });
+
+      const record2 = await this.prisma.memberChannel.findUnique({
+        where : {
+          userId_channelId: {
+            userId: user_muted, 
+            channelId: ch.id_channel,
+          },
+          },
+      });
+      if (record && record2)
+      {
+        if (record.status_UserInChannel === "owner" || record.status_UserInChannel === "admin")
+        {
+          if (record2.status_UserInChannel !== "owner")
+          {
+            
+              const updateChannel = await this.prisma.memberChannel.update({
+                where: {
+                  userId_channelId: {
+                    userId: record2.userId, 
+                    channelId: record2.channelId,
+                  },
+                },
+                  data: {
+                    muted:false,
+                  },
+              })
+              return updateChannel;
+          }
+          else
+          {
+            throw new NotFoundException(`you can't muted an owner or an admin`);
+          }
+        }
+        else
+        {
+          throw new NotFoundException(`your not  the  owner or admin of ${ch.name}`);
+        }
+      }
+      else
+      {
+        throw new NotFoundException(`the user with ${idus} or ${user_muted} is not belong to this channel ${ch.name}`);
+      }
+  }
+  else
+  {
+    throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
+  }
+}
+
+
+
+    async removeChannel(data: any, idus: number)
+    {
+      const ch = await this.getChannelById(data.channel_id);
+      if (ch)
+      {
+          const record = await this.prisma.memberChannel.findUnique({
+            where : {
+    
+              userId_channelId: {
+                userId: idus, 
+                channelId: ch.id_channel,
+              },
+              },
+          });
+          if (record)
+          {
+              if (record.status_UserInChannel === "owner")
+              {
+                // delete all messages of channel 
+                const deleteMsg = await this.prisma.discussion.deleteMany({
+                  where: {
+                    channelId: ch.id_channel,
+                  },
+                });
+                // // delete all members of channel 
+                const users = await this.prisma.memberChannel.deleteMany({
+                  where: {
+                    channelId: ch.id_channel,
+                  },
+                });
+                const chan = await this.prisma.channel.delete({
+                  where: {
+                    id_channel: ch.id_channel,
+                  },
+                });
+                return true;
+              }
+              else
+              {
+                throw new NotFoundException(`your not  the  owner  of ${ch.name}`);
+              }
+          }
+          else
+          {
+            throw new NotFoundException(`the user with ${idus} is not belong to this channel ${ch.name}`);
+          }
+      }
+      else
+      {
+        throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
+      }
+    }
+
 }

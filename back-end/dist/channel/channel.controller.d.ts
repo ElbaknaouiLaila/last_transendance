@@ -18,7 +18,7 @@ export declare class ChannelsController {
     removePass(req: any, data: any): Promise<void>;
     setPass(req: any, data: any): Promise<void>;
     setAdmin(req: any, data: any): Promise<void>;
-    muteUser(req: any, data: any): Promise<void>;
+    removeChannel(req: any, data: any): Promise<void>;
     getPublicChannels(): Promise<({
         users: ({
             user: {

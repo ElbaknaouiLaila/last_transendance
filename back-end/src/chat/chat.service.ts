@@ -260,6 +260,14 @@ export class ChatService {
             });
             if (record)
             {
+              console.log("DELETING USER \n");
+                // delete all messages of this user from channel first :
+                const deleteMsg = await this.prisma.discussion.deleteMany({
+                  where: {
+                    userId: idUs,
+                    channelId: idch,
+                  },
+                });
               const result = await this.prisma.memberChannel.delete({
                 where : {
           
