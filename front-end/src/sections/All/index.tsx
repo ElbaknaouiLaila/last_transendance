@@ -16,10 +16,40 @@ const All = () => {
   const { channels } = useAppSelector(state => state.channels);
 
   // add channels and conversations together
-  const ChatList = [...conversations, ...channels];
-  // console.log(conversations);
-  // console.log(channels);
+  // const ChatList = [...conversations, ...channels];
+  console.log(conversations);
+  console.log(channels);
 
+  const combinedObject = {
+    channels: channels.map(
+      ({
+        channel_id,
+        name,
+        image,
+        last_messages,
+        time,
+        unread,
+        channel_type,
+      }) => ({
+        id: channel_id,
+        name,
+        image,
+        last_message: last_messages,
+        time,
+        unread,
+        channel_type,
+      })
+    ),
+    users: conversations.map(({ room_id, name, img, msg, time, unread }) => ({
+      id: room_id,
+      name,
+      image: img,
+      last_message: msg,
+      time,
+      unread,
+    })),
+  };
+  console.log(combinedObject);
   // useEffect(() => {
   //   console.log(ChatList);
   // }, [channels, conversations]);
@@ -58,9 +88,10 @@ const All = () => {
           }}
         >
           <Stack>
-            {ChatList.filter(el => !el.pinned).map(el => {
+            hellow
+            {/* {ChatList.filter(el => !el.pinned).map(el => {
               return <ChatElements {...el} />;
-            })}
+            })} */}
           </Stack>
         </Stack>
       </Stack>

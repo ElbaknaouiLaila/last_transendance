@@ -432,6 +432,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     else
       console.log("Error user does not exist");
   }
+  // ! user id 
 
   @SubscribeMessage('leaveChannel')
   async leavingRoom(@ConnectedSocket() client: Socket,@MessageBody() data: any)

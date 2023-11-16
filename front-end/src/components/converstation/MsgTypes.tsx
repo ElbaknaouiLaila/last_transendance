@@ -15,15 +15,6 @@ import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
 const Message_options = [
   {
-    title: "Reply",
-  },
-  {
-    title: "React to message",
-  },
-  {
-    title: "Star message",
-  },
-  {
     title: "Delete Message",
   },
 ];
@@ -170,7 +161,7 @@ const MediaMsg = ({ el }: any) => {
 };
 
 const TextMsg = ({ el }: any) => {
-  console.log(el);
+  // console.log(el);
   return (
     // <>{console.log(el)}</>
     <Stack direction={"row"} justifyContent={el.incoming ? "start" : "end"}>

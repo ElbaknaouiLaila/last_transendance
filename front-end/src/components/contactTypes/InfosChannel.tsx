@@ -1,5 +1,3 @@
-import React, { useRef, useState } from "react";
-import { TransitionProps } from "@mui/material/transitions";
 import {
   Avatar,
   Box,
@@ -11,6 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { TransitionProps } from "@mui/material/transitions";
 import {
   Gear,
   Prohibit,
@@ -18,9 +17,10 @@ import {
   SpeakerSimpleX,
   X,
 } from "@phosphor-icons/react";
+import React, { useRef, useState } from "react";
 import { toggleDialog } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import CreateChannel from "../channels/CreateChannel";
+import ChangeChannels from "../channels/ChangeChannels";
 import { LeaveDialog, MuteDialog, RemoveDialog } from "../dialogs/Dialogs";
 import MembersSettings from "./MembersSettings";
 
@@ -36,7 +36,7 @@ const Transition = React.forwardRef(function Transition(
 const InfosChannel = () => {
   const currentInfos = useRef<any>(null);
   const dispatch = useAppDispatch();
-  const { contact, channels } = useAppSelector(store => store);
+  const { contact, channels, profile } = useAppSelector(store => store);
 
   // console.log(contact);
 
@@ -254,16 +254,20 @@ const InfosChannel = () => {
       </Stack>
       {openMute && <MuteDialog open={openMute} handleClose={handleCloseMute} />}
       {openLeave && (
-        <LeaveDialog open={openLeave} handleClose={handleCloseLeave} />
+        <LeaveDialog
+          open={openLeave}
+          handleClose={handleCloseLeave}
+          el={{ user_id: profile._id, channel_id: currentInfos.current?.id_channel }}
+        />
       )}
       {openBlock && (
         <RemoveDialog open={openBlock} handleClose={handleCloseBlock} />
       )}
       {openSettings && (
-        <CreateChannel
+        <ChangeChannels
           open={openSettings}
           handleClose={handleClickSettings}
-          el={currentInfos.current}
+          el={{el: currentInfos.current, user_id: profile._id}}
         />
       )}
     </Dialog>
