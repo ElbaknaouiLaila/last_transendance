@@ -45,9 +45,9 @@ const MembersSettings = (el: any) => {
   const makeAdmin = () => {
     console.log("make admin");
     // ! emit "make_admin" event
-    axios.post("http://localhost:3000/api/channel/makeAdmin", {
-      to: el.el.userId,
-      from: _id,
+    axios.post("http://localhost:3000/channels/setAdmin", {
+      to: _id,
+      from: user.userId,
       channel_id: el.el.channelId,
     });
 
