@@ -33,16 +33,11 @@ export class ChannelsService {
           },
         },
       });
-      // console.log("||||||||||||||||||||||||||||||||||||||||");
-      
-      // console.log(publicChannelsWithUsers);
-
       return publicChannelsWithUsers;
     }
     catch (error) {
-      console.error('we have no public channels', error);
+      throw new NotFoundException(`we have no public channels`);
     }
-
   }
   async getProtectedChannels()
   {
@@ -60,32 +55,15 @@ export class ChannelsService {
           },
         },
       });
-      // console.log("||||||||||||||||||||||||||||||||||||||||");
-
-      // console.log(protectedChannelsWithUsers);
-
       return protectedChannelsWithUsers;
     }
     catch (error) {
-      console.error('we have no protected channels', error);
+      throw new NotFoundException(`we have no protected channels`);
     }
-    // try{
-      
-    //   const channels = await this.prisma.channel.findMany({
-    //     where: {
-    //       visibility: 'protected'
-    //     }
-    //   });
-    //   return channels;
-    // }
-    // catch (error) {
-    //   console.error('we have no protected channels', error);
-    // }
   }
   async createChannel(data: any,userId: number) {
 
     try {
-      // Use Prisma to create a new channel .
       if (data.password){
         const hashedPassword = await this.hashPassword(data.password);
         data.password = hashedPassword;
@@ -98,8 +76,7 @@ export class ChannelsService {
           img:data.avatar
         },
       });
-    //adding a record to save the user who created this channel and set its status on this channel.
-    const memberchannel = await this.prisma.memberChannel.create({
+      const memberchannel = await this.prisma.memberChannel.create({
       data: {
         userId:userId,
         channelId:channel.id_channel,
@@ -107,8 +84,6 @@ export class ChannelsService {
         muted:false,
       },
     });
-
-    // adding members to channels :
     for (let i = 0; i < data.members.length; i++) {
       try{
           let idMbr =  await this.userService.findByName(data.members[i]);
@@ -120,152 +95,84 @@ export class ChannelsService {
               muted:false,
             },
           });
-        }catch (error) {
-          console.error('Error inserting records of Members in this Channel:', error);
+        } catch (error) {
+          throw new NotFoundException(`Error inserting records of Members in this Channel`);
         }
-    
-
-  }
-  return true;
-}
-    catch (error) {
-        console.error('Channel does not created successfully:', error);
+      }
+      return (true);
     }
-//     catch (error) { 
-//   throw new HttpException({
-//     status: HttpStatus.FORBIDDEN,
-//     error: 'Channel does not created successfully',
-//   }, HttpStatus.FORBIDDEN
-//   );
-// }
-    // if (!channel && !memberchannel) {
-    //   throw new NotFoundException('Channel does not created successfully');
-    // }
-    // // console.log("channelIdcreated is "+ channel.id_channel);
-    
+    catch (error) {
+      throw new NotFoundException(`Channel does not created successfully`);
+    }
   }
 
   async getChannelByName(nameVar:string)
   {
-    const channel = await this.prisma.channel.findUnique({
-      where: { name: nameVar },
-    });
+    try {
 
-    if (!channel) {
-      throw new NotFoundException(`User with  ${nameVar} not found`);
+      const channel = await this.prisma.channel.findUnique({
+        where: { name: nameVar },
+      });
+  
+      if (!channel) {
+        throw new NotFoundException(`channel with  ${nameVar} not found`);
+      }
+      return channel;
+    }  catch (error) {
+      throw new NotFoundException(`Channel does not created successfully`);
     }
-
-    return channel;
   }
 
-  //check the visbility of the channel. 
-  // already tested is worked , both protected and public.
   async joinChannel(data : any, usid : number)
   {
-    console.log("join channel from service");
-    console.log(data);
-    let join = 0;
-    // console.log(data.data.id_channel);
-    const ch = await this.getChannelByName(data.sendData.name);
-    console.log("//////////////////////");
-    console.log(ch);
-    // console.log("channel is " +ch.name);
-    // console.log("channel is " +ch.visibility);
-    // // must cheak is this user has already banned from this channel or not, if yes must prevent him.
-    // const cheak = await this.prisma.channelBan.findUnique({
-    //   where : {
-
-    //     bannedUserId_channelId: {
-    //       bannedUserId: usid, 
-    //       channelId: ch.id_channel,
-    //     },
-    //     },
-    // });
-
-    const cheak = await this.prisma.saveBanned.findFirst({
-      where: {
-        bannedUserId: usid,
-        channelId: ch.id_channel,
-        status_User: 'banned',
-      },
-    });
-    
-    console.log(cheak);
-    if (cheak)
-    {
-      console.log("22222222222222222222222222");
-      throw new NotFoundException(`your not allowed to join this channel ${ch.name} cuz  you are banned`);
-    }
-
-    if (ch)
-    {
-      console.log("heeeeeeeeeeeeeeeeey join channel");
-      if (ch.visibility === "protected")
+    try {
+      
+      let join = 0;
+      const ch = await this.getChannelByName(data.sendData.name);
+      const cheak = await this.prisma.saveBanned.findFirst({
+        where: {
+          bannedUserId: usid,
+          channelId: ch.id_channel,
+          status_User: 'banned',
+        },
+      });
+      if (cheak)
       {
-      //  console.log("inside if ");
-        // if (this.verifyPassword(data.password, ch.password))
-        console.log(`Protected channel ${ch.name}`);
-        let test = await this.verifyPassword(data.sendData.password, ch.password);
-        console.log(`Test is ${test}`);
-        if (test)
-        {
-         console.log(`cheaking password  ${data.sendData.password}  ${ch.password} `);
-          join = 1;
-        }
-        //must the user has the password.
+        throw new NotFoundException(`your not allowed to join this channel ${ch.name} cuz  you are banned`);
       }
-        if (join == 1 || ch.visibility === "public")
+      if (ch)
+      {
+        if (ch.visibility === "protected")
         {
-          //INSERT NEW RECORD AFTER CHECKING IS THE PASSWORD WAS MATCHED OR THE VISIBILITY IS PUBLIC.
-          try{
-            console.log("inside try joing channel");
-            const memberchannel = await this.prisma.memberChannel.create({
-              data: {
-                  userId:usid,
-                  channelId:ch.id_channel,
-                  status_UserInChannel:'member',
-                  muted:false,
-                  },
-              });
-              return memberchannel;
-          }
-          catch(error)
+          let test = await this.verifyPassword(data.sendData.password, ch.password);
+          if (test)
           {
-             console.error('duplicate records in memeberchannels:', error);
+            join = 1;
           }
-
-            // console.log("inside join to insert into database");
-            // // u don't need to check, cuz already u mention that id_user+ischannel as ID(PK).
-            // const check = await this.prisma.memberChannel.findUnique({
-            //   where : {
-
-            //     userId_channelId: {
-            //       userId: usid, 
-            //       channelId: chid,
-            //     },
-          
-            //     },
-
-            // });
-            // if (!check)
-            // {
-            //   console.log("the record does not exist");
-            //     const memberchannel = await this.prisma.memberChannel.create({
-            //       data: {
-            //         userId:usid,
-            //         channelId:chid,
-            //         status_UserInChannel:'member',
-            //       },
-            //     });
-            //     console.log("data is " + memberchannel.status_UserInChannel);
-            //     return memberchannel;
-            //   }       
+        }
+          if (join == 1 || ch.visibility === "public")
+          {
+              const memberchannel = await this.prisma.memberChannel.create({
+                data: {
+                    userId:usid,
+                    channelId:ch.id_channel,
+                    status_UserInChannel:'member',
+                    muted:false,
+                    },
+                });
+                return true;
           }
-    }
+      }
+    }  catch(error)
+    {
+       console.error('Error occured when joining this channel', error);
+    } 
   }
 
   async updatePass(data : any, usid : number)
   {
+    try {
+
     const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
@@ -283,8 +190,6 @@ export class ChannelsService {
       {
           if (record.status_UserInChannel == "owner")
           {
-            console.log("Yes I am the owner");
-
             if (ch.visibility == "protected")
             {
               const hashedPassword = await this.hashPassword(data.password);
@@ -308,17 +213,23 @@ export class ChannelsService {
       {
         throw new NotFoundException(`the user with id ${usid} is not belong to this channel ${ch.name}`);
       }
-  }
-  else 
+    }
+    else 
+    {
+      throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
+    }
+  } catch(error)
   {
-    throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
-  }
+    console.error('Error occured when updating password of this channel', error);
+  } 
 }
 
 
   // End !!
   async removePass(data : any, usid : number)
   {
+    try{
+
     const ch = await this.getChannelById(data.id_channel);
     if (ch)
     {
@@ -351,7 +262,6 @@ export class ChannelsService {
         else
         {
           throw new NotFoundException(`your not allowed to remove the password of ${ch.name}, or the channel is not protected`);
-          // console.log("your not allowed to change the password , or the channel is not protected");
         }
     }
     else 
@@ -363,11 +273,16 @@ export class ChannelsService {
   {
     throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
   }
+} catch(error)
+  {
+    console.error('Error occured when Removing password of this channel', error);
+  } 
 }
 
-// End
   async setPass(data : any, usid : number)
   {
+    try{
+
     const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
@@ -383,11 +298,9 @@ export class ChannelsService {
     {
         if (record.status_UserInChannel == "owner")
         {
-          console.log("Yes I am the owner");
           if (ch.visibility == "public" || ch.visibility == "privat")
           {
             const hashedPassword = await this.hashPassword(data.password);
-            console.log("inside visibility");
             const updateChannel = await this.prisma.channel.update({
               where: {
                 id_channel: ch.id_channel,
@@ -401,7 +314,6 @@ export class ChannelsService {
         }
         else
         {
-          // console.log("your not allowed to change the password , or the channel is not protected");
           throw new NotFoundException(`your not allowed to set the password of ${ch.name}, or the channel is already protected`);
 
         }
@@ -415,7 +327,11 @@ export class ChannelsService {
   {
     throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
   }
-  }
+} catch(error)
+  {
+    console.error('Error occured when setting password of this channel', error);
+  } 
+}
 
 
 
@@ -423,6 +339,7 @@ export class ChannelsService {
   // END. belaan d muted kifesh andir lih hnea !!
   async setAdmin(data : any)
   {
+    try {
     const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
@@ -478,13 +395,19 @@ export class ChannelsService {
   else
   {
     throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
-  }
+  }   
+  } catch(error)
+  {
+    console.error('Error occured when setting admin in this channel', error);
+  } 
 }
 
-  // END
+  // weslt hena f trycatch
 
   async kickUser(data:any, idus:number, kickcus:number)
   {
+    try{
+
     const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
@@ -540,24 +463,6 @@ export class ChannelsService {
             },
           });
           return updateChannel;
-            // const updateChannel = await this.prisma.memberChannel.delete({
-            //   where: {
-            //     userId_channelId: {
-            //       userId: kickcus, 
-            //       channelId: ch.id_channel,
-            //     },
-            //   },
-            // })
-            // // should add this user in banneduser:
-            // const memberchannel = await this.prisma.channelBan.create({
-            //   data: {
-            //     bannedUserId:kickcus,
-            //     channelId:ch.id_channel,
-            //     status_User:'kicked',
-            //   },
-            // });
-            // return updateChannel;
-        
         }
         else
         {
@@ -578,6 +483,10 @@ export class ChannelsService {
     {
       throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
     }
+  } catch(error)
+  {
+    console.error('Error occured when kickUser in this channel', error);
+  } 
   }
 
 
@@ -585,19 +494,22 @@ export class ChannelsService {
 
   async getChannelById(nameVar:number)
   {
+ 
+
     const channel = await this.prisma.channel.findUnique({
       where: { id_channel: nameVar },
     });
 
     if (!channel) {
-      throw new NotFoundException(`User with  ${nameVar} not found`);
+      throw new NotFoundException(`Channel with  ${nameVar} not found`);
     }
-
     return channel;
   }
 
   async banUser(idch:number, idus:number, user_banned:number)
   {
+    try{
+
     const ch = await this.getChannelById(idch);
     if (ch)
     {
@@ -671,11 +583,16 @@ export class ChannelsService {
     {
       throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
     }
+  } catch(error)
+  {
+    console.error('Error occured when banUser in this channel', error);
+  } 
   }
 
 // END
   async muteUser(data:any, idus:number, user_muted:number)
   {
+    try {
     const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
@@ -736,63 +653,66 @@ export class ChannelsService {
   {
     throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
   }
+} catch(error)
+  {
+    console.error('Error occured when muteUser in this channel', error);
+  }
 }
 
 
     // get all Channels of current user that has joined them:
     async getAllChannels(idUser : number )
     {
-
-        const channels = await this.prisma.memberChannel.findMany({
-        where: {
-            userId: idUser,
-              },
-        include: {
-            channel: true,
-     },
-    });
-        // console.log("###################################################");
-        // console.log(channels);
-        // console.log("###################################################");
-
-        return channels;
+      try{
+        
+          const channels = await this.prisma.memberChannel.findMany({
+          where: {
+              userId: idUser,
+                },
+          include: {
+              channel: true,
+      },
+      });
+          return channels;
+      }
+      catch(error)
+      {
+        console.error('Error occured when getting all channels', error);
+      }
     }
     
-
-        // get all Channels of current user that has joined them:
         async getAllAdmins(idch : number )
         {
-    
-          const usersInAdminChannel = await this.prisma.memberChannel.findMany({
-            where: {
-              channelId: idch,
-              status_UserInChannel: 'admin',
-            },
-            include: {
-              user: true,
-              channel: true,
-            },
-          });
+          try{
+            const usersInAdminChannel = await this.prisma.memberChannel.findMany({
+              where: {
+                channelId: idch,
+                status_UserInChannel: 'admin',
+              },
+              include: {
+                user: true,
+                channel: true,
+              },
+            });
 
-          // console.log("************************************************");
-
-          // console.log(usersInAdminChannel);
-          // console.log("************************************************");
-
-    
-            let Names: string[] = [];
-            if (usersInAdminChannel)
-            {
-              Names = usersInAdminChannel.map(member => member.user.name);
-            
-            }
+      
+              let Names: string[] = [];
+              if (usersInAdminChannel)
+              {
+                Names = usersInAdminChannel.map(member => member.user.name);
+              }
               return Names;
+          } 
+            catch(error)
+          {
+            console.error('Error occured when getting all admins in this channel', error);
+          }
         }
 
                 // get all Channels of current user that has joined them:
         async getAllMembers(idch : number )
         {
-          
+          try {
           const usersInAdminChannel = await this.prisma.memberChannel.findMany({
             where: {
               channelId: idch,
@@ -804,23 +724,23 @@ export class ChannelsService {
             },
           });
 
-          // console.log("************************************************");
-
-          // console.log(usersInAdminChannel);
-          // console.log("************************************************");
           let Names: string[] = [];
           if (usersInAdminChannel)
           {
             Names = usersInAdminChannel.map(member => member.user.name);
           
           }
-            return Names;
+          return Names;
+        } catch(error)
+        {
+          console.error('Error occured when getting all members in this channel', error);
+        }
         }
 
-                // get all Channels of current user that has joined them:
         async getAllOwners(idch : number )
         {
     
+          try {
           const usersInAdminChannel = await this.prisma.memberChannel.findMany({
             where: {
               channelId: idch,
@@ -831,13 +751,6 @@ export class ChannelsService {
               channel: true,
             },
           });
-
-
-          // console.log("************************************************");
-
-          // console.log(usersInAdminChannel);
-          // console.log("************************************************");
-
     
           let Names: string[] = [];
           if (usersInAdminChannel)
@@ -845,7 +758,11 @@ export class ChannelsService {
             Names = usersInAdminChannel.map(member => member.user.name);
           
           }
-            return Names;
+          return Names;
+         } catch(error)
+          {
+            console.error('Error occured when getting all owners in this channel', error);
+          }
         }
 
 
@@ -872,6 +789,7 @@ export class ChannelsService {
         // END
   async unmuteUser(data:any, idus:number, user_muted:number)
   {
+    try{
     const ch = await this.getChannelById(data.channel_id);
     if (ch)
     {
@@ -931,6 +849,10 @@ export class ChannelsService {
   else
   {
     throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
+  } 
+  } catch(error)
+  {
+    console.error('Error occured when unmute this user in this channel', error);
   }
 }
 
@@ -938,6 +860,7 @@ export class ChannelsService {
 
     async removeChannel(data: any, idus: number)
     {
+      try{
       const ch = await this.getChannelById(data.channel_id);
       if (ch)
       {
@@ -988,5 +911,12 @@ export class ChannelsService {
         throw new NotFoundException(`this Channel with Name ${ch.name} not found`);
       }
     }
-
+   catch(error)
+  {
+    console.error('Error occured when remove this channel', error);
+  }
+  }
+  
+  
+  // end 
 }

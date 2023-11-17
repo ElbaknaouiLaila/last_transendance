@@ -6,19 +6,34 @@ export declare class ChannelsController {
     private readonly channelsService;
     private readonly UsersService;
     constructor(jwt: JwtService, channelsService: ChannelsService, UsersService: UsersService);
-    create(req: any, data: any): Promise<boolean>;
-    join(req: any, data: any): Promise<{
-        userId: number;
-        channelId: number;
-        status_UserInChannel: string;
-        muted: boolean;
-        period: Date;
+    create(req: any, data: any): Promise<true | {
+        message: string;
+        error: any;
     }>;
-    updatePass(req: any, data: any): Promise<void>;
-    removePass(req: any, data: any): Promise<void>;
-    setPass(req: any, data: any): Promise<void>;
-    setAdmin(req: any, data: any): Promise<void>;
-    removeChannel(req: any, data: any): Promise<void>;
+    join(req: any, data: any): Promise<true | {
+        message: string;
+        error: any;
+    }>;
+    updatePass(req: any, data: any): Promise<true | {
+        message: string;
+        error: any;
+    }>;
+    removePass(req: any, data: any): Promise<true | {
+        message: string;
+        error: any;
+    }>;
+    setPass(req: any, data: any): Promise<true | {
+        message: string;
+        error: any;
+    }>;
+    setAdmin(req: any, data: any): Promise<true | {
+        message: string;
+        error: any;
+    }>;
+    removeChannel(req: any, data: any): Promise<true | {
+        message: string;
+        error: any;
+    }>;
     getPublicChannels(): Promise<({
         users: ({
             user: {
@@ -43,7 +58,10 @@ export declare class ChannelsController {
         img: string;
         visibility: string;
         password: string;
-    })[]>;
+    })[] | {
+        message: string;
+        error: any;
+    }>;
     getProtectedChannels(): Promise<({
         users: ({
             user: {
@@ -68,6 +86,12 @@ export declare class ChannelsController {
         img: string;
         visibility: string;
         password: string;
-    })[]>;
-    getAllChannels(req: any, data: any): Promise<any[]>;
+    })[] | {
+        message: string;
+        error: any;
+    }>;
+    getAllChannels(req: any, data: any): Promise<any[] | {
+        message: string;
+        error: any;
+    }>;
 }

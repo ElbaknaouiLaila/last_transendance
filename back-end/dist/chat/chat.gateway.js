@@ -103,7 +103,6 @@ let ChatGateway = class ChatGateway {
             };
             console.log(`¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤`);
             this.server.to(room).emit('chatToDm', data);
-            console.log("after sending");
         }
     }
     process_dm(client, data) {
@@ -172,7 +171,6 @@ let ChatGateway = class ChatGateway {
                 const getRecvUser = await this.UsersService.findById(dmm.receiverId);
                 const getSendUser = await this.UsersService.findById(dmm.senderId);
                 const lastMsg = await this.ChatService.getTheLastMessage(dmm.id_dm);
-                console.log(lastMsg);
                 recv = dmm.receiverId;
                 send = dmm.senderId;
                 namerecv = getRecvUser.name;
@@ -203,13 +201,10 @@ let ChatGateway = class ChatGateway {
                 };
                 arrayOfDms.push(newDm);
             }
-            console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-            console.log(arrayOfDms);
             client.emit('response', arrayOfDms);
         }
     }
     async getAllMessages(client, data) {
-        console.log("*************   allMessagesDm");
         const userId = Number(client.handshake.query.user_id);
         const user = await this.UsersService.findById(userId);
         console.log(data);
@@ -217,7 +212,6 @@ let ChatGateway = class ChatGateway {
             const existDm = await this.ChatService.getDm(data.user_id, data.room_id);
             if (existDm) {
                 const messages = await this.ChatService.getAllMessages(existDm.id_dm);
-                console.log(messages);
                 client.emit('historyDms', messages);
             }
         }
@@ -225,8 +219,6 @@ let ChatGateway = class ChatGateway {
             console.log("Error user does not exist");
     }
     async getAllMessagesRoom(client, data) {
-        console.log("********************** allMessagesRoom");
-        console.log(data);
         const user = await this.UsersService.findById(data.user_id);
         if (user) {
             const messages = await this.ChatService.getAllMessagesRoom(data.id);

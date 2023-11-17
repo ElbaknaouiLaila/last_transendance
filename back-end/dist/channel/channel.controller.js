@@ -24,121 +24,169 @@ let ChannelsController = class ChannelsController {
         this.UsersService = UsersService;
     }
     async create(req, data) {
-        console.log("------ Starting Creating a Channel ");
+        console.log("-------------------------- Starting Creating a Channel -------------------------- ");
         console.log(data);
-        console.log(data.title);
-        console.log(data.password);
-        console.log(data.type);
-        console.log(`length of data.memebers is ${data.members.length}`);
-        console.log(data.members[0]);
-        console.log(req.cookies);
-        console.log("--------------------------");
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        console.log(decode);
-        console.log(`id is ${decode.id}`);
-        console.log("*****************");
-        const user = await this.UsersService.findById(decode.id);
-        console.log("##################");
-        const channel = await this.channelsService.createChannel(data, user.id_user);
-        console.log("End of Creating A Channel ");
-        return true;
+        try {
+            const decode = this.jwt.verify(req.cookies['cookie']);
+            const user = await this.UsersService.findById(decode.id);
+            if (user) {
+                const channel = await this.channelsService.createChannel(data, user.id_user);
+            }
+            return (true);
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async join(req, data) {
-        console.log("------ Starting Joining a Channel ");
+        console.log("-------------------------- Starting Joining a Channel  -------------------------- ");
         console.log(data);
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        const name = "Assila";
-        const memberChannel = await this.channelsService.joinChannel(data, user.id_user);
-        console.log("AFTER CREATEION        ");
-        console.log(memberChannel);
-        return memberChannel;
+        try {
+            const decode = this.jwt.verify(req.cookies['cookie']);
+            const user = await this.UsersService.findById(decode.id);
+            if (user) {
+                const memberChannel = await this.channelsService.joinChannel(data, user.id_user);
+                return (true);
+            }
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async updatePass(req, data) {
-        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%% ===== UPDATEPASS");
+        console.log("-------------------------- UPDATE PASSWORD  -------------------------- ");
         console.log(data);
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        await this.channelsService.updatePass(data, user.id_user);
+        try {
+            const decode = this.jwt.verify(req.cookies['cookie']);
+            const user = await this.UsersService.findById(decode.id);
+            if (user) {
+                await this.channelsService.updatePass(data, user.id_user);
+                return (true);
+            }
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async removePass(req, data) {
-        console.log("ÄÄÄÄÄÄÄÄÄÄÄ ======= removePass");
+        console.log("-------------------------- REMOVE PASSWORD  -------------------------- ");
         console.log(data);
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        await this.channelsService.removePass(data, user.id_user);
+        try {
+            const decode = this.jwt.verify(req.cookies['cookie']);
+            const user = await this.UsersService.findById(decode.id);
+            if (user) {
+                await this.channelsService.removePass(data, user.id_user);
+                return (true);
+            }
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async setPass(req, data) {
-        console.log("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤ FROM SET PASSWORD ");
+        console.log("-------------------------- SET PASSWORD  -------------------------- ");
         console.log(data);
-        console.log(data.passwordConfirm);
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        await this.channelsService.setPass(data, user.id_user);
+        try {
+            const decode = this.jwt.verify(req.cookies['cookie']);
+            const user = await this.UsersService.findById(decode.id);
+            if (user) {
+                await this.channelsService.setPass(data, user.id_user);
+                return (true);
+            }
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async setAdmin(req, data) {
-        console.log("SET ADMIN :::: !!!!!!!!!!!!!!!!!!!!!!!!1 FROM SET ADMIN \n");
+        console.log("-------------------------- SET ADMIN  -------------------------- ");
         console.log(data);
-        await this.channelsService.setAdmin(data);
+        try {
+            await this.channelsService.setAdmin(data);
+            return (true);
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async removeChannel(req, data) {
-        console.log("Remove Channel :::: !!!!!!!!!!!!!!!!!!!!!!!! \n");
+        console.log("-------------------------- SET ADMIN  -------------------------- ");
         console.log(data);
-        const user = await this.UsersService.findById(data.user_id);
-        if (user) {
-            const result = await this.channelsService.removeChannel(data, user.id_user);
-            if (!result)
-                console.log("ERROR \n");
+        try {
+            const user = await this.UsersService.findById(data.user_id);
+            if (user) {
+                const result = await this.channelsService.removeChannel(data, user.id_user);
+                return (true);
+            }
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
         }
     }
     async getPublicChannels() {
-        return this.channelsService.getPublicChannels();
+        try {
+            return this.channelsService.getPublicChannels();
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async getProtectedChannels() {
-        return this.channelsService.getProtectedChannels();
+        try {
+            return this.channelsService.getProtectedChannels();
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async getAllChannels(req, data) {
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!! ALL CHANNELS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        const myAllChannels = await this.channelsService.getAllChannels(user.id_user);
-        let message = "";
-        let sent = null;
-        if (myAllChannels) {
-            const arrayOfChannels = [];
-            for (const channels of myAllChannels) {
-                const lastMsg = await this.channelsService.getTheLastMessageOfChannel(channels.channelId);
-                if (lastMsg) {
-                    message = lastMsg.message;
-                    sent = lastMsg.dateSent;
+        console.log("-------------------------- all channels that a user inside them -------------------------- ");
+        try {
+            const decode = this.jwt.verify(req.cookies['cookie']);
+            const user = await this.UsersService.findById(decode.id);
+            const myAllChannels = await this.channelsService.getAllChannels(user.id_user);
+            let message = "";
+            let sent = null;
+            if (myAllChannels) {
+                const arrayOfChannels = [];
+                for (const channels of myAllChannels) {
+                    const lastMsg = await this.channelsService.getTheLastMessageOfChannel(channels.channelId);
+                    if (lastMsg) {
+                        message = lastMsg.message;
+                        sent = lastMsg.dateSent;
+                    }
+                    const admins = await this.channelsService.getAllAdmins(channels.channelId);
+                    const memebers = await this.channelsService.getAllMembers(channels.channelId);
+                    const owners = await this.channelsService.getAllOwners(channels.channelId);
+                    const newCh = {
+                        channel_id: channels.channelId,
+                        image: channels.channel.img,
+                        name: channels.channel.name,
+                        owner: owners,
+                        admin: admins,
+                        members: memebers,
+                        last_messages: message,
+                        time: sent,
+                        unread: true,
+                        channel_type: channels.channel.visibility,
+                    };
+                    arrayOfChannels.push(newCh);
                 }
-                console.log("FROM GETALL CHANNELS \n", message);
-                const admins = await this.channelsService.getAllAdmins(channels.channelId);
-                console.log("ADMINS ARE : ");
-                console.log(admins);
-                const memebers = await this.channelsService.getAllMembers(channels.channelId);
-                console.log("memebers ARE : ");
-                console.log(memebers);
-                const owners = await this.channelsService.getAllOwners(channels.channelId);
-                console.log("owners ARE : ");
-                console.log(owners);
-                const newCh = {
-                    channel_id: channels.channelId,
-                    image: channels.channel.img,
-                    name: channels.channel.name,
-                    owner: owners,
-                    admin: admins,
-                    members: memebers,
-                    last_messages: message,
-                    time: sent,
-                    unread: true,
-                    channel_type: channels.channel.visibility,
-                };
-                console.log("%%%%%%%");
-                console.log(newCh);
-                arrayOfChannels.push(newCh);
+                return arrayOfChannels;
             }
-            return arrayOfChannels;
+        }
+        catch (error) {
+            console.log(error.message);
+            return { message: 'An error occurred', error: error.message };
         }
     }
 };
