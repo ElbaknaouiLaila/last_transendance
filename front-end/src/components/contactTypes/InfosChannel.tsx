@@ -5,7 +5,6 @@ import {
   Dialog,
   Divider,
   IconButton,
-  Popover,
   Slide,
   Stack,
   Typography,
@@ -13,24 +12,17 @@ import {
 import { TransitionProps } from "@mui/material/transitions";
 import {
   Gear,
-  PencilSimple,
   Prohibit,
   SignOut,
   SpeakerSimpleX,
   X,
 } from "@phosphor-icons/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { toggleDialog } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import {
-  BlockDialog,
-  DeleteDialog,
-  LeaveDialog,
-  MuteDialog,
-  RemoveDialog,
-} from "../dialogs/Dialogs";
+import ChangeChannels from "../channels/ChangeChannels";
+import { LeaveDialog, MuteDialog, RemoveDialog } from "../dialogs/Dialogs";
 import MembersSettings from "./MembersSettings";
-import CreateChannel from "../channels/CreateChannel";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -44,21 +36,21 @@ const Transition = React.forwardRef(function Transition(
 const InfosChannel = () => {
   const currentInfos = useRef<any>(null);
   const dispatch = useAppDispatch();
-  const { contact, channels } = useAppSelector(store => store);
+  const { contact, channels, profile } = useAppSelector(store => store);
 
   // console.log(contact);
 
   // console.log(channels.publicChannels);
   if (contact.type_chat === "public") {
-    console.log("public");
+    // console.log("public");
     const channel = channels.publicChannels.find(
       (channel: any) => channel?.id_channel === contact.room_id
     );
-    console.log(channel);
+    // console.log(channel);
     currentInfos.current = channel;
     // contact.name = channel?.name;
   } else if (contact.type_chat === "protected") {
-    console.log("protected");
+    // console.log("protected");
     const channel = channels.protectedChannels.find(
       (channel: any) => channel?.id_channel === contact.room_id
     );
@@ -66,7 +58,7 @@ const InfosChannel = () => {
 
     // contact.name = channel?.name;
   } else if (contact.type_chat === "private") {
-    console.log("private");
+    // console.log("private");
     const channel = channels.privateChannels.find(
       (channel: any) => channel?.id_channel === contact.room_id
     );
@@ -262,13 +254,31 @@ const InfosChannel = () => {
       </Stack>
       {openMute && <MuteDialog open={openMute} handleClose={handleCloseMute} />}
       {openLeave && (
-        <LeaveDialog open={openLeave} handleClose={handleCloseLeave} />
+        <LeaveDialog
+          open={openLeave}
+          handleClose={handleCloseLeave}
+          el={{
+            user_id: profile._id,
+            channel_id: currentInfos.current?.id_channel,
+          }}
+        />
       )}
       {openBlock && (
-        <RemoveDialog open={openBlock} handleClose={handleCloseBlock} />
+        <RemoveDialog
+          open={openBlock}
+          handleClose={handleCloseBlock}
+          el={{
+            user_id: profile._id,
+            channel_id: currentInfos.current?.id_channel,
+          }}
+        />
       )}
       {openSettings && (
-        <CreateChannel open={openSettings} handleClose={handleClickSettings} />
+        <ChangeChannels
+          open={openSettings}
+          handleClose={handleClickSettings}
+          el={{ el: currentInfos.current, user_id: profile._id }}
+        />
       )}
     </Dialog>
   );

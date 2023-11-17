@@ -10,6 +10,8 @@ import {
   Stack,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
+import { socket } from "../../socket";
+import axios from "axios";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -97,7 +99,7 @@ const MuteDialog = ({ open, handleClose }: any) => (
   </Dialog>
 );
 
-const LeaveDialog = ({ open, handleClose }: any) => (
+const LeaveDialog = ({ open, handleClose, el }: any) => (
   <Dialog
     fullWidth
     maxWidth="sm"
@@ -150,7 +152,13 @@ const LeaveDialog = ({ open, handleClose }: any) => (
         Cancel
       </Button>
       <Button
-        onClick={handleClose}
+        onClick={() => {
+          handleClose();
+          socket.emit("leaveChannel", {
+            user_id: el.user_id,
+            channel_id: el.channel_id,
+          });
+        }}
         sx={{
           borderRadius: "15px",
           fontSize: "20px",
@@ -307,7 +315,7 @@ const BlockDialog = ({ open, handleClose }: any) => (
   </Dialog>
 );
 
-const RemoveDialog = ({ open, handleClose }: any) => (
+const RemoveDialog = ({ open, handleClose, el }: any) => (
   <Dialog
     fullWidth
     maxWidth="sm"
@@ -360,7 +368,13 @@ const RemoveDialog = ({ open, handleClose }: any) => (
         Cancel
       </Button>
       <Button
-        onClick={handleClose}
+        onClick={() => {
+          handleClose();
+          axios.post("http://localhost:3000/channels/removeChannel", {
+            user_id: el.user_id,
+            channel_id: el.channel_id,
+          });
+        }}
         sx={{
           borderRadius: "15px",
           fontSize: "20px",

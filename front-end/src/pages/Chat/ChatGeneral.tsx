@@ -9,7 +9,6 @@ import ChatTabs from "./ChatTabs";
 import { useEffect } from "react";
 import axios from "axios";
 import InfosChannel from "../../components/contactTypes/InfosChannel";
-// import InfosChannel from "../../components/contactTypes/infosChannel";
 
 const ChatGeneral: React.FC = () => {
   const { contact, profile } = useAppSelector(state => state);

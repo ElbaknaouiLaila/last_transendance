@@ -19,7 +19,7 @@ const Messages = () => {
     messages = current_messages;
   } else {
     const { current_messages } = useAppSelector(state => state.channels);
-    // console.log(current_messages);
+    console.log(current_messages);
     messages = current_messages;
   }
 

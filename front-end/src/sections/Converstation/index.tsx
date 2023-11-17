@@ -1,18 +1,21 @@
-import { useEffect, useRef } from "react";
 import { Box, Stack } from "@mui/material";
+import { useEffect, useRef } from "react";
 import Chatbox from "../../components/converstation/Chatbox";
 import Header from "../../components/converstation/Header";
 import Messages from "../../components/converstation/Messages";
+import {
+  addNewConversation,
+  fetchCurrentMessages,
+  updateUnread,
+  updatedConverstation,
+} from "../../redux/slices/converstation";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import axios from "axios";
 import { socket } from "../../socket";
-import { fetchCurrentMessages } from "../../redux/slices/converstation";
-import { da } from "@faker-js/faker";
 
 const Converstation = () => {
   const dispatch = useAppDispatch();
   const messageListRef: any = useRef(null);
-  const { current_messages, current_conversations } = useAppSelector(
+  const { current_messages, conversations } = useAppSelector(
     state => state.converstation.direct_chat
   );
   const { profile, contact } = useAppSelector(state => state);
@@ -22,11 +25,6 @@ const Converstation = () => {
     messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
 
     const handleChatToDm = (data: any) => {
-      console.log(data);
-      // Check if the received message is from the currently selected conversation
-      // if (conversation.direct_chat.current_conversation.id === data.id) {.
-      console.log(contact.room_id);
-      // if (data.recieve === contact.room_id && data.send === profile._id) {
       dispatch(
         fetchCurrentMessages({
           id: data.id,
@@ -36,14 +34,38 @@ const Converstation = () => {
           incoming: data.recieve === profile._id,
         })
       );
-      // }
-      // }
+      const now = new Date();
+      console.log(conversations);
+
+      const newDataConversation = {
+        id: data.id,
+        user_id: profile._id,
+        name: contact.name,
+        img: contact.avatar,
+        message: data.message,
+        status: "Online",
+        time: now.toISOString(),
+        unread: 0,
+      };
+      const existingConversation = conversations.find(
+        el => el.room_id === data.id
+      );
+      console.log(existingConversation);
+      if (!existingConversation) {
+        console.log(data);
+        dispatch(addNewConversation(newDataConversation));
+        // dispatch(updateUnread(data));
+      } else {
+        console.log(data);
+        dispatch(updatedConverstation(newDataConversation));
+        // dispatch(updateUnread(data));
+      }
     };
     socket.on("chatToDm", handleChatToDm);
     return () => {
       socket.off("chatToDm", handleChatToDm);
     };
-  }, [dispatch, profile._id, contact.room_id, current_messages]);
+  }, [dispatch, profile._id, contact.room_id, current_messages, conversations]);
 
   return (
     <Stack

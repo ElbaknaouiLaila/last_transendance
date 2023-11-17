@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { stat } from 'fs';
 import { useDispatch } from 'react-redux';
 
 export interface Channel {
@@ -140,7 +139,7 @@ export function FetchChannels() {
         },
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         dispatch(fetchChannels(res.data));
       })
       .catch((err) => console.log(err));

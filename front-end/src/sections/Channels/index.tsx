@@ -136,6 +136,7 @@ const Channels = () => {
         <CreateChannel
           open={openCreateChannel}
           handleClose={handleCloseCreateChannel}
+          el={null}
         />
       )}
     </>

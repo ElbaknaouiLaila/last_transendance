@@ -32,7 +32,7 @@ const SmallAvatar = styled(Avatar)(() => ({
 }));
 
 const ChannelElements = (id: IdType) => {
-  console.log("id", id);
+  console.log(id);
   const { contact, profile } = useAppSelector(state => state);
   const dispatch = useAppDispatch();
   const selected_id = id.channel_id;
