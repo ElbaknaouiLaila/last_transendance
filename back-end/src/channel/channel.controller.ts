@@ -1,7 +1,7 @@
 // src/channels/channels.controller.ts
 import { Controller, Get,Post, Req,Body, UseGuards, Patch, Delete, ValidationPipe } from '@nestjs/common';
 import { ChannelsService } from './channel.service';
-import { CreateChannelDto } from './dto/create-channel.dto';
+import { CreateChannelDto, CreateMemberDto, joinDto } from './dto/create-channel.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '../jwt/jwtservice.service';
 import * as cookieParser from 'cookie-parser';
@@ -32,10 +32,19 @@ export class ChannelsController {
   }
   @Post('join')
   async join(@Req() req, @Body() data: any) {
-    
+    // if (!CreateMemberDto.name) {
+    //   throw new Error('Name is required');
+    // }
     console.log("-------------------------- Starting Joining a Channel  -------------------------- ");
     console.log(data);
-
+// {
+//     // sendData: {
+//     //   id_channel: 16,
+//     //   name: '1337geeks',
+//     //   visibility: 'public',
+//     //   password: null
+//     // }
+// }
     try {
       const decode = this.jwt.verify(req.cookies['cookie']);
       const user = await this.UsersService.findById(decode.id);
@@ -45,12 +54,16 @@ export class ChannelsController {
           data,
           user.id_user,
         );
+        console.log("end joing chanel 1");
+
         return (true);
       }
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
+      console.log("ooooooooooooooooooooooooooooooooooooooooooooo");
       return { message: 'An error occurred', error: error.message };
     }
+console.log("end joing chanel 2");
   }
 
   @Post('updatePass')

@@ -47,13 +47,15 @@ let ChannelsController = class ChannelsController {
             const user = await this.UsersService.findById(decode.id);
             if (user) {
                 const memberChannel = await this.channelsService.joinChannel(data, user.id_user);
+                console.log("end joing chanel 1");
                 return (true);
             }
         }
         catch (error) {
-            console.log(error.message);
+            console.log("ooooooooooooooooooooooooooooooooooooooooooooo");
             return { message: 'An error occurred', error: error.message };
         }
+        console.log("end joing chanel 2");
     }
     async updatePass(req, data) {
         console.log("-------------------------- UPDATE PASSWORD  -------------------------- ");

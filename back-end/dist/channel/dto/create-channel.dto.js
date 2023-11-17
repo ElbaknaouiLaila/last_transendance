@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateDmDto = exports.CreateMemberDto = exports.CreateChannelDto = void 0;
+exports.CreateDmDto = exports.joinDto = exports.CreateMemberDto = exports.CreateChannelDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateChannelDto {
 }
@@ -33,6 +33,26 @@ __decorate([
 class CreateMemberDto {
 }
 exports.CreateMemberDto = CreateMemberDto;
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], CreateMemberDto.prototype, "id_channel", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateMemberDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateMemberDto.prototype, "visibility", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateMemberDto.prototype, "password", void 0);
+class joinDto {
+}
+exports.joinDto = joinDto;
 class CreateDmDto {
 }
 exports.CreateDmDto = CreateDmDto;

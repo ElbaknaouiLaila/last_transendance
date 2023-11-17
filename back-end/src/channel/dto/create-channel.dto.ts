@@ -1,4 +1,4 @@
-import { IsString, Length, IsNotEmpty, IsIn, ValidateIf } from "class-validator";
+import { IsString, Length, IsNotEmpty, IsIn, ValidateIf, IsNumber, IsInt, IsOptional } from "class-validator";
 
 // that will be the data that Iam expect by the client when creating a new channel.
 export class CreateChannelDto {
@@ -10,18 +10,48 @@ export class CreateChannelDto {
     @IsString()
     @IsIn(['public', 'private', 'protected'])
     readonly visibility:string;
-    
+
     @ValidateIf((o) => o.password !== undefined) 
-     @Length(5, 15) 
+    @Length(5, 15) 
     readonly password?:string;
   }
 
 // that will be the data that Iam expect by the client when creating a new channel.
-export class CreateMemberDto {
+// export class CreateMemberDto {
 
-  readonly userId: number;
-  readonly channelId:number;
-  readonly status_UserInChannel:string;
+//   @IsNotEmpty({ message: 'Property must not be empty' })
+//   @IsNumber()
+//   readonly id_channel: number;
+
+//   @IsString()
+//   @IsNotEmpty({ message: 'Property must not be empty' })
+//   readonly name:string;
+
+//   @IsString()
+//   @IsNotEmpty({ message: 'Property must not be empty' })
+//   readonly visibility:string;
+
+//   @IsString()
+//   readonly password?:string | null;
+// }
+
+export class CreateMemberDto {
+  @IsInt()
+  readonly id_channel: number;
+
+  @IsString()
+  readonly name: string;
+
+  @IsString()
+  readonly visibility: string;
+
+  @IsOptional()
+  @IsString()
+  readonly password?: string | null;
+}
+
+export class joinDto {
+  readonly sendData: CreateMemberDto;
 }
 
 
