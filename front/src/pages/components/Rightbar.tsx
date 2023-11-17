@@ -31,11 +31,12 @@ function Rightbar() {
   return (
     // <nav className="flex w-40 h-full hidden lg:block mt-20"></nav>
     <div className=" mt-[30px]">
-
       <nav className="flex w-40 h-full hidden lg:block mt-20">
         <div className="w-full flex -mt-32 px-6">
           <div className="w-full h-full flex items-center justify-center text-gray-900 mt-10 text-xl">
-            <div className={`${toggle ? "w-[5.8rem]" : ""} rightbar-container `}>
+            <div
+              className={`${toggle ? "w-[5.8rem]" : ""} rightbar-container `}
+            >
               {/* <div className="group">
                 <img
                   className="w-14 h-14 p-1 rounded-full ring-2 ring-[#FE754D] dark:ring-[#FE754D] "
@@ -50,7 +51,10 @@ function Rightbar() {
               {/* <div className="flex text-white items-center justify-center mt-8 text-[1.7rem]">
                 <TiGroup />
               </div> */}
-              <button className="absolute left-6 my-5 bg-[#0505054d] p-3 rounded-full" onClick={handleScrollUp}>
+              <button
+                className="absolute left-6 my-5 bg-[#0505054d] p-3 rounded-full"
+                onClick={handleScrollUp}
+              >
                 <FiChevronUp className=" text-white" />
               </button>
               <div

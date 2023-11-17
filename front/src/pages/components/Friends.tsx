@@ -26,57 +26,59 @@ type User = {
   TwoFactor: boolean;
   secretKey: string | null;
   status_user: string;
-  wins:number;
-  losses:number;
-  games_played:number;
-  Progress:number;
-  Wins_percent:number;
-  Losses_percent:number;
-  About:string;
+  wins: number;
+  losses: number;
+  games_played: number;
+  Progress: number;
+  Wins_percent: number;
+  Losses_percent: number;
+  About: string;
 };
 type AccountOwnerProps = {
-	user: User[];
-  };
-function Friends({user}: AccountOwnerProps) {
-
-  const {friends} = useAppSelector((state) => state.app);
+  user: User[];
+};
+function Friends({ user }: AccountOwnerProps) {
+  const { friends } = useAppSelector((state) => state.app);
   console.log("friends");
   console.log(friends);
   // const [friends, setFriends] = useState<User[]>([]);
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
-  const [accountOwner , setaccountOwner] = useState<boolean>();
-  const InviteToPlaye =  (friend: any) => {
+  const [accountOwner, setaccountOwner] = useState<boolean>();
+  const InviteToPlaye = (friend: any) => {
     console.log("invite to playe");
     const id = friend.id_user;
-    if (socket)
-      socket.emit("invite-game", {id_user:id});
-	  //friend.id_user
-	  //accountOwner = false
-	  //get returngameinfos from backend
-	   axios.post("http://localhost:3000/profile/gameinfos", {
-		homies: true,
-		invited: false,
-		homie_id: friend.id_user,
-	  }, {
-		withCredentials: true,
-	  });
-	  // setaccountOwner(false);
-	  console.log("accountOwner id");
-	  // console.log(user[0].id_user);            
-	  console.log("status ");
-	  console.log(false);
-	  console.log(true);
-	  
-	  // Update selectedFriend with the clicked friend's information
-	  setSelectedFriend(friend);
-	//   console.log(" 2 : ", friend.id_user);
-	  setTimeout(() => {
-		window.location.href = "http://localhost:5173/game";
-		}, 1000);
+    if (socket) socket.emit("invite-game", { id_user: id });
+    //friend.id_user
+    //accountOwner = false
+    //get returngameinfos from backend
+    axios.post(
+      "http://localhost:3000/profile/gameinfos",
+      {
+        homies: true,
+        invited: false,
+        homie_id: friend.id_user,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    // setaccountOwner(false);
+    console.log("accountOwner id");
+    // console.log(user[0].id_user);
+    console.log("status ");
+    console.log(false);
+    console.log(true);
+
+    // Update selectedFriend with the clicked friend's information
+    setSelectedFriend(friend);
+    //   console.log(" 2 : ", friend.id_user);
+    setTimeout(() => {
+      window.location.href = "http://localhost:5173/game";
+    }, 1000);
     // console.log(friend);
     // setLoding(true);
   };
- 
+
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [searchResults, setSearchResults] = useState<User[]>([]);
@@ -116,13 +118,11 @@ function Friends({user}: AccountOwnerProps) {
     <div>
       <Popover className="relative">
         <Popover.Button className="">
-          
-            {selectedFriend ? (
-              <FriendCard friend={selectedFriend} />
-            ) : (
-              <DefaultCard />
-            )}
-           
+          {selectedFriend ? (
+            <FriendCard friend={selectedFriend} />
+          ) : (
+            <DefaultCard />
+          )}
         </Popover.Button>
         <Transition
           as={Fragment}
@@ -144,7 +144,7 @@ function Friends({user}: AccountOwnerProps) {
                 </div>
               )} */}
               {/* //if friend show this messag*/}
-              {friends.map((data:any) => {
+              {friends.map((data: any) => {
                 return (
                   <ul
                     key={data.id_user}
@@ -162,13 +162,30 @@ function Friends({user}: AccountOwnerProps) {
                           {data.name}
                         </p>
                       </div>
-                        {/* //when click on button invite to playe the color of button change to gray and stay like this until the friend accept the invitation */}
-                      <button
+                      {/* //when click on button invite to playe the color of button change to gray and stay like this until the friend accept the invitation */}
+                      {/* //if status_user = "in game" the button is
+                      cursor-not-allowed else cursor-pointer */}
+                      {data.status_user === "in game" ? (
+                        <button
+                          className="ml-3  bg-[#868686] hover:bg-[#616060] text-white font-bold  px-7 rounded-[15px] cursor-not-allowed"
+                          // onClick={() => InviteToPlaye(data)}
+                        >
+                          {data.status_user}
+                        </button>
+                      ) : (
+                        <button
+                          className="ml-3  bg-[#868686] hover:bg-[#616060] text-white font-bold  px-7 rounded-[15px]"
+                          onClick={() => InviteToPlaye(data)}
+                        >
+                          invite to playe
+                        </button>
+                      )}
+                      {/* <button
                         className="ml-3  bg-[#868686] hover:bg-[#616060] text-white font-bold  px-7 rounded-[15px]"
                         onClick={() => InviteToPlaye(data)}
                       >
                         invite to playe
-                      </button>
+                      </button> */}
                     </li>
                   </ul>
                 );

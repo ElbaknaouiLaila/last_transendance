@@ -26,31 +26,35 @@ const SidebarData: React.FC<SidebarDataProps> = ({ toggle }) => {
   //   // setActiveSection()
   // };
   const handleLogout = (path: string) => {
-    if (path === "/login") {
-      // useEffect(() => {
-      if (socket) {
-        //   console.log("logout=========>");
-        socket.emit("userOffline");
+    try {
+      if (path === "/login") {
+        // useEffect(() => {
+        if (socket) {
+          //   console.log("logout=========>");
+          socket.emit("userOffline");
+        }
+        axios.get("http://localhost:3000/profile/deletecookie", {
+          withCredentials: true,
+        });
+        // }, []);
+        // try{
+
+        // }catch(err){
+        // Perform logout actions, such as modifying status to offline
+        // For example:
+        // setOffline(); // Your function to modify status to offline
+        //change status to offline
+
+        // localStorage.removeItem("sidebar");
+        console.log("logoooooooout");
+        // history.push("/login"); // Redirect to the login page after logout
+      } else {
+        console.log("path====>");
+        console.log("path", path);
+        setActiveSection(path);
       }
-      axios.get("http://localhost:3000/profile/deletecookie", {
-        withCredentials: true,
-      });
-      // }, []);
-      // try{
-
-      // }catch(err){
-      // Perform logout actions, such as modifying status to offline
-      // For example:
-      // setOffline(); // Your function to modify status to offline
-      //change status to offline
-
-      // localStorage.removeItem("sidebar");
-      console.log("logoooooooout");
-      // history.push("/login"); // Redirect to the login page after logout
-    } else {
-      console.log("path====>");
-      console.log("path", path);
-      setActiveSection(path);
+    } catch (err) {
+      console.log("Error during logout:", err);
     }
   };
   return (

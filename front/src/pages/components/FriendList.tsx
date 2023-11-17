@@ -495,9 +495,9 @@ function FriendList() {
                               size="sm"
                               value={data.status_user}
                               className={`${
-                                data.status_user === "online"
-                                  ? " text-green-500"
-                                  : "text-red-500"
+                                data.status_user === "offline"
+                                  ? "text-red-500"
+                                  : "text-green-500"
                               }`}
                             />
                           </div>
