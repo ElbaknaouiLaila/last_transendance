@@ -13,9 +13,24 @@ export declare class ChannelsService {
                 name: string;
                 avatar: string;
                 TwoFactor: boolean;
+                ISVERIDIED: boolean;
                 IsFirstTime: boolean;
+                InGame: boolean;
                 secretKey: string;
+                About: string;
                 status_user: string;
+                email: string;
+                WonBot: number;
+                LoseBot: number;
+                wins: number;
+                losses: number;
+                games_played: number;
+                Progress: number;
+                Wins_percent: number;
+                Losses_percent: number;
+                homies: boolean;
+                invited: boolean;
+                homie_id: number;
             };
         } & {
             userId: number;
@@ -38,9 +53,24 @@ export declare class ChannelsService {
                 name: string;
                 avatar: string;
                 TwoFactor: boolean;
+                ISVERIDIED: boolean;
                 IsFirstTime: boolean;
+                InGame: boolean;
                 secretKey: string;
+                About: string;
                 status_user: string;
+                email: string;
+                WonBot: number;
+                LoseBot: number;
+                wins: number;
+                losses: number;
+                games_played: number;
+                Progress: number;
+                Wins_percent: number;
+                Losses_percent: number;
+                homies: boolean;
+                invited: boolean;
+                homie_id: number;
             };
         } & {
             userId: number;
@@ -65,10 +95,34 @@ export declare class ChannelsService {
         password: string;
     }>;
     joinChannel(data: any, usid: number): Promise<boolean>;
-    updatePass(data: any, usid: number): Promise<void>;
-    removePass(data: any, usid: number): Promise<void>;
-    setPass(data: any, usid: number): Promise<void>;
-    setAdmin(data: any): Promise<void>;
+    updatePass(data: any, usid: number): Promise<{
+        id_channel: number;
+        name: string;
+        img: string;
+        visibility: string;
+        password: string;
+    }>;
+    removePass(data: any, usid: number): Promise<{
+        id_channel: number;
+        name: string;
+        img: string;
+        visibility: string;
+        password: string;
+    }>;
+    setPass(data: any, usid: number): Promise<{
+        id_channel: number;
+        name: string;
+        img: string;
+        visibility: string;
+        password: string;
+    }>;
+    setAdmin(data: any): Promise<{
+        userId: number;
+        channelId: number;
+        status_UserInChannel: string;
+        muted: boolean;
+        period: Date;
+    }>;
     kickUser(data: any, idus: number, kickcus: number): Promise<{
         userId: number;
         channelId: number;

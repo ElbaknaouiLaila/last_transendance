@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
-const jwtservice_service_1 = require("../jwt/jwtservice.service");
+const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 const fs = require("fs");
 let ProfileService = class ProfileService {
     constructor(prisma, jwt) {
@@ -23,37 +23,44 @@ let ProfileService = class ProfileService {
         const Token = req.cookies['cookie'];
         const verifyToekn = this.jwt.verify(Token);
         try {
-            await this.prisma.user.update({
-                where: { name: verifyToekn.name },
+            const user = await this.prisma.user.update({
+                where: { id_user: verifyToekn.id },
                 data: {
                     name: dat.name,
                 },
             });
-            verifyToekn.name = dat.name;
-            res.cookie('cookie', this.jwt.sign(verifyToekn));
         }
         catch (error) {
             if (error.code == 'P2002')
-                res.status(400).json({ error: 'name already exists' });
+                return ('P2002');
         }
     }
     async ModifyPhoto(photo, req, res) {
         const verifyToken = this.jwt.verify(req.cookies['cookie']);
-        const filePath = '/Users/mmanouze/Desktop/oauth-42-project/uploads/' + photo.originalname;
+        console.log('orginal name : ', photo.originalname);
+        const filePath = '/goinfre/lelbakna/freez/last_transendance/front/public/uploads/' + photo.originalname;
+        const rightPath = '/public/uploads/' + photo.originalname;
+        console.log(photo.originalname);
         fs.writeFileSync(filePath, photo.buffer);
+        console.log('tswiraaaaaaa');
         try {
             await this.prisma.user.update({
-                where: { name: verifyToken.name },
+                where: { id_user: verifyToken.id },
                 data: {
-                    avatar: filePath,
+                    avatar: rightPath,
                 },
             });
-            verifyToken.avatar = filePath;
-            res.cookie('cookie', this.jwt.sign(verifyToken));
         }
         catch (error) {
             console.log(error);
         }
+    }
+    async About_me(req, res) {
+        const payload = this.jwt.verify(req.cookies['cookie']);
+        const user = await this.prisma.user.findUnique({
+            where: { id_user: payload.id },
+        });
+        return (user);
     }
 };
 exports.ProfileService = ProfileService;

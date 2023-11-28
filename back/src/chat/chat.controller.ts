@@ -1,7 +1,7 @@
 import { Controller, Get,Post, Req,Body, UseGuards, Patch, Delete, ValidationPipe } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { UsersService } from '../users/users.service';
-import { JwtService } from '../jwt/jwtservice.service';
+import { JwtService } from '../auth/jwt/jwtservice.service';
 import * as cookieParser from 'cookie-parser';
 import * as cookie from 'cookie';
 

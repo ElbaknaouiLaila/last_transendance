@@ -1,36 +1,34 @@
 import { ChannelsService } from './channel.service';
+import { CreateChannelDto } from './dto/create-channel.dto';
 import { UsersService } from '../users/users.service';
-import { JwtService } from '../jwt/jwtservice.service';
+import { JwtService } from '../auth/jwt/jwtservice.service';
 export declare class ChannelsController {
     private jwt;
     private readonly channelsService;
     private readonly UsersService;
     constructor(jwt: JwtService, channelsService: ChannelsService, UsersService: UsersService);
-    create(req: any, data: any): Promise<true | {
+    create(req: any, data: CreateChannelDto): Promise<boolean | {
         message: string;
         error: any;
     }>;
-    join(req: any, data: any): Promise<true | {
+    join(req: any, data: any): Promise<boolean>;
+    updatePass(req: any, data: any): Promise<boolean | {
         message: string;
         error: any;
     }>;
-    updatePass(req: any, data: any): Promise<true | {
+    removePass(req: any, data: any): Promise<boolean | {
         message: string;
         error: any;
     }>;
-    removePass(req: any, data: any): Promise<true | {
+    setPass(req: any, data: any): Promise<boolean | {
         message: string;
         error: any;
     }>;
-    setPass(req: any, data: any): Promise<true | {
+    setAdmin(req: any, data: any): Promise<boolean | {
         message: string;
         error: any;
     }>;
-    setAdmin(req: any, data: any): Promise<true | {
-        message: string;
-        error: any;
-    }>;
-    removeChannel(req: any, data: any): Promise<true | {
+    removeChannel(req: any, data: any): Promise<boolean | {
         message: string;
         error: any;
     }>;
@@ -41,9 +39,24 @@ export declare class ChannelsController {
                 name: string;
                 avatar: string;
                 TwoFactor: boolean;
+                ISVERIDIED: boolean;
                 IsFirstTime: boolean;
+                InGame: boolean;
                 secretKey: string;
+                About: string;
                 status_user: string;
+                email: string;
+                WonBot: number;
+                LoseBot: number;
+                wins: number;
+                losses: number;
+                games_played: number;
+                Progress: number;
+                Wins_percent: number;
+                Losses_percent: number;
+                homies: boolean;
+                invited: boolean;
+                homie_id: number;
             };
         } & {
             userId: number;
@@ -69,9 +82,24 @@ export declare class ChannelsController {
                 name: string;
                 avatar: string;
                 TwoFactor: boolean;
+                ISVERIDIED: boolean;
                 IsFirstTime: boolean;
+                InGame: boolean;
                 secretKey: string;
+                About: string;
                 status_user: string;
+                email: string;
+                WonBot: number;
+                LoseBot: number;
+                wins: number;
+                losses: number;
+                games_played: number;
+                Progress: number;
+                Wins_percent: number;
+                Losses_percent: number;
+                homies: boolean;
+                invited: boolean;
+                homie_id: number;
             };
         } & {
             userId: number;

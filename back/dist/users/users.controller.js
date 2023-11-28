@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
-const jwtservice_service_1 = require("../jwt/jwtservice.service");
+const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 let UsersController = class UsersController {
     constructor(jwt, usersService) {
         this.jwt = jwt;

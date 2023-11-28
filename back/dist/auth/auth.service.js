@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
-const jwtservice_service_1 = require("../jwt/jwtservice.service");
+const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 const prisma_service_1 = require("../prisma.service");
 const otplib_1 = require("otplib");
 const qrcode = require("qrcode");
@@ -21,18 +21,30 @@ let AuthService = class AuthService {
         this.jwt = jwt;
     }
     LoginToFortyTwo() {
-        return ({ msg: 'we will finish this at the right time' });
+        return { msg: "we will finish this at the right time" };
     }
     async ValidateUsers(infos, req, res) {
         try {
             const { id, email, login, first_name, last_name, displayname, image } = infos;
-            const obj = { id: id, login: login, fullname: displayname, image: image.link, email: email };
+            const obj = {
+                id: id,
+                login: login,
+                fullname: displayname,
+                image: image.link,
+                email: email,
+            };
             const id_user = id;
             const find = await this.prisma.user.findUnique({
                 where: { id_user },
             });
             if (find) {
-                const obj = { id: id, login: login, fullname: displayname, image: image.link, email: email };
+                const obj = {
+                    id: id,
+                    login: login,
+                    fullname: displayname,
+                    image: image.link,
+                    email: email,
+                };
                 return obj;
             }
             await this.prisma.user.create({
@@ -43,6 +55,22 @@ let AuthService = class AuthService {
                     TwoFactor: false,
                     status_user: "online",
                     IsFirstTime: true,
+                    secretKey: null,
+                    About: null,
+                    email: email,
+                    WonBot: 0,
+                    LoseBot: 0,
+                    wins: 0,
+                    losses: 0,
+                    games_played: 0,
+                    Progress: 0,
+                    Wins_percent: 0,
+                    Losses_percent: 0,
+                    InGame: false,
+                    homies: false,
+                    invited: false,
+                    homie_id: 0,
+                    ISVERIDIED: false,
                 },
             });
             return obj;
@@ -53,38 +81,40 @@ let AuthService = class AuthService {
     }
     async GenerateQrCode(req) {
         const sKey = otplib_1.authenticator.generateSecret();
-        const decoded = this.jwt.verify(req.cookies['cookie']);
+        const decoded = this.jwt.verify(req.cookies["cookie"]);
         const user = await this.prisma.user.update({
             where: { id_user: decoded.id },
             data: { secretKey: sKey },
         });
-        console.log(user);
-        const otpAuthURL = otplib_1.authenticator.keyuri(decoded.email, 'YourAppName', sKey);
+        const otpAuthURL = otplib_1.authenticator.keyuri(decoded.email, "YourAppName", sKey);
         const qrCodeOptions = {
-            errorCorrectionLevel: 'L',
+            errorCorrectionLevel: "L",
             width: 250,
             height: 250,
             margin: 1,
             color: {
                 dark: "#3D3C65",
-                light: "#B7B7C9"
-            }
+                light: "#B7B7C9",
+            },
         };
         const qrCodeDataURL = qrcode.toDataURL(otpAuthURL, qrCodeOptions);
         return qrCodeDataURL;
     }
     async Verify_QrCode(body, req) {
-        const decoded = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.prisma.user.findUnique({ where: { id_user: decoded.id } });
+        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const user = await this.prisma.user.findUnique({
+            where: { id_user: decoded.id },
+        });
         if (otplib_1.authenticator.verify({ token: body.inputValue, secret: user.secretKey }))
-            return ({ msg: 'true' });
+            return { msg: "true" };
         else
-            return ({ msg: 'false' });
+            return { msg: "false" };
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, jwtservice_service_1.JwtService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        jwtservice_service_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

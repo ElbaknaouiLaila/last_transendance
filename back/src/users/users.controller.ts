@@ -1,6 +1,6 @@
 import { Controller, Get, Req, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { JwtService } from '../jwt/jwtservice.service';
+import { JwtService } from '../auth/jwt/jwtservice.service';
 import * as cookieParser from 'cookie-parser';
 
 @Controller('users')
@@ -13,7 +13,7 @@ export class UsersController {
     }
     @Get(':id')
     async findById(id:number) {
-        
+
         const user = await this.usersService.findById(id);
         return (user);
     }

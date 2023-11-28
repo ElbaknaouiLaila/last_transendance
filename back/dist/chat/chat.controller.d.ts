@@ -1,6 +1,6 @@
 import { ChatService } from './chat.service';
 import { UsersService } from '../users/users.service';
-import { JwtService } from '../jwt/jwtservice.service';
+import { JwtService } from '../auth/jwt/jwtservice.service';
 export declare class ChatController {
     private jwt;
     private readonly chatService;

@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 const users_controller_1 = require("./users.controller");
 const users_service_1 = require("./users.service");
 const prisma_service_1 = require("../prisma.service");
-const jwtservice_service_1 = require("../jwt/jwtservice.service");
+const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;

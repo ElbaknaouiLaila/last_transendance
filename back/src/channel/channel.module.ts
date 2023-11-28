@@ -3,7 +3,7 @@ import { ChannelsController } from './channel.controller';
 import { ChannelsService } from './channel.service';
 import { PrismaService } from '../prisma.service';
 import { UsersService } from 'src/users/users.service';
-import { JwtService } from '../jwt/jwtservice.service';
+import { JwtService } from '../auth/jwt/jwtservice.service';
 
 @Module({
   controllers: [ChannelsController],

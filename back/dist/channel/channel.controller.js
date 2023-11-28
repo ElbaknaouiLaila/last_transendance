@@ -15,8 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChannelsController = void 0;
 const common_1 = require("@nestjs/common");
 const channel_service_1 = require("./channel.service");
+const create_channel_dto_1 = require("./dto/create-channel.dto");
 const users_service_1 = require("../users/users.service");
-const jwtservice_service_1 = require("../jwt/jwtservice.service");
+const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 let ChannelsController = class ChannelsController {
     constructor(jwt, channelsService, UsersService) {
         this.jwt = jwt;
@@ -26,47 +27,92 @@ let ChannelsController = class ChannelsController {
     async create(req, data) {
         console.log("-------------------------- Starting Creating a Channel -------------------------- ");
         console.log(data);
+        if (data) {
+            if (!data.title || !data.members || !data.type) {
+                return (false);
+            }
+            if (data.type === "protected") {
+                if (!data.password) {
+                    return (false);
+                }
+            }
+        }
+        else
+            return (false);
         try {
             const decode = this.jwt.verify(req.cookies['cookie']);
             const user = await this.UsersService.findById(decode.id);
             if (user) {
                 const channel = await this.channelsService.createChannel(data, user.id_user);
+                console.log(channel);
+                if (channel)
+                    return (true);
+                else
+                    return false;
             }
-            return (true);
         }
         catch (error) {
-            console.log(error.message);
             return { message: 'An error occurred', error: error.message };
         }
     }
     async join(req, data) {
         console.log("-------------------------- Starting Joining a Channel  -------------------------- ");
         console.log(data);
+        if (data) {
+            if (!data.sendData.id_channel || !data.sendData.name || !data.sendData.visibility) {
+                return (false);
+            }
+            if (data.sendData.visibility === "protected") {
+                if (!data.sendData.password) {
+                    return (false);
+                }
+            }
+        }
+        else
+            return (false);
         try {
             const decode = this.jwt.verify(req.cookies['cookie']);
             const user = await this.UsersService.findById(decode.id);
             if (user) {
                 const memberChannel = await this.channelsService.joinChannel(data, user.id_user);
-                console.log("end joing chanel 1");
-                return (true);
+                if (memberChannel) {
+                    console.log("operation accomplished successfully");
+                    return (true);
+                }
+                else {
+                    console.log("operation does not accomplished successfully");
+                    return (false);
+                }
             }
+            else
+                return (false);
         }
         catch (error) {
-            console.log("ooooooooooooooooooooooooooooooooooooooooooooo");
-            return { message: 'An error occurred', error: error.message };
+            return (false);
         }
-        console.log("end joing chanel 2");
     }
     async updatePass(req, data) {
         console.log("-------------------------- UPDATE PASSWORD  -------------------------- ");
         console.log(data);
+        if (data) {
+            if (!data.password || !data.channel_id || !data.user_id) {
+                return (false);
+            }
+        }
+        else
+            return (false);
         try {
             const decode = this.jwt.verify(req.cookies['cookie']);
             const user = await this.UsersService.findById(decode.id);
             if (user) {
-                await this.channelsService.updatePass(data, user.id_user);
-                return (true);
+                const updated = await this.channelsService.updatePass(data, user.id_user);
+                if (updated)
+                    return (true);
+                else
+                    return false;
             }
+            else
+                return false;
         }
         catch (error) {
             console.log(error.message);
@@ -76,41 +122,76 @@ let ChannelsController = class ChannelsController {
     async removePass(req, data) {
         console.log("-------------------------- REMOVE PASSWORD  -------------------------- ");
         console.log(data);
+        if (data) {
+            if (!data.id_channel || !data.user_id)
+                return (false);
+        }
+        else
+            return (false);
         try {
             const decode = this.jwt.verify(req.cookies['cookie']);
             const user = await this.UsersService.findById(decode.id);
             if (user) {
-                await this.channelsService.removePass(data, user.id_user);
-                return (true);
+                const remove = await this.channelsService.removePass(data, user.id_user);
+                if (remove)
+                    return (true);
+                else
+                    return false;
             }
+            else
+                return false;
         }
         catch (error) {
-            console.log(error.message);
             return { message: 'An error occurred', error: error.message };
         }
     }
     async setPass(req, data) {
         console.log("-------------------------- SET PASSWORD  -------------------------- ");
         console.log(data);
+        if (data) {
+            if (!data.password || !data.user_id || !data.channel_id) {
+                console.log("inside false");
+                return (false);
+            }
+        }
+        else
+            return (false);
         try {
             const decode = this.jwt.verify(req.cookies['cookie']);
             const user = await this.UsersService.findById(decode.id);
             if (user) {
-                await this.channelsService.setPass(data, user.id_user);
-                return (true);
+                const setch = await this.channelsService.setPass(data, user.id_user);
+                if (setch) {
+                    console.log("set ch true", setch);
+                    return (true);
+                }
+                else
+                    return (false);
             }
+            else
+                return (false);
         }
         catch (error) {
-            console.log(error.message);
             return { message: 'An error occurred', error: error.message };
         }
     }
     async setAdmin(req, data) {
         console.log("-------------------------- SET ADMIN  -------------------------- ");
         console.log(data);
+        if (data) {
+            if (!data.to || !data.channel_id || !data.from) {
+                console.log("inside false");
+                return (false);
+            }
+        }
+        else
+            return (false);
         try {
-            await this.channelsService.setAdmin(data);
-            return (true);
+            const result = await this.channelsService.setAdmin(data);
+            if (result)
+                return (true);
+            else
+                return (false);
         }
         catch (error) {
             console.log(error.message);
@@ -118,13 +199,24 @@ let ChannelsController = class ChannelsController {
         }
     }
     async removeChannel(req, data) {
-        console.log("-------------------------- SET ADMIN  -------------------------- ");
+        console.log("-------------------------- Remove Channel  -------------------------- ");
         console.log(data);
+        if (data) {
+            if (!data.user_id || !data.channel_id) {
+                console.log("inside false");
+                return (false);
+            }
+        }
+        else
+            return (false);
         try {
             const user = await this.UsersService.findById(data.user_id);
             if (user) {
                 const result = await this.channelsService.removeChannel(data, user.id_user);
-                return (true);
+                if (result)
+                    return (true);
+                else
+                    return (false);
             }
         }
         catch (error) {
@@ -161,6 +253,8 @@ let ChannelsController = class ChannelsController {
             if (myAllChannels) {
                 const arrayOfChannels = [];
                 for (const channels of myAllChannels) {
+                    message = "";
+                    sent = null;
                     const lastMsg = await this.channelsService.getTheLastMessageOfChannel(channels.channelId);
                     if (lastMsg) {
                         message = lastMsg.message;
@@ -187,7 +281,6 @@ let ChannelsController = class ChannelsController {
             }
         }
         catch (error) {
-            console.log(error.message);
             return { message: 'An error occurred', error: error.message };
         }
     }
@@ -198,7 +291,7 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, create_channel_dto_1.CreateChannelDto]),
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "create", null);
 __decorate([

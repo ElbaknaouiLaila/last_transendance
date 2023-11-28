@@ -16,7 +16,7 @@ exports.ChatController = void 0;
 const common_1 = require("@nestjs/common");
 const chat_service_1 = require("./chat.service");
 const users_service_1 = require("../users/users.service");
-const jwtservice_service_1 = require("../jwt/jwtservice.service");
+const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 let ChatController = class ChatController {
     constructor(jwt, chatService, UsersService) {
         this.jwt = jwt;
