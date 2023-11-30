@@ -1,10 +1,12 @@
-import { Avatar, Badge, Box, Stack, Typography, styled } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../redux/store/store";
-import StyledBadge from "./StyledBadge";
+import { Avatar, Box, Stack, Typography, styled } from "@mui/material";
+import { useEffect } from "react";
 import {
   selectConversation,
   updatedContactInfo,
 } from "../redux/slices/contact";
+import { setCurrentConverstation } from "../redux/slices/converstation";
+import { useAppDispatch, useAppSelector } from "../redux/store/store";
+import { socket } from "../socket";
 
 const StyledChatBox = styled(Box)(() => ({
   "&:hover": {
@@ -13,7 +15,8 @@ const StyledChatBox = styled(Box)(() => ({
 }));
 
 const AllElements = (el: any) => {
-  const { contact, profile } = useAppSelector(state => state);
+  console.log(el)
+  const { contact, profile } = useAppSelector((state) => state);
   const dispatch = useAppDispatch();
   const selected_id = el.room_id;
   const selectedChatId = contact.room_id;
@@ -22,11 +25,27 @@ const AllElements = (el: any) => {
   if (!selectedChatId) {
     isSelected = false;
   }
+
+  useEffect(() => {
+    const handleHistoryDms = (data: any) => {
+      dispatch(setCurrentConverstation({ data, user_id: profile._id }));
+    };
+    if (!contact.room_id) return;
+    socket.emit("allMessagesDm", {
+      room_id: contact.room_id, // selected conversation
+      user_id: profile._id, // current user
+    });
+    socket.once("historyDms", handleHistoryDms);
+
+    return () => {
+      socket.off("historyDms", handleHistoryDms);
+    };
+  }, [contact.room_id, profile._id, dispatch]);
+
   return (
     <StyledChatBox
       onClick={() => {
-        // console.log(el.channel_type);
-        // console.log(selected_id, el.name, el.img);
+
         el.channel_type === "direct"
           ? dispatch(updatedContactInfo("CONTACT"))
           : dispatch(updatedContactInfo("CHANNEL"));
@@ -40,16 +59,6 @@ const AllElements = (el: any) => {
             avatar: el.img,
           })
         );
-        // dispatch(updatedContactInfo("CONTACT"));
-        // console.log(id);
-        // dispatch(
-        //   selectConversation({
-        //     room_id: selected_id,
-        //     name: id.name,
-        //     type_chat: "individual",
-        //     avatar: id.img,
-        //   })
-        // );
       }}
       sx={{
         width: "100%",
@@ -66,17 +75,8 @@ const AllElements = (el: any) => {
         sx={{ padding: "0 8px 0 4px" }}
       >
         <Stack direction={"row"} alignItems={"center"} spacing={2}>
-          {el.online ? (
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              variant="dot"
-            >
-              <Avatar src={el.img} sx={{ width: 52, height: 52 }} />
-            </StyledBadge>
-          ) : (
-            <Avatar src={el.img} sx={{ width: 52, height: 52 }} />
-          )}
+          <Avatar src={el.img} sx={{ width: 52, height: 52 }} />
+
           <Stack spacing={1.3}>
             <Typography variant="subtitle2" color={"white"}>
               {el.name}
@@ -86,7 +86,11 @@ const AllElements = (el: any) => {
               color={"white"}
               sx={{ fontWeight: 400 }}
             >
-              {el.msg}
+              {el.msg
+                ? el.msg.length > 45
+                  ? el.msg.substring(0, 45) + "..."
+                  : el.msg
+                : "There is no message yet"}
             </Typography>
           </Stack>
         </Stack>
@@ -97,11 +101,6 @@ const AllElements = (el: any) => {
           >
             {el.time}
           </Typography>
-          <Badge
-            color="primary"
-            badgeContent={el.unread}
-            sx={{ paddingBottom: "9px", paddingTop: 0 }}
-          ></Badge>
         </Stack>
       </Stack>
     </StyledChatBox>

@@ -20,17 +20,21 @@ const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 const JwtGuard_1 = require("../auth/jwt/JwtGuard");
 const prisma_service_1 = require("../prisma.service");
 const numberDto_1 = require("./utils/numberDto");
+const NumberDtoO_1 = require("./utils/NumberDtoO");
+const config_1 = require("@nestjs/config");
 let AuthController = class AuthController {
-    constructor(service, jwt, prisma) {
+    constructor(service, jwt, prisma, config) {
         this.service = service;
         this.jwt = jwt;
         this.prisma = prisma;
+        this.config = config;
     }
     Login() { }
     async redirect(req, res) {
+        console.log('alright');
         const accessToken = this.jwt.sign(req.user);
         res
-            .cookie("cookie", accessToken, {
+            .cookie(this.config.get('cookie'), accessToken, {
             httponly: true,
         })
             .status(200);
@@ -38,7 +42,7 @@ let AuthController = class AuthController {
             where: { id_user: req.user.id },
         });
         if (user.TwoFactor) {
-            res.redirect("http://localhost:5173/Authentication");
+            res.redirect(this.config.get('AuthenticationPath'));
             return req;
         }
         if (user.IsFirstTime) {
@@ -46,15 +50,15 @@ let AuthController = class AuthController {
                 where: { id_user: req.user.id },
                 data: { IsFirstTime: false },
             });
-            res.redirect("http://localhost:5173/setting");
+            res.redirect(this.config.get('settingsPath'));
         }
         else {
-            res.redirect("http://localhost:5173/home");
+            res.redirect(this.config.get('homepath'));
         }
         return req;
     }
     getSessionToken(req) {
-        const sessionToken = this.jwt.verify(req.cookies["cookie"]);
+        const sessionToken = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         return `Session Token: ${sessionToken}`;
     }
     async GenerateQrCode(req) {
@@ -63,10 +67,12 @@ let AuthController = class AuthController {
     }
     async Verify_QrCode(body, req) {
         const msg = await this.service.Verify_QrCode(body, req);
+        if (msg == null)
+            return (null);
         return msg.msg;
     }
     async Insert_Friends(body, req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         try {
             await this.prisma.user.update({
                 where: { id_user: decoded.id },
@@ -109,7 +115,7 @@ let AuthController = class AuthController {
         const friendData = await this.prisma.user.findUnique({
             where: { id_user: Body.id_user },
         });
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const user = await this.prisma.freind.deleteMany({
             where: {
                 AND: [{ userId: decoded.id }, { id_freind: Body.id_user }],
@@ -125,7 +131,7 @@ let AuthController = class AuthController {
         const friendData = await this.prisma.user.findUnique({
             where: { id_user: Body.id_user },
         });
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const user = await this.prisma.user.update({
             where: { id_user: decoded.id },
             data: {
@@ -139,7 +145,7 @@ let AuthController = class AuthController {
         this.Remove_friends(Body, req);
     }
     async DeBlock_friends(Body, req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         await this.prisma.blockedUser.deleteMany({
             where: {
                 AND: [{ id_blocked_user: Body.id_user }, { userId: decoded.id }],
@@ -147,7 +153,7 @@ let AuthController = class AuthController {
         });
     }
     async Get_FriendsList(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const user = await this.prisma.user.findUnique({
             where: { id_user: decoded.id },
         });
@@ -174,7 +180,7 @@ let AuthController = class AuthController {
         return scoop;
     }
     async only_friends(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const friends = await this.prisma.user.findUnique({
             where: { id_user: decoded.id },
             include: {
@@ -205,7 +211,7 @@ let AuthController = class AuthController {
         return array;
     }
     async Get_User(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         let obj = [];
         const user = await this.prisma.user.findUnique({
             where: { id_user: decoded.id },
@@ -218,7 +224,7 @@ let AuthController = class AuthController {
         return users;
     }
     async TwofactorAuth(body, req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const user = await this.prisma.user.update({
             where: { id_user: decoded.id },
             data: {
@@ -271,7 +277,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [numberDto_1.NumberDto, Object]),
+    __metadata("design:paramtypes", [NumberDtoO_1.NumberDtoO, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "Insert_Friends", null);
 __decorate([
@@ -279,7 +285,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [numberDto_1.NumberDto, Object]),
+    __metadata("design:paramtypes", [NumberDtoO_1.NumberDtoO, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "Remove_friends", null);
 __decorate([
@@ -287,7 +293,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [numberDto_1.NumberDto, Object]),
+    __metadata("design:paramtypes", [NumberDtoO_1.NumberDtoO, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "Block_friends", null);
 __decorate([
@@ -295,7 +301,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [numberDto_1.NumberDto, Object]),
+    __metadata("design:paramtypes", [NumberDtoO_1.NumberDtoO, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "DeBlock_friends", null);
 __decorate([
@@ -341,6 +347,7 @@ exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
         jwtservice_service_1.JwtService,
-        prisma_service_1.PrismaService])
+        prisma_service_1.PrismaService,
+        config_1.ConfigService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

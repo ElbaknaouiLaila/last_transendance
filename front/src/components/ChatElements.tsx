@@ -10,7 +10,13 @@ import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import { socket } from "../socket";
 import StyledBadge from "./StyledBadge";
 
-interface IdType {
+
+/**
+ * 
+ * 
+ * Type '{ room_id: string | null; id: string | null; user_id: string | null; name: string | null; online: boolean; img: string | null; msg: string | null; time: string | null; unread: number | null; pinned: boolean; key: number; }'
+ */
+export interface IdType {
   id: number;
   user_id?: number | undefined;
   room_id: number;
@@ -31,7 +37,7 @@ const StyledChatBox = styled(Box)(() => ({
 }));
 
 const ChatElements = (id: IdType) => {
-  const { contact, profile } = useAppSelector(state => state);
+  const { contact, profile } = useAppSelector((state) => state);
   const dispatch = useAppDispatch();
   let selected_id: number = 0;
   const selectedChatId = contact.room_id;
@@ -66,7 +72,7 @@ const ChatElements = (id: IdType) => {
     <StyledChatBox
       onClick={() => {
         dispatch(updatedContactInfo("CONTACT"));
-        // console.log(selected_id, id.name, id.img);
+        console.log(selected_id, id.name, id.img);
         dispatch(
           selectConversation({
             room_id: selected_id,
@@ -111,7 +117,11 @@ const ChatElements = (id: IdType) => {
               color={"white"}
               sx={{ fontWeight: 400 }}
             >
-              {id.msg}
+              {id.msg
+                ? id.msg.length > 45
+                  ? id.msg.substring(0, 45) + "..."
+                  : id.msg
+                : "There is no message yet"}
             </Typography>
           </Stack>
         </Stack>

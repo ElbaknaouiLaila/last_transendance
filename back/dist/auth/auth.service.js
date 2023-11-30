@@ -15,10 +15,12 @@ const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 const prisma_service_1 = require("../prisma.service");
 const otplib_1 = require("otplib");
 const qrcode = require("qrcode");
+const config_1 = require("@nestjs/config");
 let AuthService = class AuthService {
-    constructor(prisma, jwt) {
+    constructor(prisma, jwt, config) {
         this.prisma = prisma;
         this.jwt = jwt;
+        this.config = config;
     }
     LoginToFortyTwo() {
         return { msg: "we will finish this at the right time" };
@@ -71,22 +73,21 @@ let AuthService = class AuthService {
                     invited: false,
                     homie_id: 0,
                     ISVERIDIED: false,
+                    GameFlag: 0,
                 },
             });
             return obj;
         }
-        catch (error) {
-            console.log(error);
-        }
+        catch (error) { }
     }
     async GenerateQrCode(req) {
         const sKey = otplib_1.authenticator.generateSecret();
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const user = await this.prisma.user.update({
             where: { id_user: decoded.id },
             data: { secretKey: sKey },
         });
-        const otpAuthURL = otplib_1.authenticator.keyuri(decoded.email, "YourAppName", sKey);
+        const otpAuthURL = otplib_1.authenticator.keyuri(decoded.email, this.config.get('QrCodeAppName'), sKey);
         const qrCodeOptions = {
             errorCorrectionLevel: "L",
             width: 250,
@@ -101,20 +102,27 @@ let AuthService = class AuthService {
         return qrCodeDataURL;
     }
     async Verify_QrCode(body, req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
-        const user = await this.prisma.user.findUnique({
-            where: { id_user: decoded.id },
-        });
-        if (otplib_1.authenticator.verify({ token: body.inputValue, secret: user.secretKey }))
-            return { msg: "true" };
-        else
-            return { msg: "false" };
+        try {
+            const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+            const user = await this.prisma.user.findUnique({
+                where: { id_user: decoded.id },
+            });
+            if (otplib_1.authenticator.verify({ token: body.inputValue, secret: user.secretKey })) {
+                return { msg: "true" };
+            }
+            else
+                return { msg: "false" };
+        }
+        catch (error) {
+            return (null);
+        }
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        jwtservice_service_1.JwtService])
+        jwtservice_service_1.JwtService,
+        config_1.ConfigService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

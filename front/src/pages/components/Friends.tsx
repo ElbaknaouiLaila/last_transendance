@@ -1,6 +1,6 @@
 import { Popover, Transition } from "@headlessui/react";
 import axios from "axios";
-import { ChangeEvent, Fragment, KeyboardEvent, useRef, useState } from "react";
+import { ChangeEvent, Fragment, KeyboardEvent, useRef, useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../redux/store/store";
 import { socket_user } from "../../socket";
@@ -26,8 +26,20 @@ type AccountOwnerProps = {
   user: User[];
 };
 function Friends({ user }: AccountOwnerProps) {
-  const { friends } = useAppSelector(state => state.app);
-  console.log("friends");
+  // const { friends } = useAppSelector(state => state.app);
+  // const friends = await axios.get("http://localhost:3000/auth/friends", {
+  //   withCredentials: true,
+  // });
+  useEffect(() => {
+    const fetchData = async () => {
+      const {data}  = await axios.get("http://localhost:3000/auth/friends", { withCredentials: true });
+      setFriend(data);
+      console.log('daaaata : ', data);
+    };
+    fetchData();
+  }
+    , []);
+  const [friends, setFriend] = useState<User[]>([]);
   console.log(friends);
   // const [friends, setFriends] = useState<User[]>([]);
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
@@ -36,9 +48,6 @@ function Friends({ user }: AccountOwnerProps) {
     console.log("invite to playe");
     const id = friend.id_user;
     if (socket_user) socket_user.emit("invite-game", { id_user: id });
-    //friend.id_user
-    //accountOwner = false
-    //get returngameinfos from backend
     axios.post(
       "http://localhost:3000/profile/gameinfos",
       {
@@ -50,21 +59,16 @@ function Friends({ user }: AccountOwnerProps) {
         withCredentials: true,
       }
     );
-    // setaccountOwner(false);
     console.log("accountOwner id");
-    // console.log(user[0].id_user);
     console.log("status ");
     console.log(false);
     console.log(true);
 
-    // Update selectedFriend with the clicked friend's information
     setSelectedFriend(friend);
-    //   console.log(" 2 : ", friend.id_user);
+	axios.post("http://localhost:3000/profile/GameFlag", {flag:2}, {withCredentials:true});
     setTimeout(() => {
-      window.location.href = "http://localhost:5173/game";
+		window.location.href = "http://localhost:5173/game";
     }, 1000);
-    // console.log(friend);
-    // setLoding(true);
   };
 
   const [query, setQuery] = useState("");

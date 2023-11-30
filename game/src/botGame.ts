@@ -69,11 +69,12 @@ class MyBotGame {
 		});
     }
 
-	checkLocation = () => {
+	checkLocation = async () => {
 		if (pathn != '/game') {
 			this.gameOver = true;
 			this.compWon = true;
 			this.renderingStopped = true;
+            await axios.post('http://localhost:3000/profile/Gamestatus', {status:false}, {withCredentials:true});
 		}
 	};
 
@@ -139,7 +140,8 @@ class MyBotGame {
 
         player_2.y += (ball.y - (player_2.y + player_2.h / 2)) * computerLevel;
 
-        if (ball.y + ball.r > this.canvasHeight || ball.y + ball.r < 10) {
+        if (ball.y + ball.r >= this.canvasHeight || ball.y - ball.r <= 0) {
+			ball.y = ball.y + ball.r >= this.canvasHeight ? ball.y - ball.r : ball.y + ball.r;
             ball.velocityY *= -1;
         }
 
@@ -185,7 +187,7 @@ class MyBotGame {
                 this.message.innerHTML = "Game Over, You Lost!";
             }
 
-			await axios.post('http://localhost:3000/profile/Gamestatus', {status:true}, {withCredentials:true});
+			await axios.post('http://localhost:3000/profile/Gamestatus', {status:false}, {withCredentials:true});
 
 			axios.post("http://localhost:3000/profile/Bot-Pong", {
 				won: this.userWon,
@@ -240,14 +242,14 @@ class MyBotGame {
             button.style.display = "none";
         }
         console.log("Starting Bot Game");
-		await axios.post('http://localhost:3000/profile/Gamestatus', {status:true}, {withCredentials:true});
+        await axios.post('http://localhost:3000/profile/Gamestatus', {status:true}, {withCredentials:true});
         this.message.innerHTML = `The game will start in ${this.countdown} seconds...`;
         const countdownInterval = setInterval(() => {
-			this.checkLocation();
-			if (this.gameOver) {
-				clearInterval(countdownInterval);
-				this.render();
-			}
+            this.checkLocation();
+            if (this.gameOver) {
+                clearInterval(countdownInterval);
+                this.render();
+            }
             this.countdown--;
             if (this.countdown) {
                 this.message.innerHTML = `The game will start in ${this.countdown} seconds...`;
@@ -284,8 +286,8 @@ class MyBotGame {
                 if (this.renderingStopped) {
                     clearInterval(interval);
                 }
-				this.checkLocation();
-				this.game();
+                this.checkLocation();
+                this.game();
             }, 1000 / this.framePerSec);
         }, 3100);
     }

@@ -23,11 +23,13 @@ const AboutDto_1 = require("./AboutDto");
 const BotDto_1 = require("./BotDto");
 const ingameDto_1 = require("./ingameDto");
 const infosDto_1 = require("./infosDto");
+const config_1 = require("@nestjs/config");
 let ProfileController = class ProfileController {
-    constructor(Profile, prisma, jwt) {
+    constructor(Profile, prisma, jwt, config) {
         this.Profile = Profile;
         this.prisma = prisma;
         this.jwt = jwt;
+        this.config = config;
     }
     async Name_Modification(data, req, res) {
         const value = await this.Profile.ModifyName(data, req, res);
@@ -41,7 +43,7 @@ let ProfileController = class ProfileController {
         this.Profile.ModifyPhoto(photo, req, res);
     }
     async About_me(data, req, res) {
-        const payload = this.jwt.verify(req.cookies["cookie"]);
+        const payload = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const ab = data.About;
         await this.prisma.user.update({
             where: { id_user: payload.id },
@@ -57,10 +59,13 @@ let ProfileController = class ProfileController {
     }
     async VsBoot(req, body) {
         console.log(body);
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const user = await this.prisma.user.findUnique({
             where: { id_user: decoded.id },
         });
+        let winspercent;
+        let lossespercent;
+        let progress;
         let gameP = user.games_played + 1;
         let gameW = user.WonBot;
         let gameL = user.LoseBot;
@@ -69,11 +74,19 @@ let ProfileController = class ProfileController {
         console.log("game_played: " + user.games_played);
         if (body.won) {
             gameW++;
+            progress = ((gameW - gameL) / gameP) * 100;
+            progress = progress < 0 ? 0 : progress;
+            winspercent = (gameW / gameP) * 100;
+            lossespercent = (gameL / gameP) * 100;
             await this.prisma.user.update({
                 where: { id_user: decoded.id },
                 data: {
                     WonBot: gameW,
+                    wins: gameW,
                     games_played: gameP,
+                    Progress: progress,
+                    Wins_percent: winspercent,
+                    Losses_percent: lossespercent,
                     history: {
                         create: {
                             winner: true,
@@ -89,11 +102,19 @@ let ProfileController = class ProfileController {
         }
         else {
             gameL++;
+            progress = ((gameW - gameL) / gameP) * 100;
+            progress = progress < 0 ? 0 : progress;
+            winspercent = (gameW / gameP) * 100;
+            lossespercent = (gameL / gameP) * 100;
             await this.prisma.user.update({
                 where: { id_user: decoded.id },
                 data: {
                     LoseBot: gameL,
+                    losses: gameL,
                     games_played: gameP,
+                    Progress: progress,
+                    Wins_percent: winspercent,
+                    Losses_percent: lossespercent,
                     history: {
                         create: {
                             winner: false,
@@ -122,7 +143,7 @@ let ProfileController = class ProfileController {
         }
     }
     async NotFriendsUsers(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         const users = this.prisma.user.findMany({
@@ -144,7 +165,7 @@ let ProfileController = class ProfileController {
         return FinalUsers;
     }
     async GetNotifications(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         const user = await this.prisma.user.findUnique({
@@ -169,7 +190,7 @@ let ProfileController = class ProfileController {
         return topUsers;
     }
     async Achievments(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         const userAchievements = await this.prisma.achievments.findMany({
@@ -180,7 +201,7 @@ let ProfileController = class ProfileController {
         return userAchievements;
     }
     async History(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         const user = await this.prisma.history.findMany({
@@ -189,7 +210,7 @@ let ProfileController = class ProfileController {
         return user;
     }
     async GetAvatar(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         const user = await this.prisma.user.findUnique({
@@ -198,7 +219,7 @@ let ProfileController = class ProfileController {
         return user.avatar;
     }
     async Gamestatus(req, body) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         await this.prisma.user.update({
@@ -209,7 +230,7 @@ let ProfileController = class ProfileController {
         });
     }
     async gameinfos(req, body) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         console.log("gameinfoos ", body);
@@ -231,7 +252,7 @@ let ProfileController = class ProfileController {
         }
     }
     async Returngameinfos(req) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         const user = await this.prisma.user.findUnique({
@@ -245,7 +266,7 @@ let ProfileController = class ProfileController {
         return obj;
     }
     async Logout(req, res) {
-        const decoded = this.jwt.verify(req.cookies["cookie"]);
+        const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         if (decoded == null)
             return;
         await this.prisma.user.update({
@@ -259,6 +280,57 @@ let ProfileController = class ProfileController {
         res.clearCookie("cookie");
         res.status(200).json({ msg: "cookie deleted" });
         console.log("cookie deleted");
+    }
+    async verify_Otp(body, req) {
+        console.log('veriyyy ', body);
+        try {
+            const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+            await this.prisma.user.update({
+                where: { id_user: decoded.id },
+                data: {
+                    ISVERIDIED: body.verify,
+                }
+            });
+        }
+        catch (error) { }
+    }
+    async Get_Otp(req) {
+        try {
+            const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+            const user = await this.prisma.user.findUnique({
+                where: { id_user: decoded.id },
+            });
+            return ({ verified: user.ISVERIDIED, TFA: user.TwoFactor });
+        }
+        catch (error) { }
+    }
+    async GameFlag(req, body) {
+        try {
+            const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+            await this.prisma.user.update({
+                where: { id_user: decoded.id },
+                data: {
+                    GameFlag: body.flag,
+                },
+            });
+        }
+        catch (error) { }
+    }
+    async GetFalg(req) {
+        try {
+            const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+            const user = await this.prisma.user.findUnique({ where: { id_user: decoded.id } });
+            return ({ flag: user.GameFlag });
+        }
+        catch (error) { }
+    }
+    async ingame(req) {
+        try {
+            const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+            const user = await this.prisma.user.findUnique({ where: { id_user: decoded.id } });
+            return ({ ingame: user.InGame });
+        }
+        catch (error) { }
     }
 };
 exports.ProfileController = ProfileController;
@@ -386,10 +458,48 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProfileController.prototype, "deletecookie", null);
+__decorate([
+    (0, common_1.Post)("verifyOtp"),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "verify_Otp", null);
+__decorate([
+    (0, common_1.Get)("verifyOtp"),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "Get_Otp", null);
+__decorate([
+    (0, common_1.Post)('GameFlag'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "GameFlag", null);
+__decorate([
+    (0, common_1.Get)('GameFlag'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "GetFalg", null);
+__decorate([
+    (0, common_1.Get)('ingame'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "ingame", null);
 exports.ProfileController = ProfileController = __decorate([
     (0, common_1.Controller)("profile"),
     __metadata("design:paramtypes", [profile_service_1.ProfileService,
         prisma_service_1.PrismaService,
-        jwtservice_service_1.JwtService])
+        jwtservice_service_1.JwtService,
+        config_1.ConfigService])
 ], ProfileController);
 //# sourceMappingURL=profile.controller.js.map

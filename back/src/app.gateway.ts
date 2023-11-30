@@ -26,6 +26,7 @@ export class AppGateway
   private roomsId: number = 1;
   private users = new Map();
   private rooms: Room[] = [];
+  private playingUsers: number[] = [];
   private frRooms: Room[] = [];
   private framePerSec: number = 50;
   private isPaused: boolean = false;
@@ -39,6 +40,7 @@ export class AppGateway
     let cookieHeader;
 
     cookieHeader = client.handshake.headers.cookie;
+    if (cookieHeader == undefined) return null;
     const cookies = cookieHeader.split(";").reduce((acc, cookie) => {
       const [name, value] = cookie.trim().split("=");
       acc[name] = value;
@@ -56,30 +58,21 @@ export class AppGateway
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
+	const userId: number = this.decodeCookie(client).id;
+	if (this.playingUsers.includes(userId)) {
+		client.disconnect();
+		return ;
+	}
+	this.playingUsers.push(userId);
     this.logger.log(`Client connected: ${client.id}`);
-    // const userId: number = this.decodeCookie(client).id;
-    // const decoded = this.decodeCookie(client);
-    // const user = await this.prisma.user.findUnique({
-    //     where:{id_user: decoded.id},
-    // });
-    // if (this.users.has(userId)) {
-    //     client.disconnect();
-    // }
-    try {
-      const decoded = this.decodeCookie(client);
-      const user = await this.prisma.user.findUnique({
-        where: { id_user: decoded.id },
-      });
-      if (user.InGame === true) {
-        client.disconnect();
-      }
-    }
-    catch(error){}
   }
+
 
   async handleDisconnect(client: Socket) {
     const room: Room | null = this.findRoomBySocketId(client.id);
     const decoded = this.decodeCookie(client);
+	this.playingUsers = this.playingUsers.filter(item => item !== decoded.id);
+    if (decoded == null) return;
     await this.prisma.user.update({
       where: { id_user: decoded.id },
       data: {
@@ -90,6 +83,7 @@ export class AppGateway
         homie_id: 0,
       },
     });
+
     if (room) {
       room.gameAbondoned = true;
       this.logger.log(`User disconnected : ${client.id}`);
@@ -106,11 +100,11 @@ export class AppGateway
       this.logger.log(`User disconnected : ${client.id}`);
     }
     this.users.delete(this.decodeCookie(client).id);
+	console.log(this.users);
   }
 
   @SubscribeMessage("join-friends-room")
   async handleJoinFriendsRoom(client: Socket, data: any) {
-    // console.log("Motherfuckers");
     const userId: number = this.decodeCookie(client).id;
     if (!this.users.has(userId)) {
       this.users.set(userId, client.id);
@@ -384,67 +378,84 @@ export class AppGateway
     let username: string = user.name;
     let enemyname: string = enemyUser.name;
     if (player && !player.won) {
-      gameL++;
-      progress = ((gameW - gameL) / gameP) * 100;
-      progress = progress < 0 ? 0 : progress;
-      winspercent = (gameW / gameP) * 100;
-      lossespercent = (gameL / gameP) * 100;
+      if (enemy.score === 5) {
+        gameL++;
+        progress = ((gameW - gameL) / gameP) * 100;
+        progress = progress < 0 ? 0 : progress;
+        winspercent = (gameW / gameP) * 100;
+        lossespercent = (gameL / gameP) * 100;
+        await this.prisma.user.update({
+          where: { id_user: decoded.id },
+          data: {
+            losses: gameL,
+            games_played: gameP,
+            Progress: progress,
+            Wins_percent: winspercent,
+            Losses_percent: lossespercent,
+            history: {
+              create: {
+                useravatar: useravatar,
+                username: username,
+                winner: false,
+                userscore: UserScore,
+                enemyId: OppositeId,
+                enemyname: enemyname,
+                enemyavatar: enemyavatar,
+                enemyscore: EnemyScore,
+              },
+            },
+          },
+        });
+      }
       console.log("leave");
       await this.prisma.user.update({
         where: { id_user: decoded.id },
         data: {
-          losses: gameL,
-          games_played: gameP,
-          Progress: progress,
-          Wins_percent: winspercent,
-          Losses_percent: lossespercent,
           InGame: false,
           status_user: "online",
           homies: false,
           invited: false,
           homie_id: 0,
-          history: {
-            create: {
-              useravatar: useravatar,
-              username: username,
-              winner: false,
-              userscore: UserScore,
-              enemyId: OppositeId,
-              enemyname: enemyname,
-              enemyavatar: enemyavatar,
-              enemyscore: EnemyScore,
-            },
-          },
         },
       });
     } else if (player) {
-      gameW++;
-      progress = ((gameW - gameL) / gameP) * 100;
-      progress = progress < 0 ? 0 : progress;
-      winspercent = (gameW / gameP) * 100;
-      lossespercent = (gameL / gameP) * 100;
+      if (player.score === 5) {
+        gameW++;
+        progress = ((gameW - gameL) / gameP) * 100;
+        progress = progress < 0 ? 0 : progress;
+        winspercent = (gameW / gameP) * 100;
+        lossespercent = (gameL / gameP) * 100;
+        await this.prisma.user.update({
+          where: { id_user: decoded.id },
+          data: {
+            wins: gameW,
+            games_played: gameP,
+            Progress: progress,
+            Wins_percent: winspercent,
+            Losses_percent: lossespercent,
+            history: {
+              create: {
+                useravatar: useravatar,
+                winner: true,
+                username: username,
+                userscore: UserScore,
+                enemyId: OppositeId,
+                enemyname: enemyname,
+                enemyavatar: enemyavatar,
+                enemyscore: EnemyScore,
+              },
+            },
+          },
+        });
+      }
       await this.prisma.user.update({
         where: { id_user: decoded.id },
         data: {
-          wins: gameW,
-          games_played: gameP,
-          Progress: progress,
-          Wins_percent: winspercent,
-          Losses_percent: lossespercent,
           InGame: false,
           status_user: "online",
-          history: {
-            create: {
-              useravatar: useravatar,
-              winner: true,
-              username: username,
-              userscore: UserScore,
-              enemyId: OppositeId,
-              enemyname: enemyname,
-              enemyavatar: enemyavatar,
-              enemyscore: EnemyScore,
-            },
-          },
+          homies: false,
+          invited: false,
+          homie_id: 0,
         },
       });
     }
@@ -572,10 +583,11 @@ export class AppGateway
         room.roomBall.y += room.roomBall.velocityY;
 
         if (
-          room.roomBall.y + room.roomBall.r > 644 ||
-          room.roomBall.y + room.roomBall.r < 10
+          room.roomBall.y + room.roomBall.r >= 644 ||
+          room.roomBall.y - room.roomBall.r <= 0
         ) {
-          room.roomBall.velocityY *= -1;
+			room.roomBall.y = room.roomBall.y + room.roomBall.r >= 644 ? room.roomBall.y - room.roomBall.r : room.roomBall.y + room.roomBall.r;
+          	room.roomBall.velocityY *= -1;
         }
 
         let player =

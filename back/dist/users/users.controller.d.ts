@@ -1,13 +1,17 @@
+/// <reference types="multer" />
 import { UsersService } from './users.service';
 import { JwtService } from '../auth/jwt/jwtservice.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 export declare class UsersController {
     private jwt;
     private readonly usersService;
-    constructor(jwt: JwtService, usersService: UsersService);
+    private cloudinaryService;
+    constructor(jwt: JwtService, usersService: UsersService, cloudinaryService: CloudinaryService);
     findAllUsers(): Promise<{
         id_user: number;
         name: string;
         avatar: string;
+        GameFlag: number;
         TwoFactor: boolean;
         ISVERIDIED: boolean;
         IsFirstTime: boolean;
@@ -32,6 +36,7 @@ export declare class UsersController {
         id_user: number;
         name: string;
         avatar: string;
+        GameFlag: number;
         TwoFactor: boolean;
         ISVERIDIED: boolean;
         IsFirstTime: boolean;
@@ -53,4 +58,5 @@ export declare class UsersController {
         homie_id: number;
     }>;
     findByName(name: string): Promise<number>;
+    updateUserDetails(file: Express.Multer.File): Promise<any>;
 }

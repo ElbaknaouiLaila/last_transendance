@@ -4,15 +4,20 @@ import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Stack } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { RHFAutocomplete, RHFTextField } from "../../components/hook-form";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { RHFUploadAvatar } from "../../components/hook-form/RHFUploadAvatar";
 import { showSnackbar } from "../../redux/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import { FetchChannels } from "../../redux/slices/channels";
+import {
+  FetchChannels,
+  FetchPublicChannels,
+} from "../../redux/slices/channels";
 
 const CreatePublicForm = ({ handleClose }: any) => {
   const [file, setFile] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
   const { friends } = useAppSelector((state) => state.app);
   const dispatch = useAppDispatch();
   const PublicSchema = Yup.object().shape({
@@ -43,9 +48,23 @@ const CreatePublicForm = ({ handleClose }: any) => {
   } = methods; // useful methods from useForm()
 
   const onSubmit = async (data: any) => {
+    // setIsLoading(true);
     try {
       console.log(file);
-      data.avatar = file?.preview;
+      setIsLoading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      const dataAvatar: any = await axios.patch(
+        "http://localhost:3000/users/upload/avatar",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+
+      // console.log("avatarUrl: ", dataAvatar.dat);
+      data.avatar = dataAvatar.data;
       const res: any = await axios.post(
         "http://localhost:3000/channels/create",
         data,
@@ -61,6 +80,7 @@ const CreatePublicForm = ({ handleClose }: any) => {
           })
         );
         dispatch(FetchChannels());
+        dispatch(FetchPublicChannels());
         reset();
         handleClose();
       } else {
@@ -84,6 +104,8 @@ const CreatePublicForm = ({ handleClose }: any) => {
       console.log("error", error);
       reset();
       handleClose();
+    } finally {
+      setIsLoading(false);
     }
   };
   const handleDrop = useCallback(
@@ -144,7 +166,8 @@ const CreatePublicForm = ({ handleClose }: any) => {
             Cancel
           </Button>
 
-          <Button
+          <LoadingButton
+            loading={isLoading}
             sx={{
               backgroundColor: "#3D3C65", // Change the background color to purple 3D3C65
               color: "#f78562", // Change the text color to white
@@ -161,7 +184,7 @@ const CreatePublicForm = ({ handleClose }: any) => {
             variant="contained"
           >
             Create Channel
-          </Button>
+          </LoadingButton>
         </Stack>
       </Stack>
     </FormProvider>

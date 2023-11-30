@@ -17,22 +17,57 @@ const common_1 = require("@nestjs/common");
 const chat_service_1 = require("./chat.service");
 const users_service_1 = require("../users/users.service");
 const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
+const config_1 = require("@nestjs/config");
 let ChatController = class ChatController {
-    constructor(jwt, chatService, UsersService) {
+    constructor(jwt, chatService, UsersService, config) {
         this.jwt = jwt;
         this.chatService = chatService;
         this.UsersService = UsersService;
+        this.config = config;
     }
     async getAllConversations(req) {
-        const decode = this.jwt.verify(req.cookies['cookie']);
-        const user = await this.UsersService.findById(decode.id);
-        return this.chatService.getAllConversations(user.id_user);
+        try {
+            const decode = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+            if (decode) {
+                if (!decode.id)
+                    return (false);
+                const user = await this.UsersService.findById(decode.id);
+                return this.chatService.getAllConversations(user.id_user);
+            }
+            else
+                return (false);
+        }
+        catch (error) {
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async getAllMessages(req, data) {
-        return this.chatService.getAllMessages(data.idDm);
+        try {
+            if (data) {
+                if (!data.idDm)
+                    return (false);
+            }
+            else
+                return (false);
+            return this.chatService.getAllMessages(data.idDm);
+        }
+        catch (error) {
+            return { message: 'An error occurred', error: error.message };
+        }
     }
     async getAllMessagesRoom(req, data) {
-        return this.chatService.getAllMessagesRoom(data.idRoom);
+        try {
+            if (data) {
+                if (!data.idRoom)
+                    return (false);
+            }
+            else
+                return (false);
+            return this.chatService.getAllMessagesRoom(data.idRoom);
+        }
+        catch (error) {
+            return { message: 'An error occurred', error: error.message };
+        }
     }
 };
 exports.ChatController = ChatController;
@@ -61,6 +96,9 @@ __decorate([
 ], ChatController.prototype, "getAllMessagesRoom", null);
 exports.ChatController = ChatController = __decorate([
     (0, common_1.Controller)('chatData'),
-    __metadata("design:paramtypes", [jwtservice_service_1.JwtService, chat_service_1.ChatService, users_service_1.UsersService])
+    __metadata("design:paramtypes", [jwtservice_service_1.JwtService,
+        chat_service_1.ChatService,
+        users_service_1.UsersService,
+        config_1.ConfigService])
 ], ChatController);
 //# sourceMappingURL=chat.controller.js.map

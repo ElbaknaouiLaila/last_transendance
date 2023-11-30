@@ -47,6 +47,20 @@ function Maincontent() {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const handleBotGame = () => {
+    axios.post("http://localhost:3000/profile/GameFlag", {flag:1}, {withCredentials:true});
+    setTimeout(() => {
+      window.location.href = "/game";
+    }, 200);
+  };
+
+  const handleMultiplayerGame = () => {
+    axios.post("http://localhost:3000/profile/GameFlag", {flag:2}, {withCredentials:true});
+    setTimeout(() => {
+      window.location.href = "/game";
+    }, 1000);
+  };
   
   const handleClickOpen = () => {
     setOpen(true);
@@ -163,7 +177,8 @@ function Maincontent() {
                   src={Astronaut}
                   alt=""
                 />
-                <span className="uppercase text-lg tablet:text-2xl font-bold mobile:text-center tablet:text-start text-white ml-3">
+                <span className="uppercase text-lg tablet:text-2xl font-bold mobile:text-center tablet:text-start text-white ml-3"
+                      onClick={handleBotGame}>
                   BOT
                 </span>
               </div>
@@ -173,7 +188,8 @@ function Maincontent() {
                   src={Rakets}
                   alt=""
                 />
-                <h4 className="uppercase text-lg tablet:text-2xl font-bold mobile:text-center tablet:text-start text-white">
+                <h4 className="uppercase text-lg tablet:text-2xl font-bold mobile:text-center tablet:text-start text-white"
+                    onClick={handleMultiplayerGame}>
                   Random player
                 </h4>
               </div>
@@ -272,15 +288,15 @@ function Maincontent() {
                       </div>
                      
                     </div> */}
-                    <div className=" flex flex-col justify-center items-center -mt-10">
+                    <div className=" flex flex-col justify-center items-center mt-5">
 
-                      <div className="text-white font-bold text-[8rem]">
+                      <div className="text-white font-bold text-[8rem] mb-10">
                         vs
                       </div>
                       <img className=" -mt-10" src={Table} alt="" />
-                      <DialogActions>
+                      {/* <DialogActions>
                       <button  className="bg-[#D75D3A] px-10 rounded-[35px] text-white text-[4rem]" onClick={handleClose} autoFocus>Play</button>
-                      </DialogActions>
+                      </DialogActions> */}
                     </div>
                 </DialogContent>
               </div>

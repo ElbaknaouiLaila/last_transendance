@@ -30,7 +30,6 @@ let SocketGateway = class SocketGateway {
         cookieHeader = client.handshake.headers.cookie;
         if (cookieHeader == undefined)
             return null;
-        console.log(cookieHeader);
         const cookies = cookieHeader.split(";").reduce((acc, cookie) => {
             const [name, value] = cookie.trim().split("=");
             acc[name] = value;
@@ -70,19 +69,21 @@ let SocketGateway = class SocketGateway {
         }
     }
     async handleUserOnline(client) {
-        const decoded = this.decodeCookie(client);
-        if (decoded == null)
-            return;
-        await this.prisma.user.update({
-            where: { id_user: decoded.id },
-            data: {
-                status_user: "online",
-            },
-        });
-        this.server.emit("online", { id_user: decoded.id });
+        try {
+            const decoded = this.decodeCookie(client);
+            if (decoded == null)
+                return;
+            await this.prisma.user.update({
+                where: { id_user: decoded.id },
+                data: {
+                    status_user: "online",
+                },
+            });
+            this.server.emit("online", { id_user: decoded.id });
+        }
+        catch (error) { }
     }
     async handleUserOffline(client) {
-        console.log("offliiiiine");
         const decoded = this.decodeCookie(client);
         if (decoded == null)
             return;
@@ -97,7 +98,6 @@ let SocketGateway = class SocketGateway {
         this.server.emit("list-friends");
     }
     handleMessage(body) {
-        console.log(body);
         return "Hello world!";
     }
     async invite_game(client, body) {
@@ -106,11 +106,12 @@ let SocketGateway = class SocketGateway {
         const data = await this.prisma.user.findUnique({
             where: { id_user: decoded.id },
         });
-        console.log("in game ", data.InGame);
         const notify = await this.prisma.notification.findFirst({
             where: { userId: body.id_user, id_user: decoded.id },
         });
+        console.log('notiiify : ', notify);
         if (notify == null) {
+            console.log('ingame : ', data.InGame);
             if (data.InGame == false) {
                 const user = await this.prisma.user.update({
                     where: { id_user: body.id_user },
@@ -161,21 +162,22 @@ let SocketGateway = class SocketGateway {
         this.server.to(sock).emit("notification");
     }
     async NewFriend(client, body) {
-        console.log(body);
         const decoded = this.decodeCookie(client);
         const sockrecv = this.SocketContainer.get(decoded.id);
-        console.log("right bar gatway ", body);
         const socksend = this.SocketContainer.get(body);
         this.server.to(sockrecv).emit("RefreshFriends");
+        this.server.to(sockrecv).emit("friendsUpdateChat");
         this.server.to(socksend).emit("RefreshFriends");
+        this.server.to(socksend).emit("friendsUpdateChat");
     }
     async friends_list(client, body) {
         const decoded = this.decodeCookie(client);
-        console.log("friends list : ", body);
         const sockrecv = this.SocketContainer.get(decoded.id);
         const socksend = this.SocketContainer.get(body);
         this.server.to(sockrecv).emit("list-friends");
+        this.server.to(sockrecv).emit("friendsUpdateChat");
         this.server.to(socksend).emit("list-friends");
+        this.server.to(socksend).emit("friendsUpdateChat");
     }
 };
 exports.SocketGateway = SocketGateway;

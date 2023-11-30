@@ -67,13 +67,27 @@ class MyMultiplayerGame {
 	};
 
 	async startMultiplayerGame(): Promise<void> {
+		const outcome = await axios.get("http://localhost:3000/profile/GameFlag", {
+			withCredentials: true,});
+		if (outcome.data.flag === 2) {
+			this.socket = io("http://localhost:3000", {
+				transports: ["websocket"],
+				withCredentials: true,
+			});
+
+			this.socket.on("connect", () => {
+				console.log(`You connected to the server with id : ${this.socket.id}`);
+			});
+			this.initSocketListeners();
+			axios.post("http://localhost:3000/profile/GameFlag", {flag:0}, {
+				withCredentials: true,});
+		}
 		let flag = false;
 		const data = await axios.get('http://localhost:3000/profile/returngameinfos',  { withCredentials: true });
 		for (const button of this.buttons) {
 			button.style.display = "none";
 		}
 		this.exitBtn.style.display = "block";
-
 		const interval = setInterval(() => {
 			if (this.socket.connected) {
 				if (this.gameStarted) {
@@ -103,7 +117,7 @@ class MyMultiplayerGame {
 	
 			if (room.winner === this.playerNumber) {
 				if (room.gameAbondoned) {
-					this.message.innerHTML = "Game abondoned, You Won!";
+					this.message.innerHTML = "Game abondoned!";
 				} else {
 					this.message.innerHTML = "Game Over, You Won!";
 				}

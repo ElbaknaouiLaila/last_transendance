@@ -22,13 +22,12 @@ import { UsersController } from './users/users.controller';
 import { ChannelsService } from './channel/channel.service';
 import { UsersService } from './users/users.service';
 import { PrismaService } from './prisma.service';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule,
-            ProfileModule, JwtModule, SocketModule, ChannelModule, UsersModule, ChatModule, ChannelModule/*, JwtModule.register({
-              secret: 'your-secret-key', // Replace with your secret key
-              signOptions: { expiresIn: '1m' }, // Token expiration time            
-            })*/],
+  imports: [ConfigModule.forRoot({isGlobal: true,}),AuthModule,
+            ProfileModule, JwtModule, SocketModule, ChannelModule, UsersModule, ChatModule, ChannelModule, CloudinaryModule],
   controllers: [AppController, AuthController,
                 ProfileController,ChannelsController, UsersController],
   providers: [AppService, AuthService,

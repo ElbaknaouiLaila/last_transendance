@@ -1,13 +1,14 @@
 import { ChannelsService } from './channel.service';
-import { CreateChannelDto } from './dto/create-channel.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '../auth/jwt/jwtservice.service';
+import { ConfigService } from '@nestjs/config';
 export declare class ChannelsController {
     private jwt;
     private readonly channelsService;
     private readonly UsersService;
-    constructor(jwt: JwtService, channelsService: ChannelsService, UsersService: UsersService);
-    create(req: any, data: CreateChannelDto): Promise<boolean | {
+    private config;
+    constructor(jwt: JwtService, channelsService: ChannelsService, UsersService: UsersService, config: ConfigService);
+    create(req: any, data: any): Promise<boolean | {
         message: string;
         error: any;
     }>;
@@ -38,6 +39,7 @@ export declare class ChannelsController {
                 id_user: number;
                 name: string;
                 avatar: string;
+                GameFlag: number;
                 TwoFactor: boolean;
                 ISVERIDIED: boolean;
                 IsFirstTime: boolean;
@@ -81,6 +83,51 @@ export declare class ChannelsController {
                 id_user: number;
                 name: string;
                 avatar: string;
+                GameFlag: number;
+                TwoFactor: boolean;
+                ISVERIDIED: boolean;
+                IsFirstTime: boolean;
+                InGame: boolean;
+                secretKey: string;
+                About: string;
+                status_user: string;
+                email: string;
+                WonBot: number;
+                LoseBot: number;
+                wins: number;
+                losses: number;
+                games_played: number;
+                Progress: number;
+                Wins_percent: number;
+                Losses_percent: number;
+                homies: boolean;
+                invited: boolean;
+                homie_id: number;
+            };
+        } & {
+            userId: number;
+            channelId: number;
+            status_UserInChannel: string;
+            muted: boolean;
+            period: Date;
+        })[];
+    } & {
+        id_channel: number;
+        name: string;
+        img: string;
+        visibility: string;
+        password: string;
+    })[] | {
+        message: string;
+        error: any;
+    }>;
+    getPrivateChannels(): Promise<({
+        users: ({
+            user: {
+                id_user: number;
+                name: string;
+                avatar: string;
+                GameFlag: number;
                 TwoFactor: boolean;
                 ISVERIDIED: boolean;
                 IsFirstTime: boolean;

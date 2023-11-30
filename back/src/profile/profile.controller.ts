@@ -17,13 +17,15 @@ import { ProfileDto } from "./AboutDto";
 import { MixedDto } from "./BotDto";
 import { BooleanDto } from "./ingameDto";
 import { Infos } from "./infosDto";
+import { ConfigService } from '@nestjs/config';
 
 @Controller("profile")
 export class ProfileController {
   constructor(
     private Profile: ProfileService,
     private prisma: PrismaService,
-    private jwt: JwtService
+    private jwt: JwtService,
+    private config: ConfigService
   ) {}
 
   @Post("modify-name")
@@ -59,7 +61,7 @@ export class ProfileController {
   async About_me(@Body() data: ProfileDto, @Req() req, @Res() res) {
     // console.log('about well setted');
     // console.log(data);
-    const payload = this.jwt.verify(req.cookies["cookie"]);
+    const payload = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     const ab: string = data.About;
     await this.prisma.user.update({
       where: { id_user: payload.id },
@@ -79,10 +81,13 @@ export class ProfileController {
   @Post("Bot-Pong")
   async VsBoot(@Req() req: any, @Body() body: MixedDto) {
     console.log(body);
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     const user = await this.prisma.user.findUnique({
       where: { id_user: decoded.id },
     });
+    let winspercent: number;
+    let lossespercent: number;
+    let progress: number;
     let gameP: number = user.games_played + 1;
     let gameW: number = user.WonBot;
     let gameL: number = user.LoseBot;
@@ -91,11 +96,19 @@ export class ProfileController {
     console.log("game_played: " + user.games_played);
     if (body.won) {
       gameW++;
+      progress = ((gameW - gameL) / gameP) * 100;
+      progress = progress < 0 ? 0 : progress;
+      winspercent = (gameW / gameP) * 100;
+      lossespercent = (gameL / gameP) * 100;
       await this.prisma.user.update({
         where: { id_user: decoded.id },
         data: {
           WonBot: gameW,
+          wins: gameW,
           games_played: gameP,
+          Progress: progress,
+          Wins_percent: winspercent,
+          Losses_percent: lossespercent,
           history: {
             create: {
               winner: true,
@@ -110,11 +123,19 @@ export class ProfileController {
       });
     } else {
       gameL++;
+      progress = ((gameW - gameL) / gameP) * 100;
+      progress = progress < 0 ? 0 : progress;
+      winspercent = (gameW / gameP) * 100;
+      lossespercent = (gameL / gameP) * 100;
       await this.prisma.user.update({
         where: { id_user: decoded.id },
         data: {
           LoseBot: gameL,
+          losses: gameL,
           games_played: gameP,
+          Progress: progress,
+          Wins_percent: winspercent,
+          Losses_percent: lossespercent,
           history: {
             create: {
               winner: false,
@@ -145,7 +166,7 @@ export class ProfileController {
 
   @Get("NotFriends")
   async NotFriendsUsers(@Req() req) {
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
     const users = this.prisma.user.findMany({
       where: {
@@ -170,7 +191,7 @@ export class ProfileController {
   @Get("Notifications")
   async GetNotifications(@Req() req) {
     // console.log('hnoooooooo');
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
     // console.log('notification : ', decoded);
     const user = await this.prisma.user.findUnique({
@@ -199,7 +220,7 @@ export class ProfileController {
 
   @Get("Achievments")
   async Achievments(@Req() req) {
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
 
     const userAchievements = await this.prisma.achievments.findMany({
@@ -213,7 +234,7 @@ export class ProfileController {
 
   @Get("History")
   async History(@Req() req) {
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
 
     const user = await this.prisma.history.findMany({
@@ -225,7 +246,7 @@ export class ProfileController {
 
   @Get("avatar")
   async GetAvatar(@Req() req) {
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
 
     const user = await this.prisma.user.findUnique({
@@ -236,7 +257,7 @@ export class ProfileController {
 
   @Post("Gamestatus")
   async Gamestatus(@Req() req, @Body() body: BooleanDto) {
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
 
     await this.prisma.user.update({
@@ -249,7 +270,7 @@ export class ProfileController {
 
   @Post("gameinfos")
   async gameinfos(@Req() req, @Body() body: Infos) {
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
 
     console.log("gameinfoos ", body);
@@ -274,7 +295,7 @@ export class ProfileController {
 
   @Get("returngameinfos")
   async Returngameinfos(@Req() req) {
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
 
     const user = await this.prisma.user.findUnique({
@@ -290,7 +311,7 @@ export class ProfileController {
 
   @Get("Logout")
   async Logout(@Req() req, @Res() res) {
-    const decoded = this.jwt.verify(req.cookies["cookie"]);
+    const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
     if (decoded == null) return;
 
     await this.prisma.user.update({
@@ -306,5 +327,65 @@ export class ProfileController {
     res.clearCookie("cookie");
     res.status(200).json({ msg: "cookie deleted" });
     console.log("cookie deleted");
+  }
+
+  @Post("verifyOtp")
+  async verify_Otp(@Body() body:any, @Req() req){
+    console.log('veriyyy ',body);
+    try {
+      const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+      await this.prisma.user.update({
+        where:{id_user: decoded.id},
+        data:{
+          ISVERIDIED: body.verify,
+        }
+      });
+    }
+    catch(error){}
+  }
+
+  @Get("verifyOtp")
+  async Get_Otp(@Req() req){
+    try {
+      const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+      const user = await this.prisma.user.findUnique({
+        where:{id_user: decoded.id},
+      });
+      return ({verified: user.ISVERIDIED, TFA: user.TwoFactor});
+    }
+    catch(error){}
+  }
+
+  @Post('GameFlag')
+  async GameFlag(@Req() req:any, @Body() body:any){
+    try{
+      const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+      await this.prisma.user.update({
+        where:{id_user: decoded.id},
+        data:{
+          GameFlag: body.flag,
+        },
+      })
+    }
+    catch(error){}
+  }
+
+  @Get('GameFlag')
+  async GetFalg(@Req() req:any){
+    try{
+      const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+      const user = await this.prisma.user.findUnique({where:{id_user: decoded.id}});
+      return ({flag: user.GameFlag});
+    }
+    catch(error){}
+  }
+
+  @Get('ingame')
+  async ingame(@Req() req){
+    try {
+      const decoded = this.jwt.verify(req.cookies[this.config.get('cookie')]);
+      const user = await this.prisma.user.findUnique({where:{id_user: decoded.id}});
+      return ({ingame: user.InGame});
+    }catch(error){}
   }
 }

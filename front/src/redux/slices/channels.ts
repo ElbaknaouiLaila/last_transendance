@@ -52,17 +52,17 @@ export const ChannelsSlice = createSlice({
   reducers: {
     fetchPublicChannels(state, action) {
       //~ get all public channels
-      // console.log(action.payload);
+      console.log(action.payload);
       state.publicChannels = action.payload;
     },
     fetchProtectedChannels(state, action) {
       //~ get all protected channels
-      // console.log(action.payload);
+      console.log(action.payload);
       state.protectedChannels = action.payload;
     },
     fetchPrivateChannels(state, action) {
       //~ get all private channels
-      // console.log(action.payload);
+      console.log(action.payload);
       state.privateChannels = action.payload;
     },
     fetchChannels(state, action) {
@@ -82,8 +82,13 @@ export const ChannelsSlice = createSlice({
           return inputDate.toLocaleDateString(undefined, options);
         }
       };
-      // console.log(action.payload);
       // state.channels = action.payload;
+      const firstTime = () => {
+        const current = new Date();
+        const hours = current.getHours();
+        const minutes = current.getMinutes();
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      }
       state.channels = action.payload.map((el: any) => ({
         channel_id: el.channel_id,
         image: el.image,
@@ -92,7 +97,7 @@ export const ChannelsSlice = createSlice({
         admin: el.admin,
         members: el.members,
         last_messages: el.last_messages,
-        time: formatDateTime(el.time),
+        time: (el.time !== null) ? formatDateTime(el.time) : firstTime(),
         unread: el.unread,
         channel_type: el.channel_type,
       }));
@@ -179,6 +184,22 @@ export function FetchPublicChannels() {
       .then((res) => {
         console.log(res.data);
         dispatch(ChannelsSlice.actions.fetchPublicChannels(res.data));
+      })
+      .catch((err) => console.log(err));
+  };
+}
+
+export function FetchPrivatesChannels() {
+  return async (dispatch: any) => {
+    await axios
+      .get("http://localhost:3000/channels/allprivate", {
+        withCredentials: true, headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        dispatch(ChannelsSlice.actions.fetchPrivateChannels(res.data));
       })
       .catch((err) => console.log(err));
   };

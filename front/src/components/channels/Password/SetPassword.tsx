@@ -3,13 +3,13 @@ import axios from "axios";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { showSnackbar, toggleDialog } from "../../../redux/slices/contact";
+import { resetContact, showSnackbar, toggleDialog } from "../../../redux/slices/contact";
 import { useAppDispatch } from "../../../redux/store/store";
 import FormProvider from "../../hook-form/FormProvider";
 import { Button, IconButton, InputAdornment, Stack } from "@mui/material";
 import { RHFTextField } from "../../../components/hook-form";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
-import { FetchChannels } from "../../../redux/slices/channels";
+import { FetchChannels, FetchPrivatesChannels, FetchProtectedChannels, FetchPublicChannels } from "../../../redux/slices/channels";
 
 const SetPassword = ({ handleClose, el, user_id }: any) => {
   const dispatch = useAppDispatch();
@@ -48,24 +48,28 @@ const SetPassword = ({ handleClose, el, user_id }: any) => {
         withCredentials: true,
       });
       handleClose();
+      dispatch(toggleDialog());
+      dispatch(FetchChannels());
+      dispatch(FetchProtectedChannels());
+      dispatch(FetchPublicChannels());
+      dispatch(FetchPrivatesChannels());
+      dispatch(resetContact());
       dispatch(
         showSnackbar({
           severity: "success",
           message: "You upgrated to Protected channel",
         })
       );
-      dispatch(toggleDialog());
-      dispatch(FetchChannels());
     } catch (err) {
       console.error(err);
       reset();
+      handleClose();
       dispatch(
         showSnackbar({
           severity: "error",
           message: "update into Protected Channel Failed",
         })
       );
-      handleClose();
     }
   };
 

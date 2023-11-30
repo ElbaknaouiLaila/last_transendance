@@ -14,13 +14,15 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
 const jwtservice_service_1 = require("../auth/jwt/jwtservice.service");
 const fs = require("fs");
+const config_1 = require("@nestjs/config");
 let ProfileService = class ProfileService {
-    constructor(prisma, jwt) {
+    constructor(prisma, jwt, config) {
         this.prisma = prisma;
         this.jwt = jwt;
+        this.config = config;
     }
     async ModifyName(dat, req, res) {
-        const Token = req.cookies['cookie'];
+        const Token = req.cookies[this.config.get('cookie')];
         const verifyToekn = this.jwt.verify(Token);
         try {
             const user = await this.prisma.user.update({
@@ -36,9 +38,9 @@ let ProfileService = class ProfileService {
         }
     }
     async ModifyPhoto(photo, req, res) {
-        const verifyToken = this.jwt.verify(req.cookies['cookie']);
+        const verifyToken = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         console.log('orginal name : ', photo.originalname);
-        const filePath = '/goinfre/lelbakna/freez/last_transendance/front/public/uploads/' + photo.originalname;
+        const filePath = '/home/mmanouze/Desktop/last/front/public/uploads/' + photo.originalname;
         const rightPath = '/public/uploads/' + photo.originalname;
         console.log(photo.originalname);
         fs.writeFileSync(filePath, photo.buffer);
@@ -56,7 +58,7 @@ let ProfileService = class ProfileService {
         }
     }
     async About_me(req, res) {
-        const payload = this.jwt.verify(req.cookies['cookie']);
+        const payload = this.jwt.verify(req.cookies[this.config.get('cookie')]);
         const user = await this.prisma.user.findUnique({
             where: { id_user: payload.id },
         });
@@ -66,6 +68,8 @@ let ProfileService = class ProfileService {
 exports.ProfileService = ProfileService;
 exports.ProfileService = ProfileService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, jwtservice_service_1.JwtService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        jwtservice_service_1.JwtService,
+        config_1.ConfigService])
 ], ProfileService);
 //# sourceMappingURL=profile.service.js.map
