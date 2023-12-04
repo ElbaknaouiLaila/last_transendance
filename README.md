@@ -22,10 +22,12 @@ The project is consisting of three main parts (user interface, chat, and real-ti
 
 Clone the project, then run the command: make build. After building, the server will run, and you can access it via the browser using the address: 'http://localhost:5173'.
 
+Enjoy 🤗 😊
 ## Usage
 
 <!-- I ll do it later  -->
 
 ## Contact
 
-If you have questions or feedback, you can reach us at : https://www.linkedin.com/in/rachida-moujan-297424285/.
+If you have questions or feedback, you can reach us at : https://www.linkedin.com/in/rachida-moujan-297424285/. 
+thank you 🙏🏻
