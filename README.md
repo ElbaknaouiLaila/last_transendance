@@ -2,9 +2,12 @@
 
 ft_transcendence is the last project in the 42 common core, is about creating a website for the mighty Pong contest!
 The project is consisting of three main parts (user interface, chat, and real-time multiplayer online games)
-1-User interface is where a user can login into his profile and make those actions : navigation, adding/removing friends, posting content .
-2-Chat : is where you can start a dm with your freinds , creating channels public private or protected with a password with your freinds .
-3-Game : This is the goal of the project; this section allows you to play ping pong with your friends
+
+1- The user interface is where a user can log in to their profile and perform actions such as navigation, adding/removing friends, and posting content
+
+2- Chat is where you can start a direct message with your friends, create channels—public, private, or protected with a password—and engage in conversations with your friends.
+
+3- Game: This section represents the core goal of the project, providing you with the opportunity to play ping pong with your friends.
 
 ## Technologies Used
 
